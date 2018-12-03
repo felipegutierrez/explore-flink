@@ -9,8 +9,11 @@ import org.sense.flink.mqtt.FlinkMqttConsumer;
 import org.sense.flink.mqtt.MqttMessage;
 
 /**
- * On the terminal execute "nc -lk 9000", run this class and type words back on
- * the terminal
+ * Install mosquitto MQTT broker "sudo apt install mosquitto"
+ * 
+ * type on the command line the "mosquitto_pub" command to publish messages
+ * 
+ * mosquitto_pub -t 'topic' -m 'HelloWorld HelloWorld Hello World'
  * 
  * @author Felipe Oliveira Gutierrez
  *

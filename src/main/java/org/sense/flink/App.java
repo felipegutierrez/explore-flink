@@ -18,8 +18,10 @@ public class App {
 			int app = 0;
 			do {
 				System.out.println("0 - exit");
-				System.out.println("1 - World count (Sokect stream) with Filter and showing the Query Execution Plan (QEP)");
-				System.out.println("2 - World count (MQTT stream) with Filter and showing the Query Execution Plan (QEP)");
+				System.out.println(
+						"1 - World count (Sokect stream) with Filter and showing the Query Execution Plan (QEP)");
+				System.out.println(
+						"2 - World count (MQTT stream) with Filter and showing the Query Execution Plan (QEP)");
 				// System.out.println("3 - ");
 				// System.out.println("4 - ");
 				System.out.print("    Please enter which application you want to run: ");
