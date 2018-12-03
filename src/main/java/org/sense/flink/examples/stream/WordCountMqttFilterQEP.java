@@ -5,6 +5,8 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
+import org.sense.flink.mqtt.FlinkMqttConsumer;
+import org.sense.flink.mqtt.MqttMessage;
 
 /**
  * On the terminal execute "nc -lk 9000", run this class and type words back on
@@ -13,13 +15,14 @@ import org.apache.flink.util.Collector;
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class WordCountFilterQEP {
-	public WordCountFilterQEP() throws Exception {
+public class WordCountMqttFilterQEP {
+
+	public WordCountMqttFilterQEP() throws Exception {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-		DataStream<Tuple2<String, Integer>> dataStream = env.socketTextStream("localhost", 9000)
-				.flatMap(new SplitterFlatMap()).keyBy(0) // select the first value as a key
+		DataStream<Tuple2<String, Integer>> dataStream = env.addSource(new FlinkMqttConsumer("topic"))
+				.flatMap(new SplitterFlatMapMqtt()).keyBy(0) // select the first value as a key
 				.sum(1) // reduce to sum all values with same key
 				.filter(word -> word.f1 >= 3) // use simple filter
 		;
@@ -31,13 +34,16 @@ public class WordCountFilterQEP {
 
 		dataStream.print();
 
-		env.execute("Window WordCount Execution plan details");
+		env.execute("WordCountMqttFilterQEP");
 	}
 
-	public static class SplitterFlatMap implements FlatMapFunction<String, Tuple2<String, Integer>> {
+	public static class SplitterFlatMapMqtt implements FlatMapFunction<MqttMessage, Tuple2<String, Integer>> {
 		@Override
-		public void flatMap(String sentence, Collector<Tuple2<String, Integer>> out) throws Exception {
-			for (String word : sentence.split(" ")) {
+		public void flatMap(MqttMessage sentence, Collector<Tuple2<String, Integer>> out) throws Exception {
+
+			String[] tokens = sentence.getPayload().toLowerCase().split(" ");
+
+			for (String word : tokens) {
 				out.collect(new Tuple2<String, Integer>(word, 1));
 			}
 		}

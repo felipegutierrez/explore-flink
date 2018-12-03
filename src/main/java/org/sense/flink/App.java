@@ -3,7 +3,8 @@ package org.sense.flink;
 import java.util.Scanner;
 
 import org.apache.flink.runtime.client.JobExecutionException;
-import org.sense.flink.examples.stream.WordCountFilterQEP;
+import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
+import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
 
 /**
  * 
@@ -17,8 +18,8 @@ public class App {
 			int app = 0;
 			do {
 				System.out.println("0 - exit");
-				System.out.println("1 - World count with Filter and showing the Query Execution Plan (QEP)");
-				// System.out.println("2 - ");
+				System.out.println("1 - World count (Sokect stream) with Filter and showing the Query Execution Plan (QEP)");
+				System.out.println("2 - World count (MQTT stream) with Filter and showing the Query Execution Plan (QEP)");
 				// System.out.println("3 - ");
 				// System.out.println("4 - ");
 				System.out.print("    Please enter which application you want to run: ");
@@ -31,12 +32,12 @@ public class App {
 					break;
 				case 1:
 					System.out.println("App 1 selected");
-					new WordCountFilterQEP();
+					new WordCountSocketFilterQEP();
 					app = 0;
 					break;
 				case 2:
 					System.out.println("App 2 selected");
-
+					new WordCountMqttFilterQEP();
 					app = 0;
 					break;
 				case 3:
