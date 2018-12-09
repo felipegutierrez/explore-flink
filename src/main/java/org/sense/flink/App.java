@@ -3,6 +3,7 @@ package org.sense.flink;
 import java.util.Scanner;
 
 import org.apache.flink.runtime.client.JobExecutionException;
+import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
 
@@ -22,7 +23,7 @@ public class App {
 						"1 - World count (Sokect stream) with Filter and showing the Query Execution Plan (QEP)");
 				System.out.println(
 						"2 - World count (MQTT stream) with Filter and showing the Query Execution Plan (QEP)");
-				// System.out.println("3 - ");
+				System.out.println("3 - Matrix multiplication using batch");
 				// System.out.println("4 - ");
 				System.out.print("    Please enter which application you want to run: ");
 
@@ -44,7 +45,7 @@ public class App {
 					break;
 				case 3:
 					System.out.println("App 3 selected");
-
+					new MatrixMultiplication();
 					app = 0;
 					break;
 				case 4:
