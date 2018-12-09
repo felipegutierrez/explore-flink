@@ -4,7 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.flink.api.common.functions.CoGroupFunction;
-import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.MapPartitionFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -46,8 +47,6 @@ public class MatrixMultiplication {
 	 */
 	public MatrixMultiplication() {
 
-		String input = "";
-
 		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 		DataSet<Tuple3<Integer, Integer, Integer>> matrixA = env.readCsvFile("resources/matrixA.csv")
@@ -56,10 +55,8 @@ public class MatrixMultiplication {
 		DataSet<Tuple3<Integer, Integer, Integer>> matrixB = env.readCsvFile("resources/matrixB.csv")
 				.fieldDelimiter(",").types(Integer.class, Integer.class, Integer.class);
 
-		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixA = matrixA
-				.map(new MapMatrixToKeysAndValues(2));
-		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixB = matrixB
-				.map(new MapMatrixToKeysAndValues(2));
+		// DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixA =
+		// matrixA.map(new MapMatrixToKeysAndValues(2));
 
 		// keyValueMatrixA.coGroup(keyValueMatrixB).where(0).equals(0).with(new
 		// MyCoGroup());
@@ -92,7 +89,7 @@ public class MatrixMultiplication {
 	 *
 	 */
 	public static class MapMatrixToKeysAndValues implements
-			MapFunction<Tuple3<Integer, Integer, Integer>, Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> {
+			MapPartitionFunction<Tuple3<Integer, Integer, Integer>, Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> {
 
 		int numberOfIterations;
 
@@ -101,12 +98,20 @@ public class MatrixMultiplication {
 		}
 
 		@Override
-		public Tuple2<Tuple3<Integer, Integer, Integer>, Integer> map(Tuple3<Integer, Integer, Integer> value)
-				throws Exception {
-			// TODO Auto-generated method stub
-			return null;
-		}
+		public void mapPartition(Iterable<Tuple3<Integer, Integer, Integer>> matrix,
+				Collector<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> out) throws Exception {
 
+			for (int k = 1; k <= numberOfIterations; k++) {
+				for (Tuple3<Integer, Integer, Integer> tuple : matrix) {
+					// key(i,k, i+j) for k=1...N
+					Tuple3 key = new Tuple3<Integer, Integer, Integer>(tuple.f0, k, tuple.f0 + tuple.f1);
+					// value matrix[i,j]
+					Integer value = 0;
+
+					out.collect(new Tuple2<Tuple3<Integer, Integer, Integer>, Integer>(key, value));
+				}
+			}
+		}
 	}
 
 	public static class MyCoGroup implements CoGroupFunction<Tuple2<String, Integer>, Tuple2<String, Double>, Double> {
@@ -127,6 +132,29 @@ public class MatrixMultiplication {
 					out.collect(val.f1 * i);
 				}
 			}
+		}
+	}
+
+	/**
+	 * 
+	 * <code>
+	 * This is the dot product of the result in 4 reducers because the matrix AB =
+	 * | 1 -9|
+	 * |23  4|
+	 * 
+	 * So, the reduces on AB_1,1 will need all the values of A_1,* and B_*,1. 8 values in total.
+	 * Reduce function: emit key = (i,k) and value = SUM_j(A[i,j] * B[j,k])
+	 * 
+	 * </code>
+	 * 
+	 * @author Felipe Oliveira Gutierrez
+	 */
+	public static class ProductReducer implements ReduceFunction<Tuple3<Integer, Integer, Integer>> {
+		@Override
+		public Tuple3<Integer, Integer, Integer> reduce(Tuple3<Integer, Integer, Integer> v1,
+				Tuple3<Integer, Integer, Integer> v2) {
+			Integer sum = v1.f1 + v2.f1;
+			return new Tuple3<Integer, Integer, Integer>(v1.f0, v2.f0, sum);
 		}
 	}
 
