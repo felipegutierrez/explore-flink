@@ -6,10 +6,12 @@ import java.util.Set;
 import org.apache.flink.api.common.functions.CoGroupFunction;
 import org.apache.flink.api.common.functions.MapPartitionFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.util.Collector;
 
 public class MatrixMultiplication {
@@ -44,16 +46,27 @@ public class MatrixMultiplication {
 	 * 4,1,0
 	 * 4,2,4
 	 * </code>
+	 * 
+	 * @throws Exception
 	 */
-	public MatrixMultiplication() {
+	public MatrixMultiplication() throws Exception {
 
 		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-		DataSet<Tuple3<Integer, Integer, Integer>> matrixA = env.readCsvFile("resources/matrixA.csv")
-				.fieldDelimiter(",").types(Integer.class, Integer.class, Integer.class);
+		DataSet<Tuple4<String, Integer, Integer, Integer>> matrixA = env.readCsvFile("resources/matrixA.csv")
+				.fieldDelimiter(",").types(Integer.class, Integer.class, Integer.class)
+				.map(t -> new Tuple4<String, Integer, Integer, Integer>("A", t.f0, t.f1, t.f2))
+				.returns(Types.TUPLE(Types.STRING, Types.INT, Types.INT, Types.INT));
 
-		DataSet<Tuple3<Integer, Integer, Integer>> matrixB = env.readCsvFile("resources/matrixB.csv")
-				.fieldDelimiter(",").types(Integer.class, Integer.class, Integer.class);
+		DataSet<Tuple4<String, Integer, Integer, Integer>> matrixB = env.readCsvFile("resources/matrixB.csv")
+				.fieldDelimiter(",").types(Integer.class, Integer.class, Integer.class)
+				.map(t -> new Tuple4<String, Integer, Integer, Integer>("B", t.f0, t.f1, t.f2))
+				.returns(Types.TUPLE(Types.STRING, Types.INT, Types.INT, Types.INT));
+
+		// simple union operation on matrix A and B
+		DataSet<Tuple4<String, Integer, Integer, Integer>> rawMatrixAB = matrixA.union(matrixB);
+
+		rawMatrixAB.print();
 
 		// DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixA =
 		// matrixA.map(new MapMatrixToKeysAndValues(2));
