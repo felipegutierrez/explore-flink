@@ -16,6 +16,9 @@ import org.apache.flink.util.Collector;
 
 public class MatrixMultiplication {
 
+	private static final String MATRIX_A = "A";
+	private static final String MATRIX_B = "B";
+
 	/**
 	 * <code>
 	 * matrix A
@@ -130,15 +133,30 @@ public class MatrixMultiplication {
 				Collector<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> out) throws Exception {
 
 			for (Tuple4<String, Integer, Integer, Integer> tuple : values) {
-				for (int k = 1; k <= count; k++) {
-					// key(i,k, i+j) for k=1...N
-					Integer i = tuple.f1;
-					Integer j = tuple.f2;
-					Tuple3<Integer, Integer, Integer> key = new Tuple3<Integer, Integer, Integer>(i, k, i + j);
+				for (int c = 1; c <= count; c++) {
 
-					// value matrix[i,j]
-					Integer value = tuple.f3;
+					Tuple3<Integer, Integer, Integer> key = null;
+					Integer value = null;
 
+					if (MATRIX_A.equals(tuple.f0)) {
+						// key(i,k,i+j) for k=1...N
+						Integer i = tuple.f1;
+						Integer j = tuple.f2;
+						Integer k = c;
+						key = new Tuple3<Integer, Integer, Integer>(i, k, i + j);
+
+						// value matrix[i,j]
+						value = tuple.f3;
+					} else if (MATRIX_B.equals(tuple.f0)) {
+						// key(i,k,j+k) for i=1...L
+						Integer i = c;
+						Integer j = tuple.f1;
+						Integer k = tuple.f2;
+						key = new Tuple3<Integer, Integer, Integer>(i, k, j + k);
+
+						// value matrix[j,k]
+						value = tuple.f3;
+					}
 					out.collect(new Tuple2<Tuple3<Integer, Integer, Integer>, Integer>(key, value));
 				}
 			}
