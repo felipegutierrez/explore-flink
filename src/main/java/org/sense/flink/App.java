@@ -61,6 +61,7 @@ public class App {
 		} catch (JobExecutionException ce) {
 			System.err.println(
 					"The application was not able to connect to the Netcat. Please make sure that you have initiate a Netcat on the command line (\'nc -lk 9000\')");
+			System.err.println(ce.getMessage());
 		}
 	}
 }

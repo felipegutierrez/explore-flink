@@ -63,16 +63,29 @@ public class MatrixMultiplication {
 				.map(t -> new Tuple4<String, Integer, Integer, Integer>("B", t.f0, t.f1, t.f2))
 				.returns(Types.TUPLE(Types.STRING, Types.INT, Types.INT, Types.INT));
 
+		int columnsMatrixB = 2;
+		int linesMatrixA = 2;
+
+		// create key and values for both matrix
+		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixA = matrixA
+				.mapPartition(new MapMatrixToKeysAndValues(columnsMatrixB));
+		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixB = matrixB
+				.mapPartition(new MapMatrixToKeysAndValues(linesMatrixA));
+
 		// simple union operation on matrix A and B
-		DataSet<Tuple4<String, Integer, Integer, Integer>> rawMatrixAB = matrixA.union(matrixB);
+		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> matrixAB = keyValueMatrixA.union(keyValueMatrixB);
 
-		rawMatrixAB.print();
-
-		// DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixA =
-		// matrixA.map(new MapMatrixToKeysAndValues(2));
+		matrixAB.print();
 
 		// keyValueMatrixA.coGroup(keyValueMatrixB).where(0).equals(0).with(new
 		// MyCoGroup());
+
+		// env.execute("MatrixMultiplication");
+
+		// String executionPlan = env.getExecutionPlan();
+		// System.out.println("ExecutionPlan ........................ ");
+		// System.out.println(executionPlan);
+		// System.out.println("........................ ");
 	}
 
 	/**
@@ -102,24 +115,29 @@ public class MatrixMultiplication {
 	 *
 	 */
 	public static class MapMatrixToKeysAndValues implements
-			MapPartitionFunction<Tuple3<Integer, Integer, Integer>, Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> {
+			MapPartitionFunction<Tuple4<String, Integer, Integer, Integer>, Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> {
 
-		int numberOfIterations;
+		private static final long serialVersionUID = 1L;
 
-		public MapMatrixToKeysAndValues(int numberOfIterations) {
-			this.numberOfIterations = numberOfIterations;
+		private int count;
+
+		public MapMatrixToKeysAndValues(int count) {
+			this.count = count;
 		}
 
 		@Override
-		public void mapPartition(Iterable<Tuple3<Integer, Integer, Integer>> matrix,
+		public void mapPartition(Iterable<Tuple4<String, Integer, Integer, Integer>> values,
 				Collector<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> out) throws Exception {
 
-			for (int k = 1; k <= numberOfIterations; k++) {
-				for (Tuple3<Integer, Integer, Integer> tuple : matrix) {
+			for (Tuple4<String, Integer, Integer, Integer> tuple : values) {
+				for (int k = 1; k <= count; k++) {
 					// key(i,k, i+j) for k=1...N
-					Tuple3 key = new Tuple3<Integer, Integer, Integer>(tuple.f0, k, tuple.f0 + tuple.f1);
+					Integer i = tuple.f1;
+					Integer j = tuple.f2;
+					Tuple3<Integer, Integer, Integer> key = new Tuple3<Integer, Integer, Integer>(i, k, i + j);
+
 					// value matrix[i,j]
-					Integer value = 0;
+					Integer value = tuple.f3;
 
 					out.collect(new Tuple2<Tuple3<Integer, Integer, Integer>, Integer>(key, value));
 				}
