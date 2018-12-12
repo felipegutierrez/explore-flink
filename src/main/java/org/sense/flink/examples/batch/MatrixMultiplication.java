@@ -11,6 +11,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.util.Collector;
+import org.sense.flink.util.CustomFlinkException;
 
 public class MatrixMultiplication {
 
@@ -66,39 +67,40 @@ public class MatrixMultiplication {
 				.fieldDelimiter(",").types(Integer.class, Integer.class, Integer.class)
 				.map(t -> new Tuple4<String, Integer, Integer, Integer>("A", t.f0, t.f1, t.f2))
 				.returns(Types.TUPLE(Types.STRING, Types.INT, Types.INT, Types.INT));
-		System.out.println("Matrix A");
+		long linesOnMatrixA = matrixA.map(new CountMapper()).groupBy(0).reduce(new CountReducer()).count();
+		System.out.println("Matrix " + MATRIX_A);
+		System.out.println("Lines on Matrix A: " + linesOnMatrixA);
 		matrixA.print();
 
 		DataSet<Tuple4<String, Integer, Integer, Integer>> matrixB = env.readCsvFile("resources/matrixB.csv")
 				.fieldDelimiter(",").types(Integer.class, Integer.class, Integer.class)
 				.map(t -> new Tuple4<String, Integer, Integer, Integer>("B", t.f0, t.f1, t.f2))
 				.returns(Types.TUPLE(Types.STRING, Types.INT, Types.INT, Types.INT));
-		System.out.println("Matrix B");
+		long columnsOnMatrixB = matrixB.map(new CountMapper()).groupBy(0).reduce(new CountReducer()).count();
+		System.out.println("Matrix " + MATRIX_B);
+		System.out.println("Columns on Matrix B: " + columnsOnMatrixB);
 		matrixB.print();
-
-		int columnsMatrixB = 2;
-		int linesMatrixA = 2;
 
 		// create key and values for both matrix
 		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixA = matrixA
-				.mapPartition(new MapMatrixToKeysAndValues(columnsMatrixB));
-		// System.out.println("Matrix A");
+				.mapPartition(new MapMatrixToKeysAndValues(columnsOnMatrixB));
+		// System.out.println("Matrix " + MATRIX_A);
 		// keyValueMatrixA.print();
 
 		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> keyValueMatrixB = matrixB
-				.mapPartition(new MapMatrixToKeysAndValues(linesMatrixA));
-		// System.out.println("Matrix B");
+				.mapPartition(new MapMatrixToKeysAndValues(linesOnMatrixA));
+		// System.out.println("Matrix " + MATRIX_B);
 		// keyValueMatrixB.print();
 
 		// simple union operation on matrix A and B
 		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> matrixAB = keyValueMatrixA.union(keyValueMatrixB);
-		// System.out.println("Matrix AB");
+		// System.out.println("Matrix " + MATRIX_A + MATRIX_B + " 01");
 		// matrixAB.print();
 
 		// multiply two cells of both matrix. Ex: A[1,1] * B[1,1]
 		DataSet<Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> matrixAB_01 = matrixAB.groupBy(0)
 				.reduce(new ProductReducer());
-		// System.out.println("Matrix AB 01");
+		// System.out.println("Matrix " + MATRIX_A + MATRIX_B + " 02");
 		// matrixAB_01.print();
 
 		// transform key(i,k,i+j) and value(AB[i,j]) into key(i,j) and value(AB[i,j])
@@ -108,7 +110,7 @@ public class MatrixMultiplication {
 
 		DataSet<Tuple2<Tuple2<Integer, Integer>, Integer>> productMatrixAB = matrixAB_02.groupBy(0)
 				.reduce(new SumReducer());
-		System.out.println("Matrix AB");
+		System.out.println("Matrix " + MATRIX_A + MATRIX_B + " 03");
 		productMatrixAB.print();
 
 		productMatrixAB.output(new DiscardingOutputFormat<Tuple2<Tuple2<Integer, Integer>, Integer>>());
@@ -116,6 +118,48 @@ public class MatrixMultiplication {
 		System.out.println("ExecutionPlan ........................ ");
 		System.out.println(env.getExecutionPlan());
 		System.out.println("........................ ");
+	}
+
+	/**
+	 * This class maps each cell of the matrix to a key-value pair of key = line
+	 * (matrix A) or column (matrix B) and value equal 1 in order to sum up on a
+	 * reduce phase.
+	 * 
+	 * @author Felipe Oliveira Gutierrez
+	 *
+	 */
+	public static class CountMapper
+			implements MapFunction<Tuple4<String, Integer, Integer, Integer>, Tuple2<Integer, Integer>> {
+		private static final long serialVersionUID = -8366064145804196189L;
+
+		@Override
+		public Tuple2<Integer, Integer> map(Tuple4<String, Integer, Integer, Integer> value) throws Exception {
+			if (MATRIX_A.equals(value.f0)) {
+				return new Tuple2<Integer, Integer>(value.f1, 1);
+			} else if (MATRIX_B.equals(value.f0)) {
+				return new Tuple2<Integer, Integer>(value.f2, 1);
+			} else {
+				throw new CustomFlinkException("The matrix is not defined as A or B matrix.");
+			}
+		}
+	}
+
+	/**
+	 * This class count the number of lines or columns regarding the Matrix A or B
+	 * generated at the class CountMapper.
+	 * 
+	 * @author Felipe Oliveira Gutierrez
+	 *
+	 */
+	public static class CountReducer implements ReduceFunction<Tuple2<Integer, Integer>> {
+
+		private static final long serialVersionUID = 3331037476103474499L;
+
+		@Override
+		public Tuple2<Integer, Integer> reduce(Tuple2<Integer, Integer> v1, Tuple2<Integer, Integer> v2) {
+			Integer sum = v1.f1 + v2.f1;
+			return new Tuple2<Integer, Integer>(v1.f0, sum);
+		}
 	}
 
 	/**
@@ -148,9 +192,9 @@ public class MatrixMultiplication {
 			MapPartitionFunction<Tuple4<String, Integer, Integer, Integer>, Tuple2<Tuple3<Integer, Integer, Integer>, Integer>> {
 
 		private static final long serialVersionUID = 6992353073599144457L;
-		private int count;
+		private long count;
 
-		public MapMatrixToKeysAndValues(int count) {
+		public MapMatrixToKeysAndValues(long count) {
 			this.count = count;
 		}
 
