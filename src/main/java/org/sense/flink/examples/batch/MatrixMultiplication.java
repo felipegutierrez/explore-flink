@@ -6,6 +6,7 @@ import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.io.DiscardingOutputFormat;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
@@ -59,7 +60,7 @@ public class MatrixMultiplication {
 	 */
 	public MatrixMultiplication() throws Exception {
 
-		ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
+		final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 		DataSet<Tuple4<String, Integer, Integer, Integer>> matrixA = env.readCsvFile("resources/matrixA.csv")
 				.fieldDelimiter(",").types(Integer.class, Integer.class, Integer.class)
@@ -110,12 +111,11 @@ public class MatrixMultiplication {
 		System.out.println("Matrix AB");
 		productMatrixAB.print();
 
-		// env.execute("MatrixMultiplication");
+		productMatrixAB.output(new DiscardingOutputFormat<Tuple2<Tuple2<Integer, Integer>, Integer>>());
 
-		// String executionPlan = env.getExecutionPlan();
-		// System.out.println("ExecutionPlan ........................ ");
-		// System.out.println(env.getExecutionPlan());
-		// System.out.println("........................ ");
+		System.out.println("ExecutionPlan ........................ ");
+		System.out.println(env.getExecutionPlan());
+		System.out.println("........................ ");
 	}
 
 	/**
