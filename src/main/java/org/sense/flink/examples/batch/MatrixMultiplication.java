@@ -111,10 +111,11 @@ public class MatrixMultiplication {
 		DataSet<Tuple2<Tuple2<Integer, Integer>, Integer>> productMatrixAB = matrixAB_02.groupBy(0)
 				.reduce(new SumReducer());
 		System.out.println("Matrix " + MATRIX_A + MATRIX_B + " 03");
+
 		productMatrixAB.print();
 
+		// To show the plan we need to use the env.output() method
 		productMatrixAB.output(new DiscardingOutputFormat<Tuple2<Tuple2<Integer, Integer>, Integer>>());
-
 		System.out.println("ExecutionPlan ........................ ");
 		System.out.println(env.getExecutionPlan());
 		System.out.println("........................ ");
