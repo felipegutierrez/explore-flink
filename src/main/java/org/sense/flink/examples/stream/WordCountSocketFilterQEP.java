@@ -35,6 +35,9 @@ public class WordCountSocketFilterQEP {
 	}
 
 	public static class SplitterFlatMap implements FlatMapFunction<String, Tuple2<String, Integer>> {
+
+		private static final long serialVersionUID = -6155646115486510443L;
+
 		@Override
 		public void flatMap(String sentence, Collector<Tuple2<String, Integer>> out) throws Exception {
 			for (String word : sentence.split(" ")) {

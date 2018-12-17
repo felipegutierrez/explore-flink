@@ -41,6 +41,8 @@ public class WordCountMqttFilterQEP {
 	}
 
 	public static class SplitterFlatMapMqtt implements FlatMapFunction<MqttMessage, Tuple2<String, Integer>> {
+		private static final long serialVersionUID = -524121288549767749L;
+
 		@Override
 		public void flatMap(MqttMessage sentence, Collector<Tuple2<String, Integer>> out) throws Exception {
 

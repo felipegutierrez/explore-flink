@@ -1,9 +1,12 @@
 package org.sense.flink;
 
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
+import org.sense.flink.examples.stream.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
 
@@ -24,7 +27,7 @@ public class App {
 				System.out.println(
 						"2 - World count (MQTT stream) with Filter and showing the Query Execution Plan (QEP)");
 				System.out.println("3 - Matrix multiplication using batch");
-				// System.out.println("4 - ");
+				System.out.println("4 - Join Data Sources example using Data Stream (QEP)");
 				System.out.print("    Please enter which application you want to run: ");
 
 				String msg = (new Scanner(System.in)).nextLine();
@@ -50,8 +53,29 @@ public class App {
 					break;
 				case 4:
 					System.out.println("App 4 selected");
-
+					new SensorsReadingMqttJoinQEP();
 					app = 0;
+					break;
+				case 5:
+					System.out.println("App 5 selected");
+					app = 0;
+					// Create a CompletableFuture
+					CompletableFuture<String> whatsYourNameFuture = CompletableFuture.supplyAsync(() -> {
+						try {
+							TimeUnit.SECONDS.sleep(2);
+						} catch (InterruptedException e) {
+							throw new IllegalStateException(e);
+						}
+						return "Rajeev";
+					});
+
+					// Attach a callback to the Future using thenApply()
+					CompletableFuture<String> greetingFuture = whatsYourNameFuture.thenApply(name -> {
+						return "Hello " + name;
+					});
+
+					// Block and get the result of the future.
+					// System.out.println(greetingFuture.get()); // Hello Rajeev
 					break;
 				default:
 					System.out.println("No application selected [" + app + "] ");
