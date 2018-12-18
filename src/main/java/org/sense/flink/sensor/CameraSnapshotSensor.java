@@ -45,6 +45,46 @@ public class CameraSnapshotSensor implements ISensor {
 		// Bytes to doubles
 	}
 
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+
+	public double getAltitude() {
+		return altitude;
+	}
+
+	public void setAltitude(double altitude) {
+		this.altitude = altitude;
+	}
+
+	public byte[] getSnapshot() {
+		return snapshot;
+	}
+
+	public void setSnapshot(byte[] snapshot) {
+		this.snapshot = snapshot;
+	}
+
+	public byte[] getTemperature() {
+		return temperature;
+	}
+
+	public void setTemperature(byte[] temperature) {
+		this.temperature = temperature;
+	}
+
 	@Override
 	public String toString() {
 		return "CameraSnapshotSensor [latitude=" + latitude + ", longitude=" + longitude + ", altitude=" + altitude

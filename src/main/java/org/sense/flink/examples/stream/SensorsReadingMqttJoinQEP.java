@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.functions.KeySelector;
@@ -55,7 +56,14 @@ public class SensorsReadingMqttJoinQEP {
 					public Double getKey(CameraSensor value) throws Exception {
 						return value.getLatitude();
 					}
-				}).window(TumblingEventTimeWindows.of(Time.seconds(10))).apply(new TemperatureCameraJoiner());
+				}).window(TumblingEventTimeWindows.of(Time.seconds(10))).apply(new TemperatureCameraJoiner())
+				.filter(new FilterFunction<CameraSnapshotSensor>() {
+					@Override
+					public boolean filter(CameraSnapshotSensor value) throws Exception {
+						double temperature = ByteBuffer.wrap(value.getTemperature()).getDouble();
+						return (temperature < 0 || temperature > 35);
+					}
+				});
 		result.print();
 
 		String executionPlan = env.getExecutionPlan();
