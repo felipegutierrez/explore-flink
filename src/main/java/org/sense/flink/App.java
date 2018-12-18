@@ -1,8 +1,6 @@
 package org.sense.flink;
 
 import java.util.Scanner;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
@@ -59,23 +57,6 @@ public class App {
 				case 5:
 					System.out.println("App 5 selected");
 					app = 0;
-					// Create a CompletableFuture
-					CompletableFuture<String> whatsYourNameFuture = CompletableFuture.supplyAsync(() -> {
-						try {
-							TimeUnit.SECONDS.sleep(2);
-						} catch (InterruptedException e) {
-							throw new IllegalStateException(e);
-						}
-						return "Rajeev";
-					});
-
-					// Attach a callback to the Future using thenApply()
-					CompletableFuture<String> greetingFuture = whatsYourNameFuture.thenApply(name -> {
-						return "Hello " + name;
-					});
-
-					// Block and get the result of the future.
-					// System.out.println(greetingFuture.get()); // Hello Rajeev
 					break;
 				default:
 					System.out.println("No application selected [" + app + "] ");
@@ -83,9 +64,8 @@ public class App {
 				}
 			} while (app != 0);
 		} catch (JobExecutionException ce) {
-			System.err.println(
-					"The application was not able to connect to the Netcat. Please make sure that you have initiate a Netcat on the command line (\'nc -lk 9000\')");
 			System.err.println(ce.getMessage());
+			ce.printStackTrace();
 		}
 	}
 }

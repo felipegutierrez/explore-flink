@@ -1,12 +1,10 @@
 package org.sense.flink.util;
 
-import java.lang.instrument.Instrumentation;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
 public class TemperatureSensor implements ISensor {
 
-	private static Instrumentation instrumentation;
 	private double latitude;
 	private double longitude;
 	private double altitude;
@@ -16,6 +14,13 @@ public class TemperatureSensor implements ISensor {
 		this.latitude = 52.5; // ~52.520008
 		this.longitude = 13.40; // ~13.404954
 		this.altitude = 34; // ~34 meters
+	}
+
+	public TemperatureSensor(double latitude, double longitude, double altitude, ByteBuffer buf) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.altitude = altitude;
+		this.buf = buf;
 	}
 
 	@Override
@@ -47,5 +52,11 @@ public class TemperatureSensor implements ISensor {
 		}
 		System.out.println("Location[Lat " + doubles[0] + ", Lon " + doubles[1] + ", Alt " + doubles[2]
 				+ "] temperature: " + doubles[3]);
+	}
+
+	@Override
+	public String toString() {
+		return "TemperatureSensor [latitude=" + latitude + ", longitude=" + longitude + ", altitude=" + altitude
+				+ ", buf=" + ByteBuffer.wrap(buf.array()).getDouble() + "]";
 	}
 }

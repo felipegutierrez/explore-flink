@@ -1,6 +1,5 @@
 package org.sense.flink.util;
 
-import java.lang.instrument.Instrumentation;
 import java.nio.ByteBuffer;
 import java.util.Random;
 
@@ -13,7 +12,6 @@ import java.util.Random;
  */
 public class CameraSensor implements ISensor {
 
-	private static Instrumentation instrumentation;
 	private double latitude;
 	private double longitude;
 	private double altitude;
@@ -27,6 +25,13 @@ public class CameraSensor implements ISensor {
 		this.latitude = 52.5; // ~52.520008
 		this.longitude = 13.40; // ~13.404954
 		this.altitude = 34; // ~34 meters
+	}
+
+	public CameraSensor(double latitude, double longitude, double altitude, ByteBuffer buf) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.altitude = altitude;
+		this.buf = buf;
 	}
 
 	@Override
@@ -70,5 +75,11 @@ public class CameraSensor implements ISensor {
 		}
 		System.out.println("Location[Lat " + doubles[0] + ", Lon " + doubles[1] + ", Alt " + doubles[2]
 				+ "] video recorded: " + doubles[3]);
+	}
+
+	@Override
+	public String toString() {
+		return "CameraSensor [latitude=" + latitude + ", longitude=" + longitude + ", altitude=" + altitude + ", buf="
+				+ ByteBuffer.wrap(buf.array()).getDouble() + "]";
 	}
 }
