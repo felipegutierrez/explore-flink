@@ -7,8 +7,8 @@ import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import org.sense.flink.util.CameraSensor;
-import org.sense.flink.util.ISensor;
+import org.sense.flink.sensor.CameraSensor;
+import org.sense.flink.sensor.ISensor;
 
 /**
  * The camera is not a static. It return the position where it is recording in
@@ -41,7 +41,7 @@ public class CameraMqttSource {
 				byte[] value = this.sensor.readRequest();
 				Future<Void> f3 = connection.publish("topic-camera", value, QoS.AT_LEAST_ONCE, false);
 				// this.sensor.printReadRequest();
-				TimeUnit.SECONDS.sleep(2);
+				TimeUnit.SECONDS.sleep(1);
 			}
 		} catch (URISyntaxException e) {
 			e.printStackTrace();

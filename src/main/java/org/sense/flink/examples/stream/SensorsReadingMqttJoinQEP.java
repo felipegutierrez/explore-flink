@@ -4,15 +4,21 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.mqtt.FlinkMqttByteConsumer;
 import org.sense.flink.mqtt.MqttByteMessage;
+import org.sense.flink.sensor.CameraSensor;
+import org.sense.flink.sensor.CameraSnapshotSensor;
+import org.sense.flink.sensor.TemperatureSensor;
 import org.sense.flink.source.CameraMqttSource;
 import org.sense.flink.source.TemperatureMqttSource;
-import org.sense.flink.util.CameraSensor;
-import org.sense.flink.util.TemperatureSensor;
 
 public class SensorsReadingMqttJoinQEP {
 
@@ -28,18 +34,34 @@ public class SensorsReadingMqttJoinQEP {
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-		DataStream<TemperatureSensor> dsTemp = env.addSource(new FlinkMqttByteConsumer("topic-temp"))
+		// obtain execution environment, run this example in "ingestion time"
+		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
+
+		DataStream<TemperatureSensor> temperatureStream = env.addSource(new FlinkMqttByteConsumer("topic-temp"))
 				.map(new TemperatureMqttMapper());
-		DataStream<CameraSensor> dsCame = env.addSource(new FlinkMqttByteConsumer("topic-camera"))
+		DataStream<CameraSensor> cameraStream = env.addSource(new FlinkMqttByteConsumer("topic-camera"))
 				.map(new CameraMqttMapper());
+		// temperatureStream.print();
+		// cameraStream.print();
+
+		DataStream<CameraSnapshotSensor> result = temperatureStream.join(cameraStream)
+				.where(new KeySelector<TemperatureSensor, Double>() {
+					@Override
+					public Double getKey(TemperatureSensor value) throws Exception {
+						return value.getLatitude();
+					}
+				}).equalTo(new KeySelector<CameraSensor, Double>() {
+					@Override
+					public Double getKey(CameraSensor value) throws Exception {
+						return value.getLatitude();
+					}
+				}).window(TumblingEventTimeWindows.of(Time.seconds(10))).apply(new TemperatureCameraJoiner());
+		result.print();
 
 		String executionPlan = env.getExecutionPlan();
 		System.out.println("ExecutionPlan ........................ ");
 		System.out.println(executionPlan);
 		System.out.println("........................ ");
-
-		dsTemp.print();
-		dsCame.print();
 
 		env.execute("SensorsMqttJoinQEP");
 
@@ -88,7 +110,7 @@ public class SensorsReadingMqttJoinQEP {
 
 			byte[] bytes = new byte[8];
 			ByteBuffer.wrap(bytes).putDouble(doubles[3]);
-			return new TemperatureSensor(doubles[0], doubles[1], doubles[2], ByteBuffer.wrap(bytes));
+			return new TemperatureSensor(doubles[0], doubles[1], doubles[2], bytes);
 		}
 	}
 
@@ -111,7 +133,20 @@ public class SensorsReadingMqttJoinQEP {
 
 			byte[] bytes = new byte[8];
 			ByteBuffer.wrap(bytes).putDouble(doubles[3]);
-			return new CameraSensor(doubles[0], doubles[1], doubles[2], ByteBuffer.wrap(bytes));
+			return new CameraSensor(doubles[0], doubles[1], doubles[2], bytes);
+		}
+	}
+
+	public static class TemperatureCameraJoiner
+			implements JoinFunction<TemperatureSensor, CameraSensor, CameraSnapshotSensor> {
+
+		private static final long serialVersionUID = -4375798700274294936L;
+
+		@Override
+		public CameraSnapshotSensor join(TemperatureSensor first, CameraSensor second) throws Exception {
+
+			return new CameraSnapshotSensor(first.getLatitude(), first.getLongitude(), first.getAltitude(),
+					second.getValue(), first.getValue());
 		}
 	}
 }

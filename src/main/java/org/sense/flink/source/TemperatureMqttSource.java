@@ -7,8 +7,8 @@ import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import org.sense.flink.util.ISensor;
-import org.sense.flink.util.TemperatureSensor;
+import org.sense.flink.sensor.ISensor;
+import org.sense.flink.sensor.TemperatureSensor;
 
 /**
  * The temperature sensor returns the temperature of a specific location in the
@@ -40,7 +40,7 @@ public class TemperatureMqttSource {
 				byte[] value = this.sensor.readRequest();
 				Future<Void> f3 = connection.publish("topic-temp", value, QoS.AT_LEAST_ONCE, false);
 				// this.sensor.printReadRequest();
-				TimeUnit.SECONDS.sleep(2);
+				TimeUnit.SECONDS.sleep(1);
 			}
 		} catch (URISyntaxException e) {
 			e.printStackTrace();

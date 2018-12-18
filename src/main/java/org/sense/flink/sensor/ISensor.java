@@ -1,4 +1,4 @@
-package org.sense.flink.util;
+package org.sense.flink.sensor;
 
 public interface ISensor {
 

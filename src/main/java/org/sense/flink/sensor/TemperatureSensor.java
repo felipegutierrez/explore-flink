@@ -1,55 +1,40 @@
-package org.sense.flink.util;
+package org.sense.flink.sensor;
 
 import java.nio.ByteBuffer;
 import java.util.Random;
 
-/**
- * The camera has a range to move, so it is generating images according to that
- * range.
- * 
- * @author Felipe Oliveira Gutierrez
- *
- */
-public class CameraSensor implements ISensor {
+public class TemperatureSensor implements ISensor {
 
 	private double latitude;
 	private double longitude;
 	private double altitude;
+	private byte[] value;
 	private ByteBuffer buf;
 
-	private double latitudeMin = 52.52 - 1;
-	private double latitudeMax = 52.52 + 1;
-	private boolean direction = true;
-
-	public CameraSensor() {
+	public TemperatureSensor() {
 		this.latitude = 52.5; // ~52.520008
 		this.longitude = 13.40; // ~13.404954
 		this.altitude = 34; // ~34 meters
 	}
 
-	public CameraSensor(double latitude, double longitude, double altitude, ByteBuffer buf) {
+	public TemperatureSensor(double latitude, double longitude, double altitude, ByteBuffer buf) {
 		this.latitude = latitude;
 		this.longitude = longitude;
 		this.altitude = altitude;
 		this.buf = buf;
 	}
 
+	public TemperatureSensor(double latitude, double longitude, double altitude, byte[] value) {
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.altitude = altitude;
+		this.value = value;
+	}
+
 	@Override
 	public byte[] readRequest() {
-		// generate random location value
 
-		if (direction) {
-			this.latitude = this.latitude + 0.1;
-		} else {
-			this.latitude = this.latitude - 0.1;
-		}
-
-		if (this.latitude <= this.latitudeMin) {
-			this.direction = true;
-		} else if (this.latitude >= this.latitudeMax) {
-			this.direction = false;
-		}
-
+		// generate random temperature value
 		int rangeMin = -10;
 		int rangeMax = 50;
 		Random r = new Random();
@@ -74,12 +59,32 @@ public class CameraSensor implements ISensor {
 			doubles[i] = ByteBuffer.wrap(buf.array(), i * times, times).getDouble();
 		}
 		System.out.println("Location[Lat " + doubles[0] + ", Lon " + doubles[1] + ", Alt " + doubles[2]
-				+ "] video recorded: " + doubles[3]);
+				+ "] temperature: " + doubles[3]);
+	}
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public double getAltitude() {
+		return altitude;
+	}
+
+	public ByteBuffer getBuf() {
+		return buf;
+	}
+
+	public byte[] getValue() {
+		return value;
 	}
 
 	@Override
 	public String toString() {
-		return "CameraSensor [latitude=" + latitude + ", longitude=" + longitude + ", altitude=" + altitude + ", buf="
-				+ ByteBuffer.wrap(buf.array()).getDouble() + "]";
+		return "TemperatureSensor [latitude=" + latitude + ", longitude=" + longitude + ", altitude=" + altitude
+				+ ", buf=" + ByteBuffer.wrap(buf.array()).getDouble() + "]";
 	}
 }
