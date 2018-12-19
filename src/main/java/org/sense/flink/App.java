@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
+import org.sense.flink.examples.stream.SensorsReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
@@ -20,12 +21,11 @@ public class App {
 			int app = 0;
 			do {
 				System.out.println("0 - exit");
-				System.out.println(
-						"1 - World count (Sokect stream) with Filter and showing the Query Execution Plan (QEP)");
-				System.out.println(
-						"2 - World count (MQTT stream) with Filter and showing the Query Execution Plan (QEP)");
-				System.out.println("3 - Matrix multiplication using batch");
-				System.out.println("4 - Join Data Sources example using Data Stream (QEP)");
+				System.out.println("1 - World count (Sokect stream) with Filter and QEP");
+				System.out.println("2 - World count (MQTT stream) with Filter and QEP");
+				System.out.println("3 - Matrix multiplication using batch and QEP");
+				System.out.println("4 - Two fake sensors (MQTT stream) and QEP");
+				System.out.println("5 - Fake sensor from Apache Edgent (MQTT stream) and QEP");
 				System.out.print("    Please enter which application you want to run: ");
 
 				String msg = (new Scanner(System.in)).nextLine();
@@ -56,6 +56,7 @@ public class App {
 					break;
 				case 5:
 					System.out.println("App 5 selected");
+					new SensorsReadingMqttEdgentQEP();
 					app = 0;
 					break;
 				default:
