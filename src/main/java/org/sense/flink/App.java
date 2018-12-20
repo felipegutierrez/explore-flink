@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
+import org.sense.flink.examples.stream.SensorsDynamicFilterMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
@@ -26,6 +27,7 @@ public class App {
 				System.out.println("3 - Matrix multiplication using batch and QEP");
 				System.out.println("4 - Two fake sensors (MQTT stream) and QEP");
 				System.out.println("5 - Fake sensor from Apache Edgent (MQTT stream) and QEP");
+				System.out.println("6 - Dynamic filter over fake data source and QEP");
 				System.out.print("    Please enter which application you want to run: ");
 
 				String msg = (new Scanner(System.in)).nextLine();
@@ -57,6 +59,13 @@ public class App {
 				case 5:
 					System.out.println("App 5 selected");
 					new SensorsReadingMqttEdgentQEP();
+					app = 0;
+					break;
+				case 6:
+					System.out.println("App 6 selected");
+					System.out.println("use 'mosquitto_pub -h 127.0.0.1 -t topic-parameter -m \"0.0,1000.0\"' ");
+					System.out.println("on the terminal to change the parameters at runtime.");
+					new SensorsDynamicFilterMqttEdgentQEP();
 					app = 0;
 					break;
 				default:
