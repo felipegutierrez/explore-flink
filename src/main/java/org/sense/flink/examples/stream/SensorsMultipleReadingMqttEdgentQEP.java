@@ -15,8 +15,8 @@ import org.sense.flink.mqtt.TemperatureMqttConsumer;
 
 public class SensorsMultipleReadingMqttEdgentQEP {
 
-	private boolean checkpointEnable = true;
-	private long checkpointInterval = 1000;
+	private boolean checkpointEnable = false;
+	private long checkpointInterval = 10000;
 	private CheckpointingMode checkpointMode = CheckpointingMode.EXACTLY_ONCE;
 
 	public SensorsMultipleReadingMqttEdgentQEP() throws Exception {
@@ -27,24 +27,30 @@ public class SensorsMultipleReadingMqttEdgentQEP {
 		// obtain execution environment, run this example in "ingestion time"
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		if (checkpointEnable)
+		if (checkpointEnable) {
 			env.enableCheckpointing(checkpointInterval, checkpointMode);
+		}
 
 		DataStream<MqttTemperature> temperatureStream01 = env.addSource(new TemperatureMqttConsumer("topic-edgent-01"));
 		DataStream<MqttTemperature> temperatureStream02 = env.addSource(new TemperatureMqttConsumer("topic-edgent-02"));
 		DataStream<MqttTemperature> temperatureStream03 = env.addSource(new TemperatureMqttConsumer("topic-edgent-03"));
-		DataStream<MqttTemperature> temperatureStreams = temperatureStream01.union(temperatureStream02)
-				.union(temperatureStream03);
 
-		DataStream<Tuple2<String, Double>> average = temperatureStreams.keyBy(new TemperatureKeySelector())
+		DataStream<Tuple2<String, Double>> averageStream01 = temperatureStream01.keyBy(new TemperatureKeySelector())
+				.map(new AverageTempMapper());
+		DataStream<Tuple2<String, Double>> averageStream02 = temperatureStream02.keyBy(new TemperatureKeySelector())
+				.map(new AverageTempMapper());
+		DataStream<Tuple2<String, Double>> averageStream03 = temperatureStream03.keyBy(new TemperatureKeySelector())
 				.map(new AverageTempMapper());
 
-		average.print();
+		DataStream<Tuple2<String, Double>> averageStreams = averageStream01.union(averageStream02)
+				.union(averageStream03);
 
-		// String executionPlan = env.getExecutionPlan();
-		// System.out.println("ExecutionPlan ........................ ");
-		// System.out.println(executionPlan);
-		// System.out.println("........................ ");
+		averageStreams.print();
+
+		String executionPlan = env.getExecutionPlan();
+		System.out.println("ExecutionPlan ........................ ");
+		System.out.println(executionPlan);
+		System.out.println("........................ ");
 
 		env.execute("SensorsMultipleReadingMqttEdgentQEP");
 	}

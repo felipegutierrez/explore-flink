@@ -91,6 +91,8 @@ public class App {
 					break;
 				case 9:
 					System.out.println("App 9 selected");
+					System.out.println(
+							"Use [./bin/flink run examples/explore-flink.jar 9 -c] to run this program on the Flink standalone-cluster");
 					System.out.println("Cosuming values from 3 MQTT topics");
 					new SensorsMultipleReadingMqttEdgentQEP();
 					app = 0;
