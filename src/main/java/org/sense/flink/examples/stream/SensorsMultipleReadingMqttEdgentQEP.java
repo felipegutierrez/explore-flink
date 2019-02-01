@@ -6,6 +6,7 @@ import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -14,6 +15,10 @@ import org.sense.flink.mqtt.TemperatureMqttConsumer;
 
 public class SensorsMultipleReadingMqttEdgentQEP {
 
+	private boolean checkpointEnable = true;
+	private long checkpointInterval = 1000;
+	private CheckpointingMode checkpointMode = CheckpointingMode.EXACTLY_ONCE;
+
 	public SensorsMultipleReadingMqttEdgentQEP() throws Exception {
 
 		// Start streaming from fake data source sensors
@@ -21,6 +26,9 @@ public class SensorsMultipleReadingMqttEdgentQEP {
 
 		// obtain execution environment, run this example in "ingestion time"
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
+
+		if (checkpointEnable)
+			env.enableCheckpointing(checkpointInterval, checkpointMode);
 
 		DataStream<MqttTemperature> temperatureStream01 = env.addSource(new TemperatureMqttConsumer("topic-edgent-01"));
 		DataStream<MqttTemperature> temperatureStream02 = env.addSource(new TemperatureMqttConsumer("topic-edgent-02"));
@@ -33,10 +41,10 @@ public class SensorsMultipleReadingMqttEdgentQEP {
 
 		average.print();
 
-		String executionPlan = env.getExecutionPlan();
-		System.out.println("ExecutionPlan ........................ ");
-		System.out.println(executionPlan);
-		System.out.println("........................ ");
+		// String executionPlan = env.getExecutionPlan();
+		// System.out.println("ExecutionPlan ........................ ");
+		// System.out.println(executionPlan);
+		// System.out.println("........................ ");
 
 		env.execute("SensorsMultipleReadingMqttEdgentQEP");
 	}

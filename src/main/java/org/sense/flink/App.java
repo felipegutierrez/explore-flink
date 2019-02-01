@@ -32,9 +32,20 @@ public class App {
 				System.out.println("6 - Dynamic filter over fake data source and QEP");
 				System.out.println("7 - Adaptive filter pushed down to Apache Edgent");
 				System.out.println("9 - Consume MQTT from multiple temperature sensors");
-				System.out.print("    Please enter which application you want to run: ");
 
-				String msg = (new Scanner(System.in)).nextLine();
+				String msg = "0";
+				if (args != null && args.length > 0) {
+					msg = args[0];
+					if (msg.matches("-?\\d+")) {
+						System.out.println("    Application choosed: " + msg);
+					} else {
+						msg = "999";
+					}
+				} else {
+					System.out.print("    Please enter which application you want to run: ");
+					msg = (new Scanner(System.in)).nextLine();
+				}
+
 				app = Integer.valueOf(msg);
 				switch (app) {
 				case 0:
@@ -85,6 +96,7 @@ public class App {
 					app = 0;
 					break;
 				default:
+					args = null;
 					System.out.println("No application selected [" + app + "] ");
 					break;
 				}
