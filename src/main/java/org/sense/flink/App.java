@@ -6,6 +6,7 @@ import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
 import org.sense.flink.examples.stream.SensorsDynamicFilterMqttEdgentQEP;
+import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
@@ -30,6 +31,7 @@ public class App {
 				System.out.println("5 - Fake sensor from Apache Edgent (MQTT stream) and QEP");
 				System.out.println("6 - Dynamic filter over fake data source and QEP");
 				System.out.println("7 - Adaptive filter pushed down to Apache Edgent");
+				System.out.println("9 - Consume MQTT from multiple temperature sensors");
 				System.out.print("    Please enter which application you want to run: ");
 
 				String msg = (new Scanner(System.in)).nextLine();
@@ -74,6 +76,12 @@ public class App {
 					System.out.println("App 7 selected");
 					System.out.println("The adaptive filter was pushed down to the data source");
 					new AdaptiveFilterRangeMqttEdgent();
+					app = 0;
+					break;
+				case 9:
+					System.out.println("App 9 selected");
+					System.out.println("Cosuming values from 3 MQTT topics");
+					new SensorsMultipleReadingMqttEdgentQEP();
 					app = 0;
 					break;
 				default:
