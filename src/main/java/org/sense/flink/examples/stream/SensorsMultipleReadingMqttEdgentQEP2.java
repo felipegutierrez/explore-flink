@@ -37,15 +37,14 @@ public class SensorsMultipleReadingMqttEdgentQEP2 {
 		DataStream<MqttTemperature> temperatureStream02 = env.addSource(new TemperatureMqttConsumer("topic-edgent-02"));
 		DataStream<MqttTemperature> temperatureStream03 = env.addSource(new TemperatureMqttConsumer("topic-edgent-03"));
 
-		DataStream<Tuple2<String, Double>> averageStream01 = temperatureStream01.map(new SensorMatcher()).keyBy(0)
+		// @formatter:off
+		DataStream<Tuple2<String, Double>> averageStreams = temperatureStream01
+				.union(temperatureStream02)
+				.union(temperatureStream03)
+				.map(new SensorMatcher())
+				.keyBy(0)
 				.flatMap(new AverageTempMapper());
-		DataStream<Tuple2<String, Double>> averageStream02 = temperatureStream02.map(new SensorMatcher()).keyBy(0)
-				.flatMap(new AverageTempMapper());
-		DataStream<Tuple2<String, Double>> averageStream03 = temperatureStream03.map(new SensorMatcher()).keyBy(0)
-				.flatMap(new AverageTempMapper());
-
-		DataStream<Tuple2<String, Double>> averageStreams = averageStream01.union(averageStream02)
-				.union(averageStream03);
+		// @formatter:on
 
 		averageStreams.print();
 
