@@ -7,8 +7,10 @@ import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
 import org.sense.flink.examples.stream.SensorsDynamicFilterMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP;
+import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP2;
 import org.sense.flink.examples.stream.SensorsReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttJoinQEP;
+import org.sense.flink.examples.stream.TemperatureAverageExample;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
 
@@ -23,15 +25,17 @@ public class App {
 		try {
 			int app = 0;
 			do {
-				System.out.println("0 - exit");
-				System.out.println("1 - World count (Sokect stream) with Filter and QEP");
-				System.out.println("2 - World count (MQTT stream) with Filter and QEP");
-				System.out.println("3 - Matrix multiplication using batch and QEP");
-				System.out.println("4 - Two fake sensors (MQTT stream) and QEP");
-				System.out.println("5 - Fake sensor from Apache Edgent (MQTT stream) and QEP");
-				System.out.println("6 - Dynamic filter over fake data source and QEP");
-				System.out.println("7 - Adaptive filter pushed down to Apache Edgent");
-				System.out.println("9 - Consume MQTT from multiple temperature sensors");
+				System.out.println("0  - exit");
+				System.out.println("1  - World count (Sokect stream) with Filter and QEP");
+				System.out.println("2  - World count (MQTT stream) with Filter and QEP");
+				System.out.println("3  - Matrix multiplication using batch and QEP");
+				System.out.println("4  - Two fake sensors (MQTT stream) and QEP");
+				System.out.println("5  - Fake sensor from Apache Edgent (MQTT stream) and QEP");
+				System.out.println("6  - Dynamic filter over fake data source and QEP");
+				System.out.println("7  - Adaptive filter pushed down to Apache Edgent");
+				System.out.println("8  - Temperature average example");
+				System.out.println("9  - Consume MQTT from multiple temperature sensors");
+				System.out.println("10 - Consume MQTT from multiple temperature sensors");
 
 				String msg = "0";
 				if (args != null && args.length > 0) {
@@ -89,12 +93,26 @@ public class App {
 					new AdaptiveFilterRangeMqttEdgent();
 					app = 0;
 					break;
+				case 8:
+					System.out.println("App 8 selected");
+					System.out.println("Temperature average example");
+					new TemperatureAverageExample();
+					app = 0;
+					break;
 				case 9:
 					System.out.println("App 9 selected");
 					System.out.println(
 							"Use [./bin/flink run examples/explore-flink.jar 9 -c] to run this program on the Flink standalone-cluster");
 					System.out.println("Cosuming values from 3 MQTT topics");
 					new SensorsMultipleReadingMqttEdgentQEP();
+					app = 0;
+					break;
+				case 10:
+					System.out.println("App 10 selected");
+					System.out.println(
+							"Use [./bin/flink run examples/explore-flink.jar 10 -c] to run this program on the Flink standalone-cluster");
+					System.out.println("Cosuming values from 3 MQTT topics");
+					new SensorsMultipleReadingMqttEdgentQEP2();
 					app = 0;
 					break;
 				default:
