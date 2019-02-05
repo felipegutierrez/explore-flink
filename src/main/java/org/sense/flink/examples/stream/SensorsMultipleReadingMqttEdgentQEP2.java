@@ -4,9 +4,9 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.state.MapState;
 import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.typeinfo.TypeHint;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.typeutils.TupleTypeInfo;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -87,12 +87,8 @@ public class SensorsMultipleReadingMqttEdgentQEP2 {
 
 		@Override
 		public void open(Configuration parameters) throws Exception {
-			TypeInformation<Tuple2<Integer, Double>> typeInformation = TypeInformation
-					.of(new TypeHint<Tuple2<Integer, Double>>() {
-					});
-
-			MapStateDescriptor<String, Tuple2<Integer, Double>> descriptor = new MapStateDescriptor<String, Tuple2<Integer, Double>>(
-					"modelState", TypeInformation.of(String.class), typeInformation);
+			MapStateDescriptor<String, Tuple2<Integer, Double>> descriptor = new MapStateDescriptor<>("modelState",
+					BasicTypeInfo.STRING_TYPE_INFO, TupleTypeInfo.getBasicTupleTypeInfo(Integer.class, Double.class));
 			modelState = getRuntimeContext().getMapState(descriptor);
 		}
 
