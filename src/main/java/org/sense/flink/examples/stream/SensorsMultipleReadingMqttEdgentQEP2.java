@@ -2,9 +2,8 @@ package org.sense.flink.examples.stream;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.state.MapState;
-import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.typeutils.TupleTypeInfo;
 import org.apache.flink.configuration.Configuration;
@@ -82,39 +81,34 @@ public class SensorsMultipleReadingMqttEdgentQEP2 {
 			extends RichFlatMapFunction<Tuple2<String, MqttTemperature>, Tuple2<String, Double>> {
 
 		private static final long serialVersionUID = -4780146677198295204L;
-		private MapState<String, Tuple2<Integer, Double>> modelState;
+		private ValueState<Tuple2<Integer, Double>> modelState;
 		private Integer threshold = 3;
 
 		@Override
 		public void open(Configuration parameters) throws Exception {
-			MapStateDescriptor<String, Tuple2<Integer, Double>> descriptor = new MapStateDescriptor<>("modelState",
-					BasicTypeInfo.STRING_TYPE_INFO, TupleTypeInfo.getBasicTupleTypeInfo(Integer.class, Double.class));
-			modelState = getRuntimeContext().getMapState(descriptor);
+			ValueStateDescriptor<Tuple2<Integer, Double>> descriptor = new ValueStateDescriptor<>("modelState",
+					TupleTypeInfo.getBasicTupleTypeInfo(Integer.class, Double.class));
+			this.modelState = getRuntimeContext().getState(descriptor);
 		}
 
 		@Override
 		public void flatMap(Tuple2<String, MqttTemperature> value, Collector<Tuple2<String, Double>> out)
 				throws Exception {
-			Integer count = 0;
-			Double temp = 0.0;
-
-			if (modelState.contains(value.f0)) {
-				// there is already a value on the state
-				count = modelState.get(value.f0).f0 + 1;
-				temp = modelState.get(value.f0).f1 + value.f1.getTemp();
-				modelState.put(value.f0, Tuple2.of(1, value.f1.getTemp()));
+			Double temp;
+			Integer count;
+			if (modelState.value() != null) {
+				Tuple2<Integer, Double> state = modelState.value();
+				count = state.f0 + 1;
+				temp = state.f1 + value.f1.getTemp();
 			} else {
-				// there is no value on the state
 				count = 1;
 				temp = value.f1.getTemp();
 			}
-			modelState.put(value.f0, Tuple2.of(count, temp));
+			modelState.update(Tuple2.of(count, temp));
 
 			if (count >= threshold) {
-				// only compute the average after the threshold
 				out.collect(Tuple2.of(value.f0, temp / count));
-				// clear the modelState value in order to compute new values next time
-				modelState.put(value.f0, Tuple2.of(0, 0.0));
+				modelState.update(Tuple2.of(0, 0.0));
 			}
 		}
 	}
