@@ -5,6 +5,7 @@ import java.util.Scanner;
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
+import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt;
 import org.sense.flink.examples.stream.SensorsDynamicFilterMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP2;
@@ -25,6 +26,7 @@ public class App {
 		try {
 			int app = 0;
 			do {
+				// @formatter:off
 				System.out.println("0  - exit");
 				System.out.println("1  - World count (Sokect stream) with Filter and QEP");
 				System.out.println("2  - World count (MQTT stream) with Filter and QEP");
@@ -36,6 +38,8 @@ public class App {
 				System.out.println("8  - Temperature average example");
 				System.out.println("9  - Consume MQTT from multiple temperature sensors");
 				System.out.println("10 - Consume MQTT from multiple temperature sensors");
+				System.out.println("11 - Consume MQTT from multiple sensors at train stations");
+				// @formatter:on
 
 				String msg = "0";
 				if (args != null && args.length > 0) {
@@ -100,19 +104,30 @@ public class App {
 					app = 0;
 					break;
 				case 9:
+					// @formatter:off
 					System.out.println("App 9 selected");
-					System.out.println(
-							"Use [./bin/flink run examples/explore-flink.jar 9 -c] to run this program on the Flink standalone-cluster");
+					System.out.println("Use [./bin/flink run examples/explore-flink.jar 9 -c] to run this program on the Flink standalone-cluster");
 					System.out.println("Cosuming values from 3 MQTT topics");
+					// @formatter:on
 					new SensorsMultipleReadingMqttEdgentQEP();
 					app = 0;
 					break;
 				case 10:
+					// @formatter:off
 					System.out.println("App 10 selected");
-					System.out.println(
-							"Use [./bin/flink run examples/explore-flink.jar 10 -c] to run this program on the Flink standalone-cluster");
+					System.out.println("Use [./bin/flink run examples/explore-flink.jar 10 -c] to run this program on the Flink standalone-cluster");
 					System.out.println("Cosuming values from 3 MQTT topics");
+					// @formatter:on
 					new SensorsMultipleReadingMqttEdgentQEP2();
+					app = 0;
+					break;
+				case 11:
+					// @formatter:off
+					System.out.println("App 11 selected");
+					System.out.println("Use [./bin/flink run examples/explore-flink.jar 11 -c] to run this program on the Flink standalone-cluster");
+					System.out.println("Cosuming values from 2 MQTT topics");
+					// @formatter:on
+					new MultiSensorMultiStationsReadingMqtt();
 					app = 0;
 					break;
 				default:
