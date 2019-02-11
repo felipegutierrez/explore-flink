@@ -2,13 +2,19 @@ package org.sense.flink.examples.stream;
 
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.functions.RichFlatMapFunction;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.typeutils.TupleTypeInfo;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.mqtt.MqttSensorConsumer;
 
@@ -40,7 +46,13 @@ public class MultiSensorMultiStationsReadingMqtt {
 		streamStations.filter(new StationPeopleCountFilter())
 				.map(new TrainStationMapper())
 				.keyBy(0)
-				.reduce(new CountPeopleReduce())
+				.flatMap(new AveragePeopleOnStationMapper())
+				.print();
+		
+		streamStations.filter(new StationTicketCountFilter())
+				.map(new TrainStationMapper())
+				.keyBy(0)
+				.flatMap(new AverageTicketOnStationMapper())
 				.print();
 		// @formatter:on
 
@@ -65,6 +77,19 @@ public class MultiSensorMultiStationsReadingMqtt {
 		}
 	}
 
+	public static class StationTicketCountFilter implements FilterFunction<MqttSensor> {
+
+		private static final long serialVersionUID = 5888231690393233369L;
+
+		@Override
+		public boolean filter(MqttSensor value) throws Exception {
+			if (value.getKey().f1.equals("COUNTER_TICKETS") && value.getKey().f2.equals(0)) {
+				return true;
+			}
+			return false;
+		}
+	}
+
 	public static class TrainStationMapper
 			implements MapFunction<MqttSensor, Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>> {
 
@@ -82,49 +107,13 @@ public class MultiSensorMultiStationsReadingMqtt {
 		}
 	}
 
-	public static class CountPeopleReduce
-			implements ReduceFunction<Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>> {
+	public static class AveragePeopleOnStationMapper extends
+			RichFlatMapFunction<Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>, Tuple2<String, Double>> {
 
-		private static final long serialVersionUID = -3323622065195829932L;
-
-		@Override
-		public Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> reduce(
-				Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> value1,
-				Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> value2) throws Exception {
-			Double sum = value1.f2 + value2.f2;
-			return Tuple3.of(value1.f0, Tuple4.of(value1.f1.f0, value1.f1.f1, value1.f1.f2, value1.f1.f3), sum);
-		}
-	}
-
-	// public static class CountPeopleMapper implements
-	// @formatter:off
-	/*
-	public static class SensorMapper implements MapFunction<MqttTemperature, Tuple2<String, MqttTemperature>> {
-
-		@Override
-		public Tuple2<String, MqttTemperature> map(MqttTemperature value) throws Exception {
-			String key = "no-room";
-			if (value.getId().equals(1) || value.getId().equals(2) || value.getId().equals(3)) {
-				key = "room-A";
-			} else if (value.getId().equals(4) || value.getId().equals(5) || value.getId().equals(6)) {
-				key = "room-B";
-			} else if (value.getId().equals(7) || value.getId().equals(8) || value.getId().equals(9)) {
-				key = "room-C";
-			} else {
-				System.err.println("Sensor not defined in any room.");
-			}
-			return new Tuple2<>(key, value);
-		}
-	}
-
-	public static class AverageTempMapper
-			extends RichFlatMapFunction<Tuple2<String, MqttTemperature>, Tuple2<String, Double>> {
-
-		private static final long serialVersionUID = -4780146677198295204L;
+		private static final long serialVersionUID = -5275774398291456293L;
 		private ValueState<Tuple2<Integer, Double>> modelState;
 		private Integer threshold = 3;
 
-		@Override
 		public void open(Configuration parameters) throws Exception {
 			ValueStateDescriptor<Tuple2<Integer, Double>> descriptor = new ValueStateDescriptor<>("modelState",
 					TupleTypeInfo.getBasicTupleTypeInfo(Integer.class, Double.class));
@@ -132,26 +121,59 @@ public class MultiSensorMultiStationsReadingMqtt {
 		}
 
 		@Override
-		public void flatMap(Tuple2<String, MqttTemperature> value, Collector<Tuple2<String, Double>> out)
-				throws Exception {
+		public void flatMap(Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> value,
+				Collector<Tuple2<String, Double>> out) throws Exception {
+			Integer count = 0;
 			Double temp;
-			Integer count;
 			if (modelState.value() != null) {
 				Tuple2<Integer, Double> state = modelState.value();
 				count = state.f0 + 1;
-				temp = state.f1 + value.f1.getTemp();
+				temp = state.f1 + value.f2;
 			} else {
 				count = 1;
-				temp = value.f1.getTemp();
+				temp = value.f2;
 			}
 			modelState.update(Tuple2.of(count, temp));
-
 			if (count >= threshold) {
-				out.collect(Tuple2.of(value.f0, temp / count));
+				String trainStation = "Train station: " + String.valueOf(value.f0) + " people average: ";
+				out.collect(Tuple2.of(trainStation, temp / count));
 				modelState.update(Tuple2.of(0, 0.0));
 			}
 		}
 	}
-	*/
-	// @formatter:on
+
+	public static class AverageTicketOnStationMapper extends
+			RichFlatMapFunction<Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>, Tuple2<String, Double>> {
+
+		private static final long serialVersionUID = 7414667009552591009L;
+		private ValueState<Tuple2<Integer, Double>> modelState;
+		private Integer threshold = 3;
+
+		public void open(Configuration parameters) throws Exception {
+			ValueStateDescriptor<Tuple2<Integer, Double>> descriptor = new ValueStateDescriptor<>("modelState",
+					TupleTypeInfo.getBasicTupleTypeInfo(Integer.class, Double.class));
+			this.modelState = getRuntimeContext().getState(descriptor);
+		}
+
+		@Override
+		public void flatMap(Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> value,
+				Collector<Tuple2<String, Double>> out) throws Exception {
+			Integer count = 0;
+			Double temp;
+			if (modelState.value() != null) {
+				Tuple2<Integer, Double> state = modelState.value();
+				count = state.f0 + 1;
+				temp = state.f1 + value.f2;
+			} else {
+				count = 1;
+				temp = value.f2;
+			}
+			modelState.update(Tuple2.of(count, temp));
+			if (count >= threshold) {
+				String trainStation = "Train station: " + String.valueOf(value.f0) + " ticket average: ";
+				out.collect(Tuple2.of(trainStation, temp / count));
+				modelState.update(Tuple2.of(0, 0.0));
+			}
+		}
+	}
 }

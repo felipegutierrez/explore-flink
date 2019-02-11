@@ -70,27 +70,27 @@ public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 			try {
 				arr0 = Integer.parseInt(arr[0]);
 			} catch (NumberFormatException re) {
-				System.err.println("Error converting arr0.");
+				// System.err.println("Error converting arr0.");
 			}
 			try {
 				arr1 = String.valueOf(arr[1]);
 			} catch (ClassCastException re) {
-				System.err.println("Error converting arr1.");
+				// System.err.println("Error converting arr1.");
 			}
 			try {
 				arr2 = Integer.parseInt(arr[2]);
 			} catch (NumberFormatException re) {
-				System.err.println("Error converting arr2.");
+				// System.err.println("Error converting arr2.");
 			}
 			try {
 				arr3 = Integer.parseInt(arr[3]);
 			} catch (NumberFormatException re) {
-				System.err.println("Error converting arr3.");
+				// System.err.println("Error converting arr3.");
 			}
 			try {
 				arr5 = Double.parseDouble(arr[5]);
 			} catch (NumberFormatException re) {
-				System.err.println("Error converting arr5.");
+				// System.err.println("Error converting arr5.");
 			}
 
 			Tuple4<Integer, String, Integer, Integer> key = new Tuple4<Integer, String, Integer, Integer>(arr0, arr1,
