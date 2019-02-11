@@ -2,29 +2,26 @@ package org.sense.flink.mqtt;
 
 import java.io.Serializable;
 
-import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 
 public class MqttSensor implements Serializable {
 
 	private static final long serialVersionUID = 6298037702066128180L;
-	private TypeInformation<Tuple3<Integer, String, Tuple2<Integer, Integer>>> key;
+	private Tuple4<Integer, String, Integer, Integer> key;
 	private String topic;
 	private Double value;
 
-	public MqttSensor(String topic, TypeInformation<Tuple3<Integer, String, Tuple2<Integer, Integer>>> key,
-			Double value) {
+	public MqttSensor(String topic, Tuple4<Integer, String, Integer, Integer> key, Double value) {
 		this.topic = topic;
 		this.key = key;
 		this.value = value;
 	}
 
-	public TypeInformation<Tuple3<Integer, String, Tuple2<Integer, Integer>>> getKey() {
+	public Tuple4<Integer, String, Integer, Integer> getKey() {
 		return key;
 	}
 
-	public void setKey(TypeInformation<Tuple3<Integer, String, Tuple2<Integer, Integer>>> key) {
+	public void setKey(Tuple4<Integer, String, Integer, Integer> key) {
 		this.key = key;
 	}
 
@@ -85,5 +82,4 @@ public class MqttSensor implements Serializable {
 	public String toString() {
 		return "MqttSensor [key=" + key + ", topic=" + topic + ", value=" + value + "]";
 	}
-
 }

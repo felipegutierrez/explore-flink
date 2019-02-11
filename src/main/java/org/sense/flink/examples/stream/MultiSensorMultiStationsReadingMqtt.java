@@ -1,5 +1,10 @@
 package org.sense.flink.examples.stream;
 
+import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -26,18 +31,17 @@ public class MultiSensorMultiStationsReadingMqtt {
 		}
 
 		DataStream<MqttSensor> streamStation01 = env.addSource(new MqttSensorConsumer("topic-station-01"));
-		// DataStream<MqttSensor> streamStation02 = env.addSource(new MqttSensorConsumer("topic-station-02"));
+		DataStream<MqttSensor> streamStation02 = env.addSource(new MqttSensorConsumer("topic-station-02"));
 
-		streamStation01.print();
+		DataStream<MqttSensor> streamStations = streamStation01.union(streamStation02);
+		streamStations.print();
+
 		// @formatter:off
-		/*
-		DataStream<Tuple2<String, Double>> averageStreams = temperatureStream01
-				.union(temperatureStream02)
-				.map(new SensorMatcher())
+		streamStations.filter(new StationPeopleCountFilter())
+				.map(new TrainStationMapper())
 				.keyBy(0)
-				.flatMap(new AverageTempMapper());
-		*/
-		// averageStreams.print();
+				.reduce(new CountPeopleReduce())
+				.print();
 		// @formatter:on
 
 		String executionPlan = env.getExecutionPlan();
@@ -48,11 +52,54 @@ public class MultiSensorMultiStationsReadingMqtt {
 		env.execute("MultiSensorMultiStationsReadingMqtt");
 	}
 
+	public static class StationPeopleCountFilter implements FilterFunction<MqttSensor> {
+
+		private static final long serialVersionUID = 7991908941095866364L;
+
+		@Override
+		public boolean filter(MqttSensor value) throws Exception {
+			if (value.getKey().f1.equals("COUNTER_PEOPLE") && value.getKey().f2.equals(0)) {
+				return true;
+			}
+			return false;
+		}
+	}
+
+	public static class TrainStationMapper
+			implements MapFunction<MqttSensor, Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>> {
+
+		private static final long serialVersionUID = -5565228597255633611L;
+
+		@Override
+		public Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> map(MqttSensor value)
+				throws Exception {
+			Integer sensorId = value.getKey().f0;
+			String sensorType = value.getKey().f1;
+			Integer platformId = value.getKey().f2;
+			Integer stationKey = value.getKey().f3;
+			Double v = value.getValue();
+			return Tuple3.of(stationKey, Tuple4.of(sensorId, sensorType, platformId, stationKey), v);
+		}
+	}
+
+	public static class CountPeopleReduce
+			implements ReduceFunction<Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>> {
+
+		private static final long serialVersionUID = -3323622065195829932L;
+
+		@Override
+		public Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> reduce(
+				Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> value1,
+				Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> value2) throws Exception {
+			Double sum = value1.f2 + value2.f2;
+			return Tuple3.of(value1.f0, Tuple4.of(value1.f1.f0, value1.f1.f1, value1.f1.f2, value1.f1.f3), sum);
+		}
+	}
+
+	// public static class CountPeopleMapper implements
 	// @formatter:off
 	/*
-	public static class SensorMatcher implements MapFunction<MqttTemperature, Tuple2<String, MqttTemperature>> {
-
-		private static final long serialVersionUID = 7035756567190539683L;
+	public static class SensorMapper implements MapFunction<MqttTemperature, Tuple2<String, MqttTemperature>> {
 
 		@Override
 		public Tuple2<String, MqttTemperature> map(MqttTemperature value) throws Exception {

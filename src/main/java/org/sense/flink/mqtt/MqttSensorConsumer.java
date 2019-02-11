@@ -1,9 +1,6 @@
 package org.sense.flink.mqtt;
 
-import org.apache.flink.api.common.typeinfo.TypeHint;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
-import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.fusesource.mqtt.client.BlockingConnection;
 import org.fusesource.mqtt.client.MQTT;
@@ -65,10 +62,41 @@ public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 			// SensorKey [id=17, sensorType=TEMPERATURE, platform=Platform [id=1, station=Station [id=2, platforms=null]]]|25.13643935135741
 			// @formatter:on
 
-			TypeInformation<Tuple3<Integer, String, Tuple2<Integer, Integer>>> key = TypeInformation
-					.of(new TypeHint<Tuple3<Integer, String, Tuple2<Integer, Integer>>>() {
-					});
-			MqttSensor mqttMessage = new MqttSensor(message.getTopic(), key, Double.valueOf(arr[5]));
+			Integer arr0 = 0;
+			String arr1 = "";
+			Integer arr2 = 0;
+			Integer arr3 = 0;
+			Double arr5 = 0.0;
+			try {
+				arr0 = Integer.parseInt(arr[0]);
+			} catch (NumberFormatException re) {
+				System.err.println("Error converting arr0.");
+			}
+			try {
+				arr1 = String.valueOf(arr[1]);
+			} catch (ClassCastException re) {
+				System.err.println("Error converting arr1.");
+			}
+			try {
+				arr2 = Integer.parseInt(arr[2]);
+			} catch (NumberFormatException re) {
+				System.err.println("Error converting arr2.");
+			}
+			try {
+				arr3 = Integer.parseInt(arr[3]);
+			} catch (NumberFormatException re) {
+				System.err.println("Error converting arr3.");
+			}
+			try {
+				arr5 = Double.parseDouble(arr[5]);
+			} catch (NumberFormatException re) {
+				System.err.println("Error converting arr5.");
+			}
+
+			Tuple4<Integer, String, Integer, Integer> key = new Tuple4<Integer, String, Integer, Integer>(arr0, arr1,
+					arr2, arr3);
+
+			MqttSensor mqttMessage = new MqttSensor(message.getTopic(), key, arr5);
 			message.ack();
 			ctx.collect(mqttMessage);
 		}
