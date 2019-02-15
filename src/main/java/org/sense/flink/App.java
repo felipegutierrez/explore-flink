@@ -6,6 +6,7 @@ import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt;
+import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt2;
 import org.sense.flink.examples.stream.SensorsDynamicFilterMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP2;
@@ -38,7 +39,8 @@ public class App {
 				System.out.println("8  - Temperature average example");
 				System.out.println("9  - Consume MQTT from multiple temperature sensors");
 				System.out.println("10 - Consume MQTT from multiple temperature sensors");
-				System.out.println("11 - Consume MQTT from multiple sensors at train stations");
+				System.out.println("11 - Consume MQTT from multiple sensors at train stations with ValueState");
+				System.out.println("12 - Consume MQTT from multiple sensors at train stations with window");
 				// @formatter:on
 
 				String msg = "0";
@@ -123,11 +125,20 @@ public class App {
 					break;
 				case 11:
 					// @formatter:off
-					System.out.println("App 11 selected");
+					System.out.println("App 11 selected (ValueState)");
 					System.out.println("Use [./bin/flink run examples/explore-flink.jar 11 -c] to run this program on the Flink standalone-cluster");
 					System.out.println("Cosuming values from 2 MQTT topics");
 					// @formatter:on
 					new MultiSensorMultiStationsReadingMqtt();
+					app = 0;
+					break;
+				case 12:
+					// @formatter:off
+					System.out.println("App 12 selected (window)");
+					System.out.println("Use [./bin/flink run examples/explore-flink.jar 11 -c] to run this program on the Flink standalone-cluster");
+					System.out.println("Cosuming values from 2 MQTT topics");
+					// @formatter:on
+					new MultiSensorMultiStationsReadingMqtt2();
 					app = 0;
 					break;
 				default:
