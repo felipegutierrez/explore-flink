@@ -7,7 +7,7 @@ import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.api.java.typeutils.TupleTypeInfo;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.CheckpointingMode;
@@ -90,25 +90,26 @@ public class MultiSensorMultiStationsReadingMqtt {
 		}
 	}
 
-	public static class TrainStationMapper
-			implements MapFunction<MqttSensor, Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>> {
+	public static class TrainStationMapper implements
+			MapFunction<MqttSensor, Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double>> {
 
 		private static final long serialVersionUID = -5565228597255633611L;
 
 		@Override
-		public Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> map(MqttSensor value)
+		public Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double> map(MqttSensor value)
 				throws Exception {
 			Integer sensorId = value.getKey().f0;
 			String sensorType = value.getKey().f1;
 			Integer platformId = value.getKey().f2;
-			Integer stationKey = value.getKey().f3;
+			String platformType = value.getKey().f3;
+			Integer stationKey = value.getKey().f4;
 			Double v = value.getValue();
-			return Tuple3.of(stationKey, Tuple4.of(sensorId, sensorType, platformId, stationKey), v);
+			return Tuple3.of(stationKey, Tuple5.of(sensorId, sensorType, platformId, platformType, stationKey), v);
 		}
 	}
 
 	public static class AveragePeopleOnStationMapper extends
-			RichFlatMapFunction<Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>, Tuple2<String, Double>> {
+			RichFlatMapFunction<Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double>, Tuple2<String, Double>> {
 
 		private static final long serialVersionUID = -5275774398291456293L;
 		private ValueState<Tuple2<Integer, Double>> modelState;
@@ -121,7 +122,7 @@ public class MultiSensorMultiStationsReadingMqtt {
 		}
 
 		@Override
-		public void flatMap(Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> value,
+		public void flatMap(Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double> value,
 				Collector<Tuple2<String, Double>> out) throws Exception {
 			Integer count = 0;
 			Double temp;
@@ -143,7 +144,7 @@ public class MultiSensorMultiStationsReadingMqtt {
 	}
 
 	public static class AverageTicketOnStationMapper extends
-			RichFlatMapFunction<Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double>, Tuple2<String, Double>> {
+			RichFlatMapFunction<Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double>, Tuple2<String, Double>> {
 
 		private static final long serialVersionUID = 7414667009552591009L;
 		private ValueState<Tuple2<Integer, Double>> modelState;
@@ -156,7 +157,7 @@ public class MultiSensorMultiStationsReadingMqtt {
 		}
 
 		@Override
-		public void flatMap(Tuple3<Integer, Tuple4<Integer, String, Integer, Integer>, Double> value,
+		public void flatMap(Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double> value,
 				Collector<Tuple2<String, Double>> out) throws Exception {
 			Integer count = 0;
 			Double temp;

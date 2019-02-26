@@ -1,6 +1,6 @@
 package org.sense.flink.mqtt;
 
-import org.apache.flink.api.java.tuple.Tuple4;
+import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.fusesource.mqtt.client.BlockingConnection;
 import org.fusesource.mqtt.client.MQTT;
@@ -65,7 +65,8 @@ public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 			Integer arr0 = 0;
 			String arr1 = "";
 			Integer arr2 = 0;
-			Integer arr3 = 0;
+			String arr3 = "";
+			Integer arr4 = 0;
 			Double arr5 = 0.0;
 			try {
 				arr0 = Integer.parseInt(arr[0]);
@@ -83,7 +84,12 @@ public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 				// System.err.println("Error converting arr2.");
 			}
 			try {
-				arr3 = Integer.parseInt(arr[3]);
+				arr3 = String.valueOf(arr[3]);
+			} catch (ClassCastException re) {
+				// System.err.println("Error converting arr3.");
+			}
+			try {
+				arr4 = Integer.parseInt(arr[4]);
 			} catch (NumberFormatException re) {
 				// System.err.println("Error converting arr3.");
 			}
@@ -93,8 +99,8 @@ public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 				// System.err.println("Error converting arr5.");
 			}
 
-			Tuple4<Integer, String, Integer, Integer> key = new Tuple4<Integer, String, Integer, Integer>(arr0, arr1,
-					arr2, arr3);
+			Tuple5<Integer, String, Integer, String, Integer> key = new Tuple5<Integer, String, Integer, String, Integer>(
+					arr0, arr1, arr2, arr3, arr4);
 
 			MqttSensor mqttMessage = new MqttSensor(message.getTopic(), key, arr5);
 			message.ack();
