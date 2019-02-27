@@ -104,10 +104,11 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 
 		private static final long serialVersionUID = 7233937097358437044L;
 		private String functionName;
-		private CountMinSketch countMinSketch = new CountMinSketch();
+		private CountMinSketch countMinSketch;
 
 		public AverageAggregator(String functionName) {
 			this.functionName = functionName;
+			this.countMinSketch = new CountMinSketch();
 		}
 
 		@Override
