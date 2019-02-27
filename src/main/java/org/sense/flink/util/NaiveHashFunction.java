@@ -1,8 +1,11 @@
 package org.sense.flink.util;
 
-public class NaiveHashFunction {
+import java.io.Serializable;
 
-	final static int LIMIT = 100;
+public class NaiveHashFunction implements Serializable {
+
+	private static final long serialVersionUID = -3460094846654202562L;
+	private final static int LIMIT = 100;
 	private long prime;
 	private long odd;
 

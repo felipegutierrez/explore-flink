@@ -59,50 +59,50 @@ public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 			String[] arr = payload.split("\\|");
 
 			// @formatter:off
-			// SensorKey [id=17, sensorType=TEMPERATURE, platform=Platform [id=1, station=Station [id=2, platforms=null]]]|25.13643935135741
+			// 11|COUNT_PE|2|CIT|1|18
 			// @formatter:on
 
-			Integer arr0 = 0;
-			String arr1 = "";
-			Integer arr2 = 0;
-			String arr3 = "";
-			Integer arr4 = 0;
-			Double arr5 = 0.0;
+			Integer sensorId = 0;
+			String sensorType = "";
+			Integer platformId = 0;
+			String platformType = "";
+			Integer stationId = 0;
+			Double value = 0.0;
 			try {
-				arr0 = Integer.parseInt(arr[0]);
+				sensorId = Integer.parseInt(arr[0]);
 			} catch (NumberFormatException re) {
 				// System.err.println("Error converting arr0.");
 			}
 			try {
-				arr1 = String.valueOf(arr[1]);
+				sensorType = String.valueOf(arr[1]);
 			} catch (ClassCastException re) {
 				// System.err.println("Error converting arr1.");
 			}
 			try {
-				arr2 = Integer.parseInt(arr[2]);
+				platformId = Integer.parseInt(arr[2]);
 			} catch (NumberFormatException re) {
 				// System.err.println("Error converting arr2.");
 			}
 			try {
-				arr3 = String.valueOf(arr[3]);
+				platformType = String.valueOf(arr[3]);
 			} catch (ClassCastException re) {
 				// System.err.println("Error converting arr3.");
 			}
 			try {
-				arr4 = Integer.parseInt(arr[4]);
+				stationId = Integer.parseInt(arr[4]);
 			} catch (NumberFormatException re) {
 				// System.err.println("Error converting arr3.");
 			}
 			try {
-				arr5 = Double.parseDouble(arr[5]);
+				value = Double.parseDouble(arr[5]);
 			} catch (NumberFormatException re) {
 				// System.err.println("Error converting arr5.");
 			}
 
 			Tuple5<Integer, String, Integer, String, Integer> key = new Tuple5<Integer, String, Integer, String, Integer>(
-					arr0, arr1, arr2, arr3, arr4);
+					sensorId, sensorType, platformId, platformType, stationId);
 
-			MqttSensor mqttMessage = new MqttSensor(message.getTopic(), key, arr5);
+			MqttSensor mqttMessage = new MqttSensor(message.getTopic(), key, value);
 			message.ack();
 			ctx.collect(mqttMessage);
 		}
