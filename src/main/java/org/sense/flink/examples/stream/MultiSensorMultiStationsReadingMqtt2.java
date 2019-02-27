@@ -19,6 +19,8 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 
 	public MultiSensorMultiStationsReadingMqtt2() throws Exception {
 
+		final CountMinSketch countMinSketch = new CountMinSketch();
+
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -36,24 +38,23 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 				.map(new TrainStationMapper())
 				.keyBy(0)
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
-				.aggregate(new AverageAggregator("COUNT_PE"))
+				.aggregate(new AverageAggregator("COUNT_PE", countMinSketch))
 				.print();
 		
 		streamStations.filter(new SensorFilter("COUNT_TI"))
 				.map(new TrainStationMapper())
 				.keyBy(0)
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
-				.aggregate(new AverageAggregator("COUNT_TI"))
+				.aggregate(new AverageAggregator("COUNT_TI", countMinSketch))
 				.print();
 		
 		streamStations.filter(new SensorFilter("COUNT_TR"))
 				.map(new TrainStationMapper())
 				.keyBy(0)
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
-				.aggregate(new AverageAggregator("COUNT_TR"))
+				.aggregate(new AverageAggregator("COUNT_TR", countMinSketch))
 				.print();
 		// @formatter:on
-		// streamStations.filter(new SensorFilter("COUNT_TR")).print();
 
 		String executionPlan = env.getExecutionPlan();
 		System.out.println("ExecutionPlan ........................ ");
@@ -106,9 +107,9 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 		private String functionName;
 		private CountMinSketch countMinSketch;
 
-		public AverageAggregator(String functionName) {
+		public AverageAggregator(String functionName, CountMinSketch countMinSketch) {
 			this.functionName = functionName;
-			this.countMinSketch = new CountMinSketch();
+			this.countMinSketch = countMinSketch;
 		}
 
 		@Override
@@ -153,7 +154,7 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 				frequency = countMinSketch.getFrequencyFromSketch("COUNT_TR");
 			}
 
-			return new Tuple2<>("Frequency reads[" + frequency + "] " + label + "[" + accumulator.f2 + "]: ",
+			return new Tuple2<>(label + "[" + accumulator.f2 + "] reads[" + frequency + "]",
 					((double) accumulator.f0) / accumulator.f1);
 		}
 
