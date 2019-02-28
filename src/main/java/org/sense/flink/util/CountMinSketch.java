@@ -31,6 +31,22 @@ public class CountMinSketch implements Serializable {
 		return true;
 	}
 
+	public Boolean updateSketchAsync(String value) {
+		new Thread(() -> {
+			sketch[H1][h1.getHashValue(value)]++;
+		}).start();
+		new Thread(() -> {
+			sketch[H2][h2.getHashValue(value)]++;
+		}).start();
+		new Thread(() -> {
+			sketch[H3][h3.getHashValue(value)]++;
+		}).start();
+		new Thread(() -> {
+			sketch[H4][h4.getHashValue(value)]++;
+		}).start();
+		return true;
+	}
+
 	public Boolean updateSketch(String value, int count) {
 		sketch[H1][h1.getHashValue(value)] = sketch[H1][h1.getHashValue(value)] + count;
 		sketch[H2][h2.getHashValue(value)] = sketch[H2][h2.getHashValue(value)] + count;
