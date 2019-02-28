@@ -66,10 +66,10 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 		streamStations.filter(new SensorFilter("COUNT_TR"))
 				.map(new TrainStationMapper())
 				.keyBy(new MyKeySelector())
-				.window(TumblingEventTimeWindows.of(Time.seconds(5)))
+				.window(TumblingEventTimeWindows.of(Time.seconds(5)));
 				// THIS AGGREGATE DOES NOT WORK
-				.aggregate(new AverageRichAggregator())
-				.print();
+				// .aggregate(new AverageRichAggregator())
+				// .print();
 		// @formatter:on
 
 		String executionPlan = env.getExecutionPlan();
@@ -152,13 +152,13 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 
 			if (value.f1.f1.equals("COUNT_PE")) {
 				// int count = (int) Math.round(value.f2);
-				countMinSketch.updateSketch("COUNT_PE");
+				countMinSketch.updateSketchAsync("COUNT_PE");
 			} else if (value.f1.f1.equals("COUNT_TI")) {
 				// int count = (int) Math.round(value.f2);
-				countMinSketch.updateSketch("COUNT_TI");
+				countMinSketch.updateSketchAsync("COUNT_TI");
 			} else if (value.f1.f1.equals("COUNT_TR")) {
 				// int count = (int) Math.round(value.f2);
-				countMinSketch.updateSketch("COUNT_TR");
+				countMinSketch.updateSketchAsync("COUNT_TR");
 			}
 
 			return new Tuple3<>(accumulator.f0 + value.f2, accumulator.f1 + 1L, value.f1.f4);
@@ -219,16 +219,16 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 			try {
 				if (value.f1.f1.equals("COUNT_PE")) {
 					// int count = (int) Math.round(value.f2);
-					// countMinSketch.updateSketch("COUNT_PE");
+					// countMinSketch.updateSketchAsync("COUNT_PE");
 				} else if (value.f1.f1.equals("COUNT_TI")) {
 					// int count = (int) Math.round(value.f2);
-					// countMinSketch.updateSketch("COUNT_TI");
+					// countMinSketch.updateSketchAsync("COUNT_TI");
 				} else if (value.f1.f1.equals("COUNT_TR")) {
 					// int count = (int) Math.round(value.f2);
-					// countMinSketch.updateSketch("COUNT_TR");
+					// countMinSketch.updateSketchAsync("COUNT_TR");
 				}
 				CountMinSketch currentCountMinSketchState = this.countMinSketchState.value();
-				currentCountMinSketchState.updateSketch(value.f1.f1);
+				currentCountMinSketchState.updateSketchAsync(value.f1.f1);
 				this.countMinSketchState.update(currentCountMinSketchState);
 
 			} catch (IOException e) {
