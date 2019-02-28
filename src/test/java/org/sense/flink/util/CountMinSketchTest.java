@@ -18,7 +18,7 @@ public class CountMinSketchTest {
 		Boolean future02 = countMinSketch.updateSketch("Oliveira");
 		Boolean future03 = countMinSketch.updateSketch("Gutierrez");
 		Boolean future04 = countMinSketch.updateSketch("Felipe");
-
+		
 		int expected;
 		int actual;
 

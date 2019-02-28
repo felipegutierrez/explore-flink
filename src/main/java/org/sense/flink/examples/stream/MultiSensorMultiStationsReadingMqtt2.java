@@ -1,14 +1,22 @@
 package org.sense.flink.examples.stream;
 
+import java.io.IOException;
+
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.functions.RichAggregateFunction;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple5;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.mqtt.MqttSensor;
@@ -54,6 +62,14 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
 				.aggregate(new AverageAggregator("COUNT_TR", countMinSketch))
 				.print();
+		
+		streamStations.filter(new SensorFilter("COUNT_TR"))
+				.map(new TrainStationMapper())
+				.keyBy(new MyKeySelector())
+				.window(TumblingEventTimeWindows.of(Time.seconds(5)))
+				// THIS AGGREGATE DOES NOT WORK
+				.aggregate(new AverageRichAggregator())
+				.print();
 		// @formatter:on
 
 		String executionPlan = env.getExecutionPlan();
@@ -62,6 +78,18 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 		System.out.println("........................ ");
 
 		env.execute("MultiSensorMultiStationsReadingMqtt2");
+	}
+
+	public static class MyKeySelector implements
+			KeySelector<Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double>, Integer> {
+
+		private static final long serialVersionUID = 2475747880505867591L;
+
+		@Override
+		public Integer getKey(Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double> value)
+				throws Exception {
+			return value.f0;
+		}
 	}
 
 	public static class SensorFilter implements FilterFunction<MqttSensor> {
@@ -152,6 +180,85 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 			} else if (functionName.equals("COUNT_TR")) {
 				label = "TRAIN average on train station";
 				frequency = countMinSketch.getFrequencyFromSketch("COUNT_TR");
+			}
+
+			return new Tuple2<>(label + "[" + accumulator.f2 + "] reads[" + frequency + "]",
+					((double) accumulator.f0) / accumulator.f1);
+		}
+
+		@Override
+		public Tuple3<Double, Long, Integer> merge(Tuple3<Double, Long, Integer> a, Tuple3<Double, Long, Integer> b) {
+			return new Tuple3<>(a.f0 + b.f0, a.f1 + b.f1, a.f2);
+		}
+	}
+
+	public static class AverageRichAggregator extends
+			RichAggregateFunction<Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double>, Tuple3<Double, Long, Integer>, Tuple2<String, Double>> {
+
+		private static final long serialVersionUID = -40874489412082797L;
+		private String functionName;
+		private ValueState<CountMinSketch> countMinSketchState;
+
+		@Override
+		public void open(Configuration parameters) throws Exception {
+			ValueStateDescriptor<CountMinSketch> descriptor = new ValueStateDescriptor<>("countMinSketchState",
+					CountMinSketch.class);
+			this.countMinSketchState = getRuntimeContext().getState(descriptor);
+		}
+
+		@Override
+		public Tuple3<Double, Long, Integer> createAccumulator() {
+			this.countMinSketchState.clear();
+			return new Tuple3<>(0.0, 0L, 0);
+		}
+
+		@Override
+		public Tuple3<Double, Long, Integer> add(
+				Tuple3<Integer, Tuple5<Integer, String, Integer, String, Integer>, Double> value,
+				Tuple3<Double, Long, Integer> accumulator) {
+			try {
+				if (value.f1.f1.equals("COUNT_PE")) {
+					// int count = (int) Math.round(value.f2);
+					// countMinSketch.updateSketch("COUNT_PE");
+				} else if (value.f1.f1.equals("COUNT_TI")) {
+					// int count = (int) Math.round(value.f2);
+					// countMinSketch.updateSketch("COUNT_TI");
+				} else if (value.f1.f1.equals("COUNT_TR")) {
+					// int count = (int) Math.round(value.f2);
+					// countMinSketch.updateSketch("COUNT_TR");
+				}
+				CountMinSketch currentCountMinSketchState = this.countMinSketchState.value();
+				currentCountMinSketchState.updateSketch(value.f1.f1);
+				this.countMinSketchState.update(currentCountMinSketchState);
+
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return new Tuple3<>(accumulator.f0 + value.f2, accumulator.f1 + 1L, value.f1.f4);
+		}
+
+		@Override
+		public Tuple2<String, Double> getResult(Tuple3<Double, Long, Integer> accumulator) {
+			String label = "";
+			int frequency = 0;
+			try {
+				if (functionName.equals("COUNT_PE")) {
+					label = "PEOPLE average on train station";
+					// frequency = countMinSketch.getFrequencyFromSketch("COUNT_PE");
+
+				} else if (functionName.equals("COUNT_TI")) {
+					label = "TICKETS average on train station";
+					// frequency = countMinSketch.getFrequencyFromSketch("COUNT_TI");
+
+				} else if (functionName.equals("COUNT_TR")) {
+					label = "TRAIN average on train station";
+					// frequency = countMinSketch.getFrequencyFromSketch("COUNT_TR");
+				}
+				frequency = this.countMinSketchState.value().getFrequencyFromSketch(functionName);
+
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 
 			return new Tuple2<>(label + "[" + accumulator.f2 + "] reads[" + frequency + "]",
