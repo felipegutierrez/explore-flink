@@ -1,5 +1,7 @@
 package org.sense.flink.examples.stream;
 
+import java.util.Iterator;
+
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -10,8 +12,6 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.api.java.tuple.Tuple5;
-import org.apache.flink.api.java.typeutils.TupleTypeInfo;
-import org.apache.flink.shaded.curator.org.apache.curator.shaded.com.google.common.collect.Iterables;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -182,9 +182,6 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 		private ValueStateDescriptor<CountMinSketch> descriptorGlobal = new ValueStateDescriptor<>(
 				"countMinSketchState", CountMinSketch.class);
 
-		private ValueStateDescriptor<Tuple2<String, Double>> descriptorWindow = new ValueStateDescriptor<>("state",
-				TupleTypeInfo.getBasicTupleTypeInfo(String.class, Double.class));
-
 		@Override
 		public void process(Integer key,
 				ProcessWindowFunction<Tuple2<String, Double>, Tuple3<String, Integer, Double>, Integer, TimeWindow>.Context context,
@@ -199,14 +196,16 @@ public class MultiSensorMultiStationsReadingMqtt2 {
 			if (currentGlobalValue == null) {
 				currentGlobalValue = new CountMinSketch();
 			}
-			Tuple2<String, Double> v = Iterables.getOnlyElement(counts);
-			currentGlobalValue.updateSketchAsync(v.f0);
 
+			for (Iterator<Tuple2<String, Double>> iterator = counts.iterator(); iterator.hasNext();) {
+				Tuple2<String, Double> averages = (Tuple2<String, Double>) iterator.next();
+				currentGlobalValue.updateSketchAsync(averages.f0);
+				// update the result of the ProcessWindowFunction
+				out.collect(
+						Tuple3.of(averages.f0, currentGlobalValue.getFrequencyFromSketch(averages.f0), averages.f1));
+			}
 			// update the global state with the value of the current window
 			stateGlobal.update(currentGlobalValue);
-
-			// update the result of the ProcessWindowFunction
-			out.collect(Tuple3.of(v.f0, currentGlobalValue.getFrequencyFromSketch(v.f0), v.f1));
 		}
 	}
 }
