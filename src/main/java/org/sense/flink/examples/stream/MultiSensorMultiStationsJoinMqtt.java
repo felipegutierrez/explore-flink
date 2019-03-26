@@ -15,6 +15,8 @@ import org.sense.flink.mqtt.MqttSensorConsumer;
 
 public class MultiSensorMultiStationsJoinMqtt {
 
+	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
 	public MultiSensorMultiStationsJoinMqtt() throws Exception {
 
 		// Start streaming from fake data source sensors
@@ -104,8 +106,6 @@ public class MultiSensorMultiStationsJoinMqtt {
 			}
 		}
 	}
-
-	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	/**
 	 * Join TICKETS and TRAINS from the same platform in order to discover if it is
