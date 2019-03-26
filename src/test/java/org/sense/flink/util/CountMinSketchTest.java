@@ -1,15 +1,14 @@
 package org.sense.flink.util;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import org.junit.Test;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
-public class CountMinSketchTest {
+public class CountMinSketchTest extends TestCase {
 
-	@Test
 	public void testSketch() throws InterruptedException, ExecutionException, TimeoutException {
 
 		CountMinSketch countMinSketch = new CountMinSketch();
@@ -24,6 +23,7 @@ public class CountMinSketchTest {
 
 		expected = 0;
 		actual = countMinSketch.getFrequencyFromSketch("de");
+		// assertTrue(true);
 		assertEquals(expected, actual);
 
 		if (future02.equals(true)) {

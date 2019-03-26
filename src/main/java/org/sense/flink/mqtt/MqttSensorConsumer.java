@@ -67,6 +67,7 @@ public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 			Integer platformId = 0;
 			String platformType = "";
 			Integer stationId = 0;
+			Long timestamp = 0L;
 			Double value = 0.0;
 			try {
 				sensorId = Integer.parseInt(arr[0]);
@@ -94,15 +95,20 @@ public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 				// System.err.println("Error converting arr3.");
 			}
 			try {
-				value = Double.parseDouble(arr[5]);
+				timestamp = Long.parseLong(arr[5]);
 			} catch (NumberFormatException re) {
 				// System.err.println("Error converting arr5.");
+			}
+			try {
+				value = Double.parseDouble(arr[6]);
+			} catch (NumberFormatException re) {
+				// System.err.println("Error converting arr6.");
 			}
 
 			Tuple5<Integer, String, Integer, String, Integer> key = new Tuple5<Integer, String, Integer, String, Integer>(
 					sensorId, sensorType, platformId, platformType, stationId);
 
-			MqttSensor mqttMessage = new MqttSensor(message.getTopic(), key, value);
+			MqttSensor mqttMessage = new MqttSensor(message.getTopic(), key, timestamp, value);
 			message.ack();
 			ctx.collect(mqttMessage);
 		}

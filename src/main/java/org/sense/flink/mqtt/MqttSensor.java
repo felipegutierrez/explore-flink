@@ -9,11 +9,14 @@ public class MqttSensor implements Serializable {
 	private static final long serialVersionUID = 6298037702066128180L;
 	private Tuple5<Integer, String, Integer, String, Integer> key;
 	private String topic;
+	private Long timestamp;
 	private Double value;
 
-	public MqttSensor(String topic, Tuple5<Integer, String, Integer, String, Integer> key, Double value) {
+	public MqttSensor(String topic, Tuple5<Integer, String, Integer, String, Integer> key, Long timestamp,
+			Double value) {
 		this.topic = topic;
 		this.key = key;
+		this.timestamp = timestamp;
 		this.value = value;
 	}
 
@@ -33,6 +36,14 @@ public class MqttSensor implements Serializable {
 		this.topic = topic;
 	}
 
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	public Double getValue() {
 		return value;
 	}
@@ -46,6 +57,7 @@ public class MqttSensor implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((key == null) ? 0 : key.hashCode());
+		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((topic == null) ? 0 : topic.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
@@ -65,6 +77,11 @@ public class MqttSensor implements Serializable {
 				return false;
 		} else if (!key.equals(other.key))
 			return false;
+		if (timestamp == null) {
+			if (other.timestamp != null)
+				return false;
+		} else if (!timestamp.equals(other.timestamp))
+			return false;
 		if (topic == null) {
 			if (other.topic != null)
 				return false;
@@ -80,6 +97,6 @@ public class MqttSensor implements Serializable {
 
 	@Override
 	public String toString() {
-		return "MqttSensor [key=" + key + ", topic=" + topic + ", value=" + value + "]";
+		return "MqttSensor [key=" + key + ", topic=" + topic + ", timestamp=" + timestamp + ", value=" + value + "]";
 	}
 }

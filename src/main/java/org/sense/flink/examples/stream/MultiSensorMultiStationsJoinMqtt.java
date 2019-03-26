@@ -1,5 +1,8 @@
 package org.sense.flink.examples.stream;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -82,10 +85,13 @@ public class MultiSensorMultiStationsJoinMqtt {
 			String platformId = people.getKey().f2 + ", " + tickets.getKey().f2;
 			String platformType = people.getKey().f3 + ", " + tickets.getKey().f3;
 			String stations = people.getKey().f4 + ", " + tickets.getKey().f4;
+			String timestampTickets = sdf.format(new Date(tickets.getTimestamp()));
+			String timestampPeople = sdf.format(new Date(people.getTimestamp()));
 
 			String result = "ID[" + ids + "] sensorTypes[" + sensorType + "] platformId[" + platformId
 					+ "] platformType[" + platformType + "] stations[" + stations + "] people[" + people.getValue()
-					+ "] tickets[" + tickets.getValue() + "]";
+					+ "] time[" + timestampPeople + "] tickets[" + tickets.getValue() + "] time[" + timestampTickets
+					+ "]";
 			if (people.getValue() > tickets.getValue()) {
 				// people are not paying tickets
 				return "People are not paying for tickets. " + result;
@@ -98,6 +104,8 @@ public class MultiSensorMultiStationsJoinMqtt {
 			}
 		}
 	}
+
+	private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
 	/**
 	 * Join TICKETS and TRAINS from the same platform in order to discover if it is
@@ -118,10 +126,12 @@ public class MultiSensorMultiStationsJoinMqtt {
 			String platformId = tickets.getKey().f2 + ", " + trains.getKey().f2;
 			String platformType = tickets.getKey().f3 + ", " + trains.getKey().f3;
 			String stations = tickets.getKey().f4 + ", " + trains.getKey().f4;
+			String timestampTickets = sdf.format(new Date(tickets.getTimestamp()));
+			String timestampTrains = sdf.format(new Date(trains.getTimestamp()));
 
-			String result = "ID[" + ids + "] sensorTypes[" + sensorType + "] tickets[" + tickets.getValue()
-					+ "] trains[" + trains.getValue() + "] platformId[" + platformId + "] platformType[" + platformType
-					+ "] stations[" + stations + "]";
+			String result = "ID[" + ids + "] sensorTypes[" + sensorType + "] tickets[" + tickets.getValue() + "] time["
+					+ timestampTickets + "] trains[" + trains.getValue() + "] time[" + timestampTrains + "] platformId["
+					+ platformId + "] platformType[" + platformType + "] stations[" + stations + "]";
 
 			Double totalCapacity = trains.getValue() * trainCapacity;
 			Double almostOverflowing = totalCapacity - ((totalCapacity / 100) * 10);
