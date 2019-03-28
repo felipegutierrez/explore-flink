@@ -20,7 +20,7 @@
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-streaming-java_2.11</artifactId>
-			<version>1.7.0</version>
+			<version>1.7.2</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.fusesource.mqtt-client/mqtt-client -->
@@ -34,7 +34,7 @@
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-connector-twitter_2.11</artifactId>
-			<version>1.7.0</version>
+			<version>1.7.2</version>
 		</dependency>
 
 		<dependency>
