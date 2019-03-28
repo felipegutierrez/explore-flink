@@ -5,6 +5,7 @@ import java.util.Scanner;
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
+import org.sense.flink.examples.stream.MqttSensorExpensiveShuffleDAG;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsJoinMqtt;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt2;
@@ -43,9 +44,11 @@ public class App {
 				System.out.println("11 - Consume MQTT from multiple sensors at train stations with ValueState");
 				System.out.println("12 - Consume MQTT from multiple sensors at train stations with window");
 				System.out.println("13 - Consume MQTT from multiple sensors at train stations and join within a window");
+				System.out.println("14 - Consume MQTT from multiple sensors at train stations and join within a window");
 				// @formatter:on
 
 				String msg = "0";
+				String ipAddressSource01 = "127.0.0.1";
 				if (args != null && args.length > 0) {
 					msg = args[0];
 					if (msg.matches("-?\\d+")) {
@@ -53,9 +56,25 @@ public class App {
 					} else {
 						msg = "999";
 					}
+					if (args.length > 2) {
+						ipAddressSource01 = args[2];
+						if (!validIP(ipAddressSource01)) {
+							ipAddressSource01 = "127.0.0.1";
+							System.err
+									.println("IP address invalid. Using the default IP address: " + ipAddressSource01);
+						} else {
+							System.out.println("Valid IP address: " + ipAddressSource01);
+						}
+					}
 				} else {
 					System.out.print("    Please enter which application you want to run: ");
 					msg = (new Scanner(System.in)).nextLine();
+					System.out.print("    Please enter the IP address of the data source [127.0.0.1]: ");
+					ipAddressSource01 = (new Scanner(System.in)).nextLine();
+					if (!validIP(ipAddressSource01)) {
+						ipAddressSource01 = "127.0.0.1";
+					}
+					System.out.println("Loaded IP address: " + ipAddressSource01);
 				}
 
 				app = Integer.valueOf(msg);
@@ -111,7 +130,7 @@ public class App {
 					// @formatter:off
 					System.out.println("App 9 selected");
 					System.out.println("Use [./bin/flink run examples/explore-flink.jar 9 -c] to run this program on the Flink standalone-cluster");
-					System.out.println("Cosuming values from 3 MQTT topics");
+					System.out.println("Consuming values from 3 MQTT topics");
 					// @formatter:on
 					new SensorsMultipleReadingMqttEdgentQEP();
 					app = 0;
@@ -120,7 +139,7 @@ public class App {
 					// @formatter:off
 					System.out.println("App 10 selected");
 					System.out.println("Use [./bin/flink run examples/explore-flink.jar 10 -c] to run this program on the Flink standalone-cluster");
-					System.out.println("Cosuming values from 3 MQTT topics");
+					System.out.println("Consuming values from 3 MQTT topics");
 					// @formatter:on
 					new SensorsMultipleReadingMqttEdgentQEP2();
 					app = 0;
@@ -129,7 +148,7 @@ public class App {
 					// @formatter:off
 					System.out.println("App 11 selected (ValueState)");
 					System.out.println("Use [./bin/flink run examples/explore-flink.jar 11 -c] to run this program on the Flink standalone-cluster");
-					System.out.println("Cosuming values from 2 MQTT topics");
+					System.out.println("Consuming values from 2 MQTT topics");
 					// @formatter:on
 					new MultiSensorMultiStationsReadingMqtt();
 					app = 0;
@@ -138,7 +157,7 @@ public class App {
 					// @formatter:off
 					System.out.println("App 12 selected (window)");
 					System.out.println("Use [./bin/flink run examples/explore-flink.jar 12 -c] to run this program on the Flink standalone-cluster");
-					System.out.println("Cosuming values from 2 MQTT topics");
+					System.out.println("Consuming values from 2 MQTT topics");
 					// @formatter:on
 					new MultiSensorMultiStationsReadingMqtt2();
 					app = 0;
@@ -147,9 +166,18 @@ public class App {
 					// @formatter:off
 					System.out.println("App 13 selected (join within a window)");
 					System.out.println("Use [./bin/flink run examples/explore-flink.jar 13 -c] to run this program on the Flink standalone-cluster");
-					System.out.println("Cosuming values from 2 MQTT topics");
+					System.out.println("Consuming values from 2 MQTT topics");
 					// @formatter:on
 					new MultiSensorMultiStationsJoinMqtt();
+					app = 0;
+					break;
+				case 14:
+					// @formatter:off
+					System.out.println("App 14 selected (Complex shuffle with aggregation over a window)");
+					System.out.println("Use [./bin/flink run examples/explore-flink.jar 14 -c] to run this program on the Flink standalone-cluster");
+					System.out.println("Consuming values from 2 MQTT topics");
+					// @formatter:on
+					new MqttSensorExpensiveShuffleDAG(ipAddressSource01);
 					app = 0;
 					break;
 				default:
@@ -161,6 +189,33 @@ public class App {
 		} catch (JobExecutionException ce) {
 			System.err.println(ce.getMessage());
 			ce.printStackTrace();
+		}
+	}
+
+	public static boolean validIP(String ip) {
+		try {
+			if (ip == null || ip.isEmpty()) {
+				return false;
+			}
+
+			String[] parts = ip.split("\\.");
+			if (parts.length != 4) {
+				return false;
+			}
+
+			for (String s : parts) {
+				int i = Integer.parseInt(s);
+				if ((i < 0) || (i > 255)) {
+					return false;
+				}
+			}
+			if (ip.endsWith(".")) {
+				return false;
+			}
+
+			return true;
+		} catch (NumberFormatException nfe) {
+			return false;
 		}
 	}
 }
