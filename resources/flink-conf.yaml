@@ -246,10 +246,10 @@ rest.port: 8081
 
 # Metrics Reporter
 #metrics.reporters: jmx,grph
-metrics.reporter.jmx.class: org.apache.flink.metrics.jmx.JMXReporter
-metrics.reporter.jmx.host: 192.168.56.1
-metrics.reporter.jmx.port: 8789-8790
-metrics.reporter.jmx.interval: 30 SECONDS
+#metrics.reporter.jmx.class: org.apache.flink.metrics.jmx.JMXReporter
+#metrics.reporter.jmx.host: 192.168.56.1
+#metrics.reporter.jmx.port: 8789-8790
+#metrics.reporter.jmx.interval: 30 SECONDS
 #metrics.reporter.jmx.scope.delimiter: 
 
 #metrics.reporter.grph.class: org.apache.flink.metrics.graphite.GraphiteReporter
@@ -257,6 +257,9 @@ metrics.reporter.jmx.interval: 30 SECONDS
 #metrics.reporter.grph.port: 2003
 #metrics.reporter.grph.protocol: TCP
 
+metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+metrics.reporter.prom.host: 192.168.56.1
+metrics.reporter.prom.port: 9250-9260
 
 # env.java.opts: -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=192.168.56.1
 

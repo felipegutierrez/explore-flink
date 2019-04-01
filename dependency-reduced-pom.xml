@@ -37,9 +37,6 @@
             <configuration>
               <transformers>
                 <transformer>
-                  <resource>reference.conf</resource>
-                </transformer>
-                <transformer>
                   <mainClass>org.sense.flink.App</mainClass>
                 </transformer>
               </transformers>
@@ -53,6 +50,11 @@
                   </excludes>
                 </filter>
               </filters>
+              <relocations>
+                <relocation>
+                  <pattern />
+                </relocation>
+              </relocations>
             </configuration>
           </execution>
         </executions>

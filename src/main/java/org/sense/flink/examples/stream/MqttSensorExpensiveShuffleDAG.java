@@ -20,6 +20,10 @@ import org.sense.flink.mqtt.MqttSensorConsumer;
 
 public class MqttSensorExpensiveShuffleDAG {
 
+	public static void main(String[] args) throws Exception {
+		new MqttSensorExpensiveShuffleDAG("192.168.56.20");
+	}
+
 	public MqttSensorExpensiveShuffleDAG(String ipAddressSource01) throws Exception {
 
 		// Start streaming from fake data source sensors
