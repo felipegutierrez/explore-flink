@@ -66,11 +66,12 @@ public class MqttSensorExpensiveShuffleDAG {
 			extends RichMapFunction<MqttSensor, Tuple2<CompositeKeySensorType, MqttSensor>> {
 		private static final long serialVersionUID = -4080196110995184486L;
 
+		// Create metrics
 		private transient Counter counter;
 		private transient Meter meter;
 
 		@Override
-		public void open(Configuration config) {
+		public void open(Configuration config) throws Exception {
 			this.counter = getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
 
 			com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();

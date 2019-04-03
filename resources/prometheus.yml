@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'node_exporter'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9100']   
+  - job_name: 'flink'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9250', 'localhost:9251', '192.168.56.20:9250']
+    metrics_path: /
+
