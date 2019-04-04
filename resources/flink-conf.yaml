@@ -49,7 +49,7 @@ taskmanager.heap.size: 1024m
 
 # The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
 
-taskmanager.numberOfTaskSlots: 1
+taskmanager.numberOfTaskSlots: 2
 
 # The parallelism used for programs that did not specify and other parallelism.
 
@@ -265,7 +265,7 @@ metrics.reporter.prom.port: 9250-9260
 
 
 
-
+taskmanager.network.netty.server.numThreads=5
 
 
 
