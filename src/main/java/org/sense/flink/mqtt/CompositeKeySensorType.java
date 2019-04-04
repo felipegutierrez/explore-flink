@@ -84,7 +84,7 @@ public class CompositeKeySensorType implements Serializable {
 
 	@Override
 	public String toString() {
-		return "CompositeKeySensorType [stationId=" + stationId + ", platformId=" + platformId + ", sensorType="
+		return "CompositeKeySensorType [stationId, platformId, sensorType][" + stationId + "," + platformId + ","
 				+ sensorType + "]";
 	}
 }

@@ -1,14 +1,10 @@
 package org.sense.flink.examples.stream;
 
 import org.apache.flink.api.common.functions.AggregateFunction;
-import org.apache.flink.api.common.functions.RichMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
-import org.apache.flink.metrics.Counter;
-import org.apache.flink.metrics.Meter;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -46,9 +42,12 @@ public class MqttSensorExpensiveShuffleDAG {
 		// 4 - print the results
 		DataStream<Tuple3<CompositeKeySensorType, Double, Long>> streamStations = streamStation01.union(streamStation02)
 				.map(new SensorTypeMapper())
+				.setParallelism(2)
 				.keyBy(new MyKeySelector())
-				.window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
-				.aggregate(new SensorTypeAggregator());
+				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
+				.aggregate(new SensorTypeAggregator())
+				.setParallelism(2)
+				;
 
 		// print the results with a single thread, rather than in parallel
 		streamStations.print().setParallelism(1);
@@ -63,26 +62,29 @@ public class MqttSensorExpensiveShuffleDAG {
 	}
 
 	public static class SensorTypeMapper
-			extends RichMapFunction<MqttSensor, Tuple2<CompositeKeySensorType, MqttSensor>> {
+			implements MapFunction<MqttSensor, Tuple2<CompositeKeySensorType, MqttSensor>> {
 		private static final long serialVersionUID = -4080196110995184486L;
 
 		// Create metrics
-		private transient Counter counter;
-		private transient Meter meter;
+		// private transient Counter counter;
+		// private transient Meter meter;
 
-		@Override
-		public void open(Configuration config) throws Exception {
-			this.counter = getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
+		// @Override
+		// public void open(Configuration config) throws Exception {
+		// this.counter =
+		// getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
 
-			com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
-			this.meter = getRuntimeContext().getMetricGroup().meter("meterSensorTypeMapper",
-					new DropwizardMeterWrapper(dropwizardMeter));
-		}
+		// com.codahale.metrics.Meter dropwizardMeter = new
+		// com.codahale.metrics.Meter();
+		// this.meter =
+		// getRuntimeContext().getMetricGroup().meter("meterSensorTypeMapper", new
+		// DropwizardMeterWrapper(dropwizardMeter));
+		// }
 
 		@Override
 		public Tuple2<CompositeKeySensorType, MqttSensor> map(MqttSensor value) throws Exception {
-			this.meter.markEvent();
-			this.counter.inc();
+			// this.meter.markEvent();
+			// this.counter.inc();
 			// every sensor key: sensorId, sensorType, platformId, platformType, stationId
 			// Integer sensorId = value.getKey().f0;
 			String sensorType = value.getKey().f1;
@@ -90,6 +92,9 @@ public class MqttSensorExpensiveShuffleDAG {
 			// String platformType = value.getKey().f3;
 			Integer stationId = value.getKey().f4;
 			CompositeKeySensorType compositeKey = new CompositeKeySensorType(stationId, platformId, sensorType);
+
+			System.out.println("Mapper: " + compositeKey + " - " + value);
+
 			return Tuple2.of(compositeKey, value);
 		}
 	}
@@ -115,18 +120,6 @@ public class MqttSensorExpensiveShuffleDAG {
 			AggregateFunction<Tuple2<CompositeKeySensorType, MqttSensor>, Tuple3<CompositeKeySensorType, Double, Long>, Tuple3<CompositeKeySensorType, Double, Long>> {
 		private static final long serialVersionUID = -6819758633805621166L;
 
-		/*
-		 * private transient Counter counter; private transient Meter meter;
-		 * 
-		 * @Override public void open(Configuration config) { this.counter =
-		 * getRuntimeContext().getMetricGroup().counter("counterSensorTypeAggregator");
-		 * 
-		 * com.codahale.metrics.Meter dropwizardMeter = new
-		 * com.codahale.metrics.Meter(); this.meter =
-		 * getRuntimeContext().getMetricGroup().meter("meterSensorTypeAggregator", new
-		 * DropwizardMeterWrapper(dropwizardMeter)); }
-		 */
-
 		@Override
 		public Tuple3<CompositeKeySensorType, Double, Long> createAccumulator() {
 			return new Tuple3<CompositeKeySensorType, Double, Long>(new CompositeKeySensorType(), 0.0, 0L);
@@ -137,6 +130,7 @@ public class MqttSensorExpensiveShuffleDAG {
 				Tuple3<CompositeKeySensorType, Double, Long> accumulator) {
 			// this.meter.markEvent();
 			// this.counter.inc();
+			System.out.println("Aggregator: " + valueToAdd);
 			return new Tuple3<CompositeKeySensorType, Double, Long>(valueToAdd.f0,
 					accumulator.f1 + valueToAdd.f1.getValue(), accumulator.f2 + 1L);
 		}

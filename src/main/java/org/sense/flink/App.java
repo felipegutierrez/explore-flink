@@ -5,7 +5,11 @@ import java.util.Scanner;
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
+import org.sense.flink.examples.stream.MqttSensorCustomPartitionByKeyDAG;
 import org.sense.flink.examples.stream.MqttSensorExpensiveShuffleDAG;
+import org.sense.flink.examples.stream.MqttSensorPartitionByKeyDAG;
+import org.sense.flink.examples.stream.MqttSensorRandomPartitionByKeyDAG;
+import org.sense.flink.examples.stream.MqttSensorRebalancePartitionByKeyDAG;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsJoinMqtt;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt2;
@@ -45,6 +49,10 @@ public class App {
 				System.out.println("12 - Consume MQTT from multiple sensors at train stations with window");
 				System.out.println("13 - Consume MQTT from multiple sensors at train stations and join within a window");
 				System.out.println("14 - Consume MQTT from multiple sensors at train stations and join within a window");
+				System.out.println("15 - Partition by Key and Reducing over a window");
+				System.out.println("16 - Custom Partition by Key and Reducing over a window");
+				System.out.println("17 - Random Partition by Key and Reducing over a window");
+				System.out.println("18 - Rebalance Partition by Key and Reducing over a window");
 				// @formatter:on
 
 				String msg = "0";
@@ -178,6 +186,26 @@ public class App {
 					System.out.println("Consuming values from 2 MQTT topics");
 					// @formatter:on
 					new MqttSensorExpensiveShuffleDAG(ipAddressSource01);
+					app = 0;
+					break;
+				case 15:
+					System.out.println("App 15 selected (Reducee with partition by key over a window)");
+					new MqttSensorPartitionByKeyDAG(ipAddressSource01);
+					app = 0;
+					break;
+				case 16:
+					System.out.println("App 16 selected (Reducee with custom partition by key over a window)");
+					new MqttSensorCustomPartitionByKeyDAG(ipAddressSource01);
+					app = 0;
+					break;
+				case 17:
+					System.out.println("App 17 selected (Reducee with random partition by key over a window)");
+					new MqttSensorRandomPartitionByKeyDAG(ipAddressSource01);
+					app = 0;
+					break;
+				case 18:
+					System.out.println("App 18 selected (Reducee with random partition by key over a window)");
+					new MqttSensorRebalancePartitionByKeyDAG(ipAddressSource01);
 					app = 0;
 					break;
 				default:
