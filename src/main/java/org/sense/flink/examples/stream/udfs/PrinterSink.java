@@ -28,5 +28,6 @@ public class PrinterSink extends RichSinkFunction<Tuple2<CompositeKeySensorType,
 		this.meter.markEvent();
 		// this.counter.inc();
 		System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
+		System.out.flush();
 	}
 }

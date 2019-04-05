@@ -46,7 +46,7 @@ public class MqttSensorPartitionByKeyDAG {
 				.map(new SensorTypeMapper()).name(SensorTypeMapper.class.getSimpleName())
 				.setParallelism(4)
 				.keyBy(new SensorKeySelector())
-				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
+				.window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
 				.reduce(new SensorTypeReduce(), new MetricsProcessWindowFunction()).name(SensorTypeReduce.class.getSimpleName())
 				.setParallelism(4)
 				.addSink(new PrinterSink()).name(PrinterSink.class.getSimpleName())

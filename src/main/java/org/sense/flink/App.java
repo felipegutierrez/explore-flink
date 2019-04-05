@@ -3,6 +3,7 @@ package org.sense.flink;
 import java.util.Scanner;
 
 import org.apache.flink.runtime.client.JobExecutionException;
+import org.apache.log4j.BasicConfigurator;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
 import org.sense.flink.examples.stream.MqttSensorCustomPartitionByKeyDAG;
@@ -29,6 +30,8 @@ import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
  */
 public class App {
 	public static void main(String[] args) throws Exception {
+
+		BasicConfigurator.configure();
 
 		try {
 			int app = 0;
