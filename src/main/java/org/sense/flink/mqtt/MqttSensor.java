@@ -1,12 +1,16 @@
 package org.sense.flink.mqtt;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.flink.api.java.tuple.Tuple5;
 
 public class MqttSensor implements Serializable {
 
 	private static final long serialVersionUID = 6298037702066128180L;
+	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
 	private Tuple5<Integer, String, Integer, String, Integer> key;
 	private String topic;
 	private Long timestamp;
@@ -97,6 +101,7 @@ public class MqttSensor implements Serializable {
 
 	@Override
 	public String toString() {
-		return "MqttSensor [key=" + key + ", topic=" + topic + ", timestamp=" + timestamp + ", value=" + value + "]";
+		return "MqttSensor [key=" + key + ", topic=" + topic + ", timestamp=" + sdf.format(new Date(timestamp))
+				+ ", value=" + value + "]";
 	}
 }

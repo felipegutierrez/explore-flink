@@ -1,8 +1,6 @@
 package org.sense.flink.examples.stream;
 
 import org.apache.flink.api.common.functions.AggregateFunction;
-import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -10,6 +8,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.sense.flink.examples.stream.udfs.SensorKeySelector;
+import org.sense.flink.examples.stream.udfs.SensorTypeMapper;
 import org.sense.flink.mqtt.CompositeKeySensorType;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.mqtt.MqttSensorConsumer;
@@ -31,9 +31,11 @@ public class MqttSensorExpensiveShuffleDAG {
 		env.getConfig().setLatencyTrackingInterval(5L);
 
 		DataStream<MqttSensor> streamStation01 = env
-				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-01"));
+				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-01"))
+				.name(MqttSensorExpensiveShuffleDAG.class.getSimpleName() + "-topic-station-01");
 		DataStream<MqttSensor> streamStation02 = env
-				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-02"));
+				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-02"))
+				.name(MqttSensorExpensiveShuffleDAG.class.getSimpleName() + "-topic-station-02");
 
 		// @formatter:off
 		// 1 - Union of both streams
@@ -41,11 +43,11 @@ public class MqttSensorExpensiveShuffleDAG {
 		// 3 - Aggregate by key to process the sum or average based on the sensor type over a window of 5 seconds
 		// 4 - print the results
 		DataStream<Tuple3<CompositeKeySensorType, Double, Long>> streamStations = streamStation01.union(streamStation02)
-				.map(new SensorTypeMapper())
+				.map(new SensorTypeMapper()).name(SensorTypeMapper.class.getSimpleName())
 				.setParallelism(2)
-				.keyBy(new MyKeySelector())
+				.keyBy(new SensorKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
-				.aggregate(new SensorTypeAggregator())
+				.aggregate(new SensorTypeAggregator()).name(SensorTypeAggregator.class.getSimpleName())
 				.setParallelism(2)
 				;
 
@@ -58,55 +60,7 @@ public class MqttSensorExpensiveShuffleDAG {
 		System.out.println(executionPlan);
 		System.out.println("........................ ");
 
-		env.execute("MqttSensorExpensiveShuffleDAG");
-	}
-
-	public static class SensorTypeMapper
-			implements MapFunction<MqttSensor, Tuple2<CompositeKeySensorType, MqttSensor>> {
-		private static final long serialVersionUID = -4080196110995184486L;
-
-		// Create metrics
-		// private transient Counter counter;
-		// private transient Meter meter;
-
-		// @Override
-		// public void open(Configuration config) throws Exception {
-		// this.counter =
-		// getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
-
-		// com.codahale.metrics.Meter dropwizardMeter = new
-		// com.codahale.metrics.Meter();
-		// this.meter =
-		// getRuntimeContext().getMetricGroup().meter("meterSensorTypeMapper", new
-		// DropwizardMeterWrapper(dropwizardMeter));
-		// }
-
-		@Override
-		public Tuple2<CompositeKeySensorType, MqttSensor> map(MqttSensor value) throws Exception {
-			// this.meter.markEvent();
-			// this.counter.inc();
-			// every sensor key: sensorId, sensorType, platformId, platformType, stationId
-			// Integer sensorId = value.getKey().f0;
-			String sensorType = value.getKey().f1;
-			Integer platformId = value.getKey().f2;
-			// String platformType = value.getKey().f3;
-			Integer stationId = value.getKey().f4;
-			CompositeKeySensorType compositeKey = new CompositeKeySensorType(stationId, platformId, sensorType);
-
-			System.out.println("Mapper: " + compositeKey + " - " + value);
-
-			return Tuple2.of(compositeKey, value);
-		}
-	}
-
-	public static class MyKeySelector
-			implements KeySelector<Tuple2<CompositeKeySensorType, MqttSensor>, CompositeKeySensorType> {
-		private static final long serialVersionUID = -1850482738358805000L;
-
-		@Override
-		public CompositeKeySensorType getKey(Tuple2<CompositeKeySensorType, MqttSensor> value) throws Exception {
-			return value.f0;
-		}
+		env.execute(MqttSensorExpensiveShuffleDAG.class.getSimpleName());
 	}
 
 	/**
