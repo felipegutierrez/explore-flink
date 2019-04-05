@@ -6,12 +6,12 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.examples.stream.udfs.MetricsProcessWindowFunction;
-import org.sense.flink.examples.stream.udfs.PrinterSink;
 import org.sense.flink.examples.stream.udfs.SensorKeySelector;
 import org.sense.flink.examples.stream.udfs.SensorTypeMapper;
 import org.sense.flink.examples.stream.udfs.SensorTypeReduce;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.mqtt.MqttSensorConsumer;
+import org.sense.flink.mqtt.MqttSensorPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,7 +49,8 @@ public class MqttSensorPartitionByKeyDAG {
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
 				.reduce(new SensorTypeReduce(), new MetricsProcessWindowFunction()).name(SensorTypeReduce.class.getSimpleName())
 				.setParallelism(4)
-				.addSink(new PrinterSink()).name(PrinterSink.class.getSimpleName())
+				// .addSink(new PrinterSink()).name(PrinterSink.class.getSimpleName())
+				.addSink(new MqttSensorPublisher("topic")).name(MqttSensorPublisher.class.getSimpleName())
 				.setParallelism(1)
 				;
 		// @formatter:on

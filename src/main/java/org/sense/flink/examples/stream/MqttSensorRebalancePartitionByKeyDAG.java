@@ -6,6 +6,7 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.examples.stream.udfs.MetricsProcessWindowFunction;
+import org.sense.flink.examples.stream.udfs.PrinterSink;
 import org.sense.flink.examples.stream.udfs.SensorKeySelector;
 import org.sense.flink.examples.stream.udfs.SensorTypeMapper;
 import org.sense.flink.examples.stream.udfs.SensorTypeReduce;
@@ -50,8 +51,7 @@ public class MqttSensorRebalancePartitionByKeyDAG {
 				.reduce(new SensorTypeReduce(), new MetricsProcessWindowFunction()).name(SensorTypeReduce.class.getSimpleName())
 				.setParallelism(5)
 				// .rebalance()
-				.print()
-				// .addSink(new PrinterSink()).name(PrinterSink.class.getSimpleName())
+				.addSink(new PrinterSink()).name(PrinterSink.class.getSimpleName())
 				.setParallelism(1)
 				;
 		// @formatter:on

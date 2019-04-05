@@ -17,8 +17,8 @@ import org.fusesource.mqtt.client.Topic;
 public class MqttSensorConsumer extends RichSourceFunction<MqttSensor> {
 
 	private static final long serialVersionUID = -1384636057411239133L;
-	final private static String DEFAUL_HOST = "127.0.0.1";
-	final private static int DEFAUL_PORT = 1883;
+	private static final String DEFAUL_HOST = "127.0.0.1";
+	private static final int DEFAUL_PORT = 1883;
 
 	private String host;
 	private int port;

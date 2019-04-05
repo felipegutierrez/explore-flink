@@ -16,7 +16,8 @@ public class PrinterSink extends RichSinkFunction<Tuple2<CompositeKeySensorType,
 	private transient Meter meter;
 
 	@Override
-	public void open(Configuration config) throws Exception {
+	public void open(Configuration parameters) throws Exception {
+		super.open(parameters);
 		// this.counter=getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
 		com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
 		this.meter = getRuntimeContext().getMetricGroup().meter(PrinterSink.class.getSimpleName() + "-meter",
