@@ -21,6 +21,6 @@ public class SensorTypeReduce implements ReduceFunction<Tuple2<CompositeKeySenso
 		Double sum = value1.f1.getValue() + value2.f1.getValue();
 
 		// System.out.println("Reducer: " + sum);
-		return Tuple2.of(value1.f0, new MqttSensor("", key, System.currentTimeMillis(), sum));
+		return Tuple2.of(value1.f0, new MqttSensor("", key, System.currentTimeMillis(), sum, value1.f1.getTrip()));
 	}
 }

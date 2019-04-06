@@ -50,11 +50,6 @@
                   </excludes>
                 </filter>
               </filters>
-              <relocations>
-                <relocation>
-                  <pattern />
-                </relocation>
-              </relocations>
             </configuration>
           </execution>
         </executions>

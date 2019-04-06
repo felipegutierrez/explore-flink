@@ -15,13 +15,15 @@ public class MqttSensor implements Serializable {
 	private String topic;
 	private Long timestamp;
 	private Double value;
+	private String trip;
 
-	public MqttSensor(String topic, Tuple5<Integer, String, Integer, String, Integer> key, Long timestamp,
-			Double value) {
+	public MqttSensor(String topic, Tuple5<Integer, String, Integer, String, Integer> key, Long timestamp, Double value,
+			String trip) {
 		this.topic = topic;
 		this.key = key;
 		this.timestamp = timestamp;
 		this.value = value;
+		this.trip = trip;
 	}
 
 	public Tuple5<Integer, String, Integer, String, Integer> getKey() {
@@ -56,6 +58,14 @@ public class MqttSensor implements Serializable {
 		this.value = value;
 	}
 
+	public String getTrip() {
+		return trip;
+	}
+
+	public void setTrip(String trip) {
+		this.trip = trip;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -63,6 +73,7 @@ public class MqttSensor implements Serializable {
 		result = prime * result + ((key == null) ? 0 : key.hashCode());
 		result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
 		result = prime * result + ((topic == null) ? 0 : topic.hashCode());
+		result = prime * result + ((trip == null) ? 0 : trip.hashCode());
 		result = prime * result + ((value == null) ? 0 : value.hashCode());
 		return result;
 	}
@@ -91,6 +102,11 @@ public class MqttSensor implements Serializable {
 				return false;
 		} else if (!topic.equals(other.topic))
 			return false;
+		if (trip == null) {
+			if (other.trip != null)
+				return false;
+		} else if (!trip.equals(other.trip))
+			return false;
 		if (value == null) {
 			if (other.value != null)
 				return false;
@@ -102,6 +118,6 @@ public class MqttSensor implements Serializable {
 	@Override
 	public String toString() {
 		return "MqttSensor [key=" + key + ", topic=" + topic + ", timestamp=" + sdf.format(new Date(timestamp))
-				+ ", value=" + value + "]";
+				+ ", value=" + value + ", trip=" + trip + "]";
 	}
 }

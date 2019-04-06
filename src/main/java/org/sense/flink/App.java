@@ -3,11 +3,10 @@ package org.sense.flink;
 import java.util.Scanner;
 
 import org.apache.flink.runtime.client.JobExecutionException;
-import org.apache.log4j.BasicConfigurator;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
 import org.sense.flink.examples.stream.MqttSensorCustomPartitionByKeyDAG;
-import org.sense.flink.examples.stream.MqttSensorExpensiveShuffleDAG;
+import org.sense.flink.examples.stream.MqttSensorDataSkewedJoinDAG;
 import org.sense.flink.examples.stream.MqttSensorPartitionByKeyDAG;
 import org.sense.flink.examples.stream.MqttSensorRandomPartitionByKeyDAG;
 import org.sense.flink.examples.stream.MqttSensorRebalancePartitionByKeyDAG;
@@ -31,7 +30,7 @@ import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
 public class App {
 	public static void main(String[] args) throws Exception {
 
-		BasicConfigurator.configure();
+		// BasicConfigurator.configure();
 
 		try {
 			int app = 0;
@@ -183,12 +182,7 @@ public class App {
 					app = 0;
 					break;
 				case 14:
-					// @formatter:off
-					System.out.println("App 14 selected (Complex shuffle with aggregation over a window)");
-					System.out.println("Use [./bin/flink run examples/explore-flink.jar 14 -c] to run this program on the Flink standalone-cluster");
-					System.out.println("Consuming values from 2 MQTT topics");
-					// @formatter:on
-					new MqttSensorExpensiveShuffleDAG(ipAddressSource01);
+					new MqttSensorDataSkewedJoinDAG(ipAddressSource01);
 					app = 0;
 					break;
 				case 15:

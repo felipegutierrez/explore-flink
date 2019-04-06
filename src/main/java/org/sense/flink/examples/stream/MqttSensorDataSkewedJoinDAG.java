@@ -1,6 +1,7 @@
 package org.sense.flink.examples.stream;
 
 import org.apache.flink.api.common.functions.AggregateFunction;
+import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -8,19 +9,26 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.udfs.SensorKeySelector;
-import org.sense.flink.examples.stream.udfs.SensorTypeMapper;
+import org.sense.flink.examples.stream.udfs.StationPlatformKeySelector;
+import org.sense.flink.examples.stream.udfs.StationPlatformMapper;
 import org.sense.flink.mqtt.CompositeKeySensorType;
+import org.sense.flink.mqtt.CompositeKeyStationPlatform;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.mqtt.MqttSensorConsumer;
 
-public class MqttSensorExpensiveShuffleDAG {
+public class MqttSensorDataSkewedJoinDAG {
 
 	public static void main(String[] args) throws Exception {
-		new MqttSensorExpensiveShuffleDAG("192.168.56.20");
+		new MqttSensorDataSkewedJoinDAG("127.0.0.1");
 	}
 
-	public MqttSensorExpensiveShuffleDAG(String ipAddressSource01) throws Exception {
+	public MqttSensorDataSkewedJoinDAG(String ipAddressSource01) throws Exception {
+
+		// @formatter:off
+		System.out.println("App 14 selected (Complex shuffle with aggregation over a window)");
+		System.out.println("Use [./bin/flink run examples/explore-flink.jar 14 -c] to run this program on the Flink standalone-cluster");
+		System.out.println("Consuming values from 2 MQTT topics");
+		// @formatter:on
 
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -30,19 +38,35 @@ public class MqttSensorExpensiveShuffleDAG {
 		// the period of the emitted markers is 5 milliseconds
 		env.getConfig().setLatencyTrackingInterval(5L);
 
-		DataStream<MqttSensor> streamStation01 = env
-				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-01"))
-				.name(MqttSensorExpensiveShuffleDAG.class.getSimpleName() + "-topic-station-01");
-		DataStream<MqttSensor> streamStation02 = env
-				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-02"))
-				.name(MqttSensorExpensiveShuffleDAG.class.getSimpleName() + "-topic-station-02");
+		DataStream<MqttSensor> streamTrainsStation01 = env
+				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-01-trains"))
+				.name(MqttSensorDataSkewedJoinDAG.class.getSimpleName() + "-topic-station-01-trains");
+		DataStream<MqttSensor> streamTicketsStation01 = env
+				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-01-tickets"))
+				.name(MqttSensorDataSkewedJoinDAG.class.getSimpleName() + "-topic-station-01-tickets");
 
 		// @formatter:off
 		// 1 - Union of both streams
 		// 2 - Partition by key using the sensor type
 		// 3 - Aggregate by key to process the sum or average based on the sensor type over a window of 5 seconds
 		// 4 - print the results
-		DataStream<Tuple3<CompositeKeySensorType, Double, Long>> streamStations = streamStation01.union(streamStation02)
+		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTrainsStation01 = streamTrainsStation01.map(new StationPlatformMapper());
+		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTicketsStation01 = streamTicketsStation01.map(new StationPlatformMapper());
+		
+		mappedTrainsStation01.join(mappedTicketsStation01)
+				.where(new StationPlatformKeySelector())
+				.equalTo(new StationPlatformKeySelector())
+				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
+				.apply(new MyJoinFunction())
+				.print()
+				;
+
+		// mappedTrainsStation01.print();
+		// mappedTicketsStation01.print();
+		
+		/*
+		DataStream<Tuple3<CompositeKeySensorType, Double, Long>> streamStations = 
+				streamTrainsStation01.union(streamTicketsStation01)
 				.map(new SensorTypeMapper()).name(SensorTypeMapper.class.getSimpleName())
 				.setParallelism(2)
 				.keyBy(new SensorKeySelector())
@@ -50,9 +74,10 @@ public class MqttSensorExpensiveShuffleDAG {
 				.aggregate(new SensorTypeAggregator()).name(SensorTypeAggregator.class.getSimpleName())
 				.setParallelism(2)
 				;
+		*/
 
 		// print the results with a single thread, rather than in parallel
-		streamStations.print().setParallelism(1);
+		// streamStations.print().setParallelism(1);
 		// @formatter:on
 
 		String executionPlan = env.getExecutionPlan();
@@ -60,7 +85,18 @@ public class MqttSensorExpensiveShuffleDAG {
 		System.out.println(executionPlan);
 		System.out.println("........................ ");
 
-		env.execute(MqttSensorExpensiveShuffleDAG.class.getSimpleName());
+		env.execute(MqttSensorDataSkewedJoinDAG.class.getSimpleName());
+	}
+
+	public static class MyJoinFunction implements
+			JoinFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>, Tuple2<CompositeKeyStationPlatform, MqttSensor>, String> {
+		private static final long serialVersionUID = 2507555650596738022L;
+
+		@Override
+		public String join(Tuple2<CompositeKeyStationPlatform, MqttSensor> first,
+				Tuple2<CompositeKeyStationPlatform, MqttSensor> second) throws Exception {
+			return first.f1 + " - " + second.f1;
+		}
 	}
 
 	/**
