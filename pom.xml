@@ -14,31 +14,35 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
+		<scala.binary.version>2.11</scala.binary.version>
+		<flink.version>1.7.2</flink.version>
+		<junit.version>4.12</junit.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-streaming-java_2.11</artifactId>
-			<version>1.7.2</version>
+			<artifactId>flink-java</artifactId>
+			<version>${flink.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-connector-twitter_2.11</artifactId>
-			<version>1.7.2</version>
+			<artifactId>flink-clients_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.apache.flink</groupId>
-			<artifactId>flink-metrics-dropwizard</artifactId>
-			<version>1.7.2</version>
+			<artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
 		</dependency>
+		<!-- <dependency> <groupId>org.apache.flink</groupId> <artifactId>flink-metrics-dropwizard</artifactId> 
+			<version>${flink.version}</version> <scope>provided</scope> </dependency> -->
 
 		<dependency>
 			<groupId>org.fusesource.mqtt-client</groupId>
 			<artifactId>mqtt-client</artifactId>
 			<version>1.15</version>
+			<!-- <scope>provided</scope> -->
 		</dependency>
 
 		<dependency>
@@ -55,8 +59,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
+			<version>${junit.version}</version>
 		</dependency>
 	</dependencies>
 	<build>
@@ -97,24 +100,30 @@
 							<goal>shade</goal>
 						</goals>
 						<configuration>
-							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<shadedClassifierName>with-dependencies</shadedClassifierName>
-							<createDependencyReducedPom>false</createDependencyReducedPom>
-							<minimizeJar>true</minimizeJar>
-							<transformers>
-								<!-- <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" 
-									/> --><!-- append default configs -->
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
-									<resource>reference.conf</resource>
-								</transformer>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.sense.flink.App</mainClass>
-								</transformer>
-							</transformers>
+							<artifactSet>
+								<excludes>
+									<exclude>org.apache.flink:*</exclude>
+									<!-- Also exclude very big transitive dependencies of Flink WARNING: 
+										You have to remove these excludes if your code relies on other versions of 
+										these dependencies. -->
+									<exclude>org.slf4j:*</exclude>
+									<exclude>log4j:*</exclude>
+									<exclude>com.typesafe:config</exclude>
+									<exclude>junit:junit</exclude>
+								</excludes>
+							</artifactSet>
 							<filters>
 								<filter>
+									<artifact>org.apache.flink:*</artifact>
+									<excludes>
+										<!-- exclude shaded google but include shaded curator -->
+										<exclude>org/apache/flink/shaded/com/**</exclude>
+										<exclude>web-docs/**</exclude>
+									</excludes>
+								</filter>
+								<filter>
+									<!-- Do not copy the signatures in the META-INF folder. Otherwise, 
+										this might cause SecurityExceptions when using the JAR. -->
 									<artifact>*:*</artifact>
 									<excludes>
 										<exclude>META-INF/*.SF</exclude>
@@ -123,6 +132,15 @@
 									</excludes>
 								</filter>
 							</filters>
+							<!-- If you want to use ./bin/flink run <quickstart jar> uncomment 
+								the following lines. This will add a Main-Class entry to the manifest file -->
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>org.sense.flink.App</mainClass>
+								</transformer>
+							</transformers>
+							<createDependencyReducedPom>false</createDependencyReducedPom>
 						</configuration>
 					</execution>
 				</executions>

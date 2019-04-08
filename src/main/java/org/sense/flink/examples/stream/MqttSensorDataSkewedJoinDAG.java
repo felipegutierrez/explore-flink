@@ -40,6 +40,9 @@ public class MqttSensorDataSkewedJoinDAG {
 
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		// StreamExecutionEnvironment env =
+		// StreamExecutionEnvironment.createRemoteEnvironment("192.168.56.1", 6123,
+		// "target/explore-flink-0.0.1-SNAPSHOT-with-dependencies.jar");
 
 		// obtain execution environment, run this example in "ingestion time"
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
@@ -58,15 +61,17 @@ public class MqttSensorDataSkewedJoinDAG {
 		// 2 - Partition by key using the sensor type
 		// 3 - Aggregate by key to process the sum or average based on the sensor type over a window of 5 seconds
 		// 4 - print the results
-		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTrainsStation01 = streamTrainsStation01.map(new StationPlatformMapper());
-		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTicketsStation01 = streamTicketsStation01.map(new StationPlatformMapper());
+		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTrainsStation01 = streamTrainsStation01
+				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-trains01");
+		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTicketsStation01 = streamTicketsStation01
+				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-tickets01");
 		
 		mappedTrainsStation01.join(mappedTicketsStation01)
 				.where(new StationPlatformKeySelector())
 				.equalTo(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new MyJoinFunction())
-				.addSink(new MqttStringPublisher(topic))
+				.addSink(new MqttStringPublisher(topic)).name(MqttStringPublisher.class.getSimpleName())
 				// .print()
 				;
 
@@ -96,7 +101,8 @@ public class MqttSensorDataSkewedJoinDAG {
 			String secondValue = second.f1.getKey().f1 + "," + second.f1.getTrip() + "," + second.f1.getValue() + ","
 					+ sdf.format(new Date(second.f1.getTimestamp()));
 
-			return key + "-First: [" + firstValue + "] - Second: [" + secondValue + "]";
+			// return key + "-First: [" + firstValue + "] - Second: [" + secondValue + "]";
+			return key;
 		}
 	}
 

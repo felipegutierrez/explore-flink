@@ -4,8 +4,8 @@ import java.util.LinkedList;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
-import org.apache.flink.metrics.Meter;
+//import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
+//import org.apache.flink.metrics.Meter;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.fusesource.hawtbuf.AsciiBuffer;
 import org.fusesource.hawtbuf.Buffer;
@@ -35,7 +35,7 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 
 	// Create metrics
 	// private transient Counter counter;
-	private transient Meter meter;
+	// private transient Meter meter;
 
 	public MqttSensorPublisher(String topic) {
 		this(DEFAUL_HOST, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
@@ -60,9 +60,9 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 	public void open(Configuration config) throws Exception {
 		super.open(config);
 		// this.counter=getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
-		com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
-		this.meter = getRuntimeContext().getMetricGroup().meter(MqttSensorPublisher.class.getSimpleName() + "-meter",
-				new DropwizardMeterWrapper(dropwizardMeter));
+		// com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
+		// this.meter = getRuntimeContext().getMetricGroup().meter(MqttSensorPublisher.class.getSimpleName() + "-meter",
+		// new DropwizardMeterWrapper(dropwizardMeter));
 
 		// Open the MQTT connection just once
 		MQTT mqtt = new MQTT();
@@ -82,7 +82,7 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 
 	@Override
 	public void invoke(Tuple2<CompositeKeySensorType, MqttSensor> value) throws Exception {
-		this.meter.markEvent();
+		// this.meter.markEvent();
 		// this.counter.inc();
 		System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
 		System.out.flush();

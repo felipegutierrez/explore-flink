@@ -35,12 +35,24 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <transformers>
-                <transformer>
-                  <mainClass>org.sense.flink.App</mainClass>
-                </transformer>
-              </transformers>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.apache.flink:*</exclude>
+                </excludes>
+              </artifactSet>
               <filters>
+                <filter>
+                  <artifact>org.apache.flink:*</artifact>
+                  <excludes>
+                    <exclude>org/apache/flink/shaded/com/**</exclude>
+                    <exclude>web-docs/**</exclude>
+                    <exclude>com.google.code.findbugs:jsr305</exclude>
+                    <exclude>org.slf4j:*</exclude>
+                    <exclude>log4j:*</exclude>
+                    <exclude>com.typesafe:config</exclude>
+                    <exclude>junit:junit</exclude>
+                  </excludes>
+                </filter>
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
@@ -50,6 +62,11 @@
                   </excludes>
                 </filter>
               </filters>
+              <transformers>
+                <transformer>
+                  <mainClass>org.sense.flink.App</mainClass>
+                </transformer>
+              </transformers>
             </configuration>
           </execution>
         </executions>
@@ -58,14 +75,29 @@
   </build>
   <dependencies>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-clients_2.11</artifactId>
+      <version>1.7.2</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-java</artifactId>
+      <version>1.7.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-streaming-java_2.11</artifactId>
+      <version>1.7.2</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
   <properties>
     <jdk.version>1.8</jdk.version>
+    <scala.binary.version>2.11</scala.binary.version>
+    <flink.version>1.7.2</flink.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <junit.version>4.12</junit.version>
   </properties>
 </project>
