@@ -2,7 +2,6 @@ package org.sense.flink.mqtt;
 
 import java.util.LinkedList;
 
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
 import org.apache.flink.metrics.Meter;
@@ -16,9 +15,8 @@ import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 import org.sense.flink.examples.stream.udfs.PrinterSink;
 
-public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySensorType, MqttSensor>> {
-
-	private static final long serialVersionUID = 8945311203644429670L;
+public class MqttStringPublisher extends RichSinkFunction<String> {
+	private static final long serialVersionUID = 1736047291991894958L;
 
 	String user = env("ACTIVEMQ_USER", "admin");
 	String password = env("ACTIVEMQ_PASSWORD", "password");
@@ -37,19 +35,19 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 	// private transient Counter counter;
 	private transient Meter meter;
 
-	public MqttSensorPublisher(String topic) {
+	public MqttStringPublisher(String topic) {
 		this(DEFAUL_HOST, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttSensorPublisher(String host, String topic) {
+	public MqttStringPublisher(String host, String topic) {
 		this(host, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttSensorPublisher(String host, int port, String topic) {
+	public MqttStringPublisher(String host, int port, String topic) {
 		this(host, port, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttSensorPublisher(String host, int port, String topic, QoS qos) {
+	public MqttStringPublisher(String host, int port, String topic, QoS qos) {
 		this.host = host;
 		this.port = port;
 		this.topic = topic;
@@ -61,7 +59,7 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 		super.open(config);
 		// this.counter=getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
 		com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
-		this.meter = getRuntimeContext().getMetricGroup().meter(MqttSensorPublisher.class.getSimpleName() + "-meter",
+		this.meter = getRuntimeContext().getMetricGroup().meter(MqttStringPublisher.class.getSimpleName() + "-meter",
 				new DropwizardMeterWrapper(dropwizardMeter));
 
 		// Open the MQTT connection just once
@@ -81,7 +79,7 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 	}
 
 	@Override
-	public void invoke(Tuple2<CompositeKeySensorType, MqttSensor> value) throws Exception {
+	public void invoke(String value) throws Exception {
 		this.meter.markEvent();
 		// this.counter.inc();
 		System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
