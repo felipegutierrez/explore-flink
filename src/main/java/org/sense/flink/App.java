@@ -60,14 +60,16 @@ public class App {
 				String msg = "0";
 				String ipAddressSource01 = "127.0.0.1";
 				if (args != null && args.length > 0) {
+					System.out.println("args 0: " + args[0]);
+					System.out.println("args 1: " + args[1]);
 					msg = args[0];
 					if (msg.matches("-?\\d+")) {
 						System.out.println("    Application choosed: " + msg);
 					} else {
 						msg = "999";
 					}
-					if (args.length > 2) {
-						ipAddressSource01 = args[2];
+					if (args.length > 1) {
+						ipAddressSource01 = args[1];
 						if (!validIP(ipAddressSource01)) {
 							ipAddressSource01 = "127.0.0.1";
 							System.err

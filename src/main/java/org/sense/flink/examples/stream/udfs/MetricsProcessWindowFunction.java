@@ -2,8 +2,8 @@ package org.sense.flink.examples.stream.udfs;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
-// import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
-// import org.apache.flink.metrics.Meter;
+import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
+import org.apache.flink.metrics.Meter;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
@@ -25,15 +25,15 @@ public class MetricsProcessWindowFunction extends
 
 	// Create metrics
 	// private transient Counter counter;
-	// private transient Meter meter;
+	private transient Meter meter;
 
 	@Override
 	public void open(Configuration config) throws Exception {
 		// this.counter=getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
-		// com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
-		// this.meter = getRuntimeContext().getMetricGroup().meter(
-		// MetricsProcessWindowFunction.class.getSimpleName() + "-meter",
-		// new DropwizardMeterWrapper(dropwizardMeter));
+		com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
+		this.meter = getRuntimeContext().getMetricGroup().meter(
+				MetricsProcessWindowFunction.class.getSimpleName() + "-meter",
+				new DropwizardMeterWrapper(dropwizardMeter));
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class MetricsProcessWindowFunction extends
 			ProcessWindowFunction<Tuple2<CompositeKeySensorType, MqttSensor>, Tuple2<CompositeKeySensorType, MqttSensor>, CompositeKeySensorType, TimeWindow>.Context arg1,
 			Iterable<Tuple2<CompositeKeySensorType, MqttSensor>> records,
 			Collector<Tuple2<CompositeKeySensorType, MqttSensor>> out) throws Exception {
-		// this.meter.markEvent();
+		this.meter.markEvent();
 		// this.counter.inc();
 
 		for (Tuple2<CompositeKeySensorType, MqttSensor> record : records) {

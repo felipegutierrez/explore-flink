@@ -1,10 +1,6 @@
 package org.sense.flink.examples.stream;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.apache.flink.api.common.functions.AggregateFunction;
-import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -12,6 +8,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.sense.flink.examples.stream.udfs.SensorSkewedJoinFunction;
 import org.sense.flink.examples.stream.udfs.StationPlatformKeySelector;
 import org.sense.flink.examples.stream.udfs.StationPlatformMapper;
 import org.sense.flink.mqtt.CompositeKeySensorType;
@@ -22,7 +19,6 @@ import org.sense.flink.mqtt.MqttStringPublisher;
 
 public class MqttSensorDataSkewedJoinDAG {
 
-	private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private final String topic = "topic-data-skewed-join";
 
 	public static void main(String[] args) throws Exception {
@@ -33,16 +29,13 @@ public class MqttSensorDataSkewedJoinDAG {
 
 		// @formatter:off
 		System.out.println("App 14 selected (Complex shuffle with aggregation over a window)");
-		System.out.println("Use [./bin/flink run examples/explore-flink.jar 14 -c] to run this program on the Flink standalone-cluster");
+		System.out.println("Use [./bin/flink run examples/explore-flink.jar 14 " + ipAddressSource01 + " -c] to run this program on the Flink standalone-cluster");
 		System.out.println("Consuming values from 2 MQTT topics");
-		System.out.println("Use 'mosquitto_sub -h 127.0.0.1 -t " + topic + "' in order to consume data from this job.");
+		System.out.println("Use 'mosquitto_sub -h " + ipAddressSource01 + " -t " + topic + "' in order to consume data from this job.");
 		// @formatter:on
 
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		// StreamExecutionEnvironment env =
-		// StreamExecutionEnvironment.createRemoteEnvironment("192.168.56.1", 6123,
-		// "target/explore-flink-0.0.1-SNAPSHOT-with-dependencies.jar");
 
 		// obtain execution environment, run this example in "ingestion time"
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
@@ -70,40 +63,17 @@ public class MqttSensorDataSkewedJoinDAG {
 				.where(new StationPlatformKeySelector())
 				.equalTo(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
-				.apply(new MyJoinFunction())
+				.apply(new SensorSkewedJoinFunction())
 				.addSink(new MqttStringPublisher(topic)).name(MqttStringPublisher.class.getSimpleName())
-				// .print()
 				;
 
 		// @formatter:on
 
-		String executionPlan = env.getExecutionPlan();
-		System.out.println("ExecutionPlan ........................ ");
-		System.out.println(executionPlan);
+		System.out.println("........................ ");
+		System.out.println("ExecutionPlan: " + env.getExecutionPlan());
 		System.out.println("........................ ");
 
 		env.execute(MqttSensorDataSkewedJoinDAG.class.getSimpleName());
-	}
-
-	public static class MyJoinFunction implements
-			JoinFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>, Tuple2<CompositeKeyStationPlatform, MqttSensor>, String> {
-		private static final long serialVersionUID = 2507555650596738022L;
-
-		@Override
-		public String join(Tuple2<CompositeKeyStationPlatform, MqttSensor> first,
-				Tuple2<CompositeKeyStationPlatform, MqttSensor> second) throws Exception {
-			Integer stationId = first.f0.getStationId();
-			Integer platformId = first.f0.getPlatformId();
-			String key = "station,platform: [" + stationId + "," + platformId + "] ";
-
-			String firstValue = first.f1.getKey().f1 + "," + first.f1.getTrip() + "," + first.f1.getValue() + ","
-					+ sdf.format(new Date(first.f1.getTimestamp()));
-			String secondValue = second.f1.getKey().f1 + "," + second.f1.getTrip() + "," + second.f1.getValue() + ","
-					+ sdf.format(new Date(second.f1.getTimestamp()));
-
-			// return key + "-First: [" + firstValue + "] - Second: [" + secondValue + "]";
-			return key;
-		}
 	}
 
 	/**
@@ -125,8 +95,6 @@ public class MqttSensorDataSkewedJoinDAG {
 		@Override
 		public Tuple3<CompositeKeySensorType, Double, Long> add(Tuple2<CompositeKeySensorType, MqttSensor> valueToAdd,
 				Tuple3<CompositeKeySensorType, Double, Long> accumulator) {
-			// this.meter.markEvent();
-			// this.counter.inc();
 			System.out.println("Aggregator: " + valueToAdd);
 			return new Tuple3<CompositeKeySensorType, Double, Long>(valueToAdd.f0,
 					accumulator.f1 + valueToAdd.f1.getValue(), accumulator.f2 + 1L);

@@ -3,8 +3,8 @@ package org.sense.flink.mqtt;
 import java.util.LinkedList;
 
 import org.apache.flink.configuration.Configuration;
-// import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
-// import org.apache.flink.metrics.Meter;
+import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
+import org.apache.flink.metrics.Meter;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.fusesource.hawtbuf.AsciiBuffer;
 import org.fusesource.hawtbuf.Buffer;
@@ -22,7 +22,6 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 	String password = env("ACTIVEMQ_PASSWORD", "password");
 	String host = env("ACTIVEMQ_HOST", "localhost");
 	int port = Integer.parseInt(env("ACTIVEMQ_PORT", "1883"));
-	// final String destination = arg(null, 0, "/topic/event");
 	FutureConnection connection;
 
 	private static final String DEFAUL_HOST = "127.0.0.1";
@@ -33,7 +32,7 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 
 	// Create metrics
 	// private transient Counter counter;
-	// private transient Meter meter;
+	private transient Meter meter;
 
 	public MqttStringPublisher(String topic) {
 		this(DEFAUL_HOST, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
@@ -58,9 +57,9 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 	public void open(Configuration config) throws Exception {
 		super.open(config);
 		// this.counter=getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
-		// com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
-		// this.meter = getRuntimeContext().getMetricGroup().meter(MqttStringPublisher.class.getSimpleName() + "-meter",
-		// new DropwizardMeterWrapper(dropwizardMeter));
+		com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
+		this.meter = getRuntimeContext().getMetricGroup().meter(MqttStringPublisher.class.getSimpleName() + "-meter",
+				new DropwizardMeterWrapper(dropwizardMeter));
 
 		// Open the MQTT connection just once
 		MQTT mqtt = new MQTT();
@@ -80,7 +79,7 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 
 	@Override
 	public void invoke(String value) throws Exception {
-		// this.meter.markEvent();
+		this.meter.markEvent();
 		// this.counter.inc();
 		System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
 		System.out.flush();
@@ -95,12 +94,10 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 
 		final LinkedList<Future<Void>> queue = new LinkedList<Future<Void>>();
 		UTF8Buffer topic = new UTF8Buffer(this.topic);
-		// UTF8Buffer topic = new UTF8Buffer(destination);
 
 		// Send the publish without waiting for it to complete. This allows us
 		// to send multiple message without blocking..
 		queue.add(connection.publish(topic, msg, this.qos, false));
-		// queue.add(connection.publish(topic, msg, QoS.AT_LEAST_ONCE, false));
 		// Eventually we start waiting for old publish futures to complete
 		// so that we don't create a large in memory buffer of outgoing message.s
 		if (queue.size() >= 1000) {
