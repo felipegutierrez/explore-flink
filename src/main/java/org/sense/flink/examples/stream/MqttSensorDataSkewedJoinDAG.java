@@ -22,14 +22,14 @@ public class MqttSensorDataSkewedJoinDAG {
 	private final String topic = "topic-data-skewed-join";
 
 	public static void main(String[] args) throws Exception {
-		new MqttSensorDataSkewedJoinDAG("192.168.56.20");
+		new MqttSensorDataSkewedJoinDAG("192.168.56.20", "192.168.56.1");
 	}
 
-	public MqttSensorDataSkewedJoinDAG(String ipAddressSource01) throws Exception {
+	public MqttSensorDataSkewedJoinDAG(String ipAddressSource01, String ipAddressSink) throws Exception {
 
 		// @formatter:off
 		System.out.println("App 14 selected (Complex shuffle with aggregation over a window)");
-		System.out.println("Use [./bin/flink run examples/explore-flink.jar 14 " + ipAddressSource01 + " -c] to run this program on the Flink standalone-cluster");
+		System.out.println("Use [./bin/flink run examples/explore-flink.jar 14 " + ipAddressSource01 + " " + ipAddressSink + " -c] to run this program on the Flink standalone-cluster");
 		System.out.println("Consuming values from 2 MQTT topics");
 		System.out.println("Use 'mosquitto_sub -h " + ipAddressSource01 + " -t " + topic + "' in order to consume data from this job.");
 		// @formatter:on
@@ -64,7 +64,7 @@ public class MqttSensorDataSkewedJoinDAG {
 				.equalTo(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new SensorSkewedJoinFunction())
-				.addSink(new MqttStringPublisher(topic)).name(MqttStringPublisher.class.getSimpleName())
+				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(MqttStringPublisher.class.getSimpleName())
 				;
 
 		// @formatter:on

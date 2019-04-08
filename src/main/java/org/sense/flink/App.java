@@ -59,6 +59,7 @@ public class App {
 
 				String msg = "0";
 				String ipAddressSource01 = "127.0.0.1";
+				String ipAddressSink = "127.0.0.1";
 				if (args != null && args.length > 0) {
 					System.out.println("args 0: " + args[0]);
 					System.out.println("args 1: " + args[1]);
@@ -72,10 +73,20 @@ public class App {
 						ipAddressSource01 = args[1];
 						if (!validIP(ipAddressSource01)) {
 							ipAddressSource01 = "127.0.0.1";
-							System.err
-									.println("IP address invalid. Using the default IP address: " + ipAddressSource01);
+							System.err.println("IP address invalid for Source. Using the default IP address: "
+									+ ipAddressSource01);
 						} else {
-							System.out.println("Valid IP address: " + ipAddressSource01);
+							System.out.println("Valid IP address for Source: " + ipAddressSource01);
+						}
+						if (args.length > 2) {
+							ipAddressSink = args[2];
+							if (!validIP(ipAddressSink)) {
+								ipAddressSink = "127.0.0.1";
+								System.err.println(
+										"IP address invalid for Sink. Using the default IP address: " + ipAddressSink);
+							} else {
+								System.out.println("Valid IP address for SInk: " + ipAddressSink);
+							}
 						}
 					}
 				} else {
@@ -87,6 +98,12 @@ public class App {
 						ipAddressSource01 = "127.0.0.1";
 					}
 					System.out.println("Loaded IP address: " + ipAddressSource01);
+					System.out.print("    Please enter the IP address of the data sink [127.0.0.1]: ");
+					ipAddressSink = (new Scanner(System.in)).nextLine();
+					if (!validIP(ipAddressSink)) {
+						ipAddressSink = "127.0.0.1";
+					}
+					System.out.println("Loaded IP address: " + ipAddressSink);
 				}
 
 				app = Integer.valueOf(msg);
@@ -184,7 +201,7 @@ public class App {
 					app = 0;
 					break;
 				case 14:
-					new MqttSensorDataSkewedJoinDAG(ipAddressSource01);
+					new MqttSensorDataSkewedJoinDAG(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				case 15:
