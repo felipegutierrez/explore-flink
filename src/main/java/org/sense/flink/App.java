@@ -7,7 +7,7 @@ import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
 import org.sense.flink.examples.stream.MqttSensorCustomPartitionByKeyDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedJoinDAG;
-import org.sense.flink.examples.stream.MqttSensorPartitionByKeyDAG;
+import org.sense.flink.examples.stream.MqttSensorDataSkewedPartitionByKeyDAG;
 import org.sense.flink.examples.stream.MqttSensorRandomPartitionByKeyDAG;
 import org.sense.flink.examples.stream.MqttSensorRebalancePartitionByKeyDAG;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsJoinMqtt;
@@ -205,8 +205,7 @@ public class App {
 					app = 0;
 					break;
 				case 15:
-					System.out.println("App 15 selected (Reducee with partition by key over a window)");
-					new MqttSensorPartitionByKeyDAG(ipAddressSource01);
+					new MqttSensorDataSkewedPartitionByKeyDAG(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				case 16:

@@ -16,8 +16,8 @@ import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
 import org.sense.flink.examples.stream.udfs.PrinterSink;
 
-public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySensorType, MqttSensor>> {
-	private static final long serialVersionUID = 8945311203644429670L;
+public class MqttStationPlatformPublisher extends RichSinkFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>> {
+	private static final long serialVersionUID = 2574156289932514868L;
 
 	String user = env("ACTIVEMQ_USER", "admin");
 	String password = env("ACTIVEMQ_PASSWORD", "password");
@@ -31,19 +31,19 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 	private String topic;
 	private QoS qos;
 
-	public MqttSensorPublisher(String topic) {
+	public MqttStationPlatformPublisher(String topic) {
 		this(DEFAUL_HOST, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttSensorPublisher(String host, String topic) {
+	public MqttStationPlatformPublisher(String host, String topic) {
 		this(host, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttSensorPublisher(String host, int port, String topic) {
+	public MqttStationPlatformPublisher(String host, int port, String topic) {
 		this(host, port, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttSensorPublisher(String host, int port, String topic, QoS qos) {
+	public MqttStationPlatformPublisher(String host, int port, String topic, QoS qos) {
 		this.host = host;
 		this.port = port;
 		this.topic = topic;
@@ -53,6 +53,7 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 	@Override
 	public void open(Configuration config) throws Exception {
 		super.open(config);
+
 		// Open the MQTT connection just once
 		MQTT mqtt = new MQTT();
 		mqtt.setHost(host, port);
@@ -70,7 +71,7 @@ public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySen
 	}
 
 	@Override
-	public void invoke(Tuple2<CompositeKeySensorType, MqttSensor> value) throws Exception {
+	public void invoke(Tuple2<CompositeKeyStationPlatform, MqttSensor> value) throws Exception {
 		System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
 		System.out.flush();
 

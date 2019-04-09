@@ -8,6 +8,7 @@ import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
 import org.apache.flink.metrics.Meter;
 import org.sense.flink.mqtt.CompositeKeyStationPlatform;
 import org.sense.flink.mqtt.MqttSensor;
+import org.sense.flink.util.ProcessSomeStuff;
 
 public class SensorSkewedJoinFunction extends
 		RichJoinFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>, Tuple2<CompositeKeyStationPlatform, MqttSensor>, Tuple3<CompositeKeyStationPlatform, MqttSensor, MqttSensor>> {
@@ -32,6 +33,8 @@ public class SensorSkewedJoinFunction extends
 		CompositeKeyStationPlatform key = first.f0;
 		MqttSensor firstValue = first.f1;
 		MqttSensor secondValue = second.f1;
+
+		ProcessSomeStuff.processSomeStuff(key, 5);
 
 		return Tuple3.of(key, firstValue, secondValue);
 	}

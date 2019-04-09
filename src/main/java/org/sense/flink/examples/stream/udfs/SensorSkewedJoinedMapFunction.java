@@ -10,7 +10,6 @@ import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
 import org.apache.flink.metrics.Meter;
 import org.sense.flink.mqtt.CompositeKeyStationPlatform;
 import org.sense.flink.mqtt.MqttSensor;
-import org.sense.flink.util.ProcessSomeStuff;
 
 public class SensorSkewedJoinedMapFunction
 		extends RichMapFunction<Tuple3<CompositeKeyStationPlatform, MqttSensor, MqttSensor>, String> {
@@ -31,8 +30,6 @@ public class SensorSkewedJoinedMapFunction
 	public String map(Tuple3<CompositeKeyStationPlatform, MqttSensor, MqttSensor> value) throws Exception {
 		this.meter.markEvent();
 		// this.counter.inc();
-
-		ProcessSomeStuff.processSomeStuff(value.f0, 5);
 
 		String key = "key[Station: " + value.f0.getStationId() + ", Platform: " + value.f0.getPlatformId() + "]";
 		String result01 = "[" + value.f1.getKey().f1 + "," + sdf.format(new Date(value.f1.getTimestamp())) + ","

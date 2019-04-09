@@ -15,12 +15,22 @@ public class StationPlatformMapper
 	// Create metrics
 	// private transient Counter counter;
 	private transient Meter meter;
+	private String metricName;
+
+	public StationPlatformMapper() {
+		this.metricName = StationPlatformMapper.class.getSimpleName();
+	}
+
+	public StationPlatformMapper(String metricName) {
+		this.metricName = metricName;
+	}
 
 	@Override
 	public void open(Configuration config) throws Exception {
 		// this.counter=getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
 		com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
-		this.meter = getRuntimeContext().getMetricGroup().meter(StationPlatformMapper.class.getSimpleName() + "-meter",
+
+		this.meter = getRuntimeContext().getMetricGroup().meter(this.metricName + "-meter",
 				new DropwizardMeterWrapper(dropwizardMeter));
 	}
 

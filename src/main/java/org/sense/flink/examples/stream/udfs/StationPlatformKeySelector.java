@@ -7,7 +7,7 @@ import org.sense.flink.mqtt.MqttSensor;
 
 public class StationPlatformKeySelector
 		implements KeySelector<Tuple2<CompositeKeyStationPlatform, MqttSensor>, CompositeKeyStationPlatform> {
-	private static final long serialVersionUID = 4041776391429253262L;
+	private static final long serialVersionUID = -7306413191299903211L;
 
 	@Override
 	public CompositeKeyStationPlatform getKey(Tuple2<CompositeKeyStationPlatform, MqttSensor> value) throws Exception {
