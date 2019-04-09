@@ -62,9 +62,11 @@ public class MqttSensorDataSkewedPartitionByKeyDAG {
 				.union(streamTicketsStation01).union(streamTicketsStation02)
 				// map the keys
 				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
+				.rebalance()
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new StationPlatformRichWindowFunction(metricWindowFunction)).name(metricWindowFunction)
+				.setParallelism(4)
 				.map(new StationPlatformMapper(metricSkewedMapper)).name(metricSkewedMapper)
 				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(metricSinkFunction)
 				;
