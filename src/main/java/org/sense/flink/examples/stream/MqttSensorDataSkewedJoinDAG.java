@@ -65,13 +65,9 @@ public class MqttSensorDataSkewedJoinDAG {
 		// @formatter:off
 		// map the keys
 		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTrainsStation = streamTrainsStations
-				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-trains")
-				// .setParallelism(4)
-				;
+				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-trains");
 		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTicketsStation = streamTicketsStations
-				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-tickets")
-				// .setParallelism(4)
-				;
+				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-tickets");
 
 		mappedTrainsStation.join(mappedTicketsStation)
 				.where(new StationPlatformKeySelector())
@@ -79,10 +75,8 @@ public class MqttSensorDataSkewedJoinDAG {
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new SensorSkewedJoinFunction())
 				.map(new SensorSkewedJoinedMapFunction()).name(SensorSkewedJoinedMapFunction.class.getSimpleName())
-				// .setParallelism(4)
-				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(MqttStringPublisher.class.getSimpleName())
-				// .setParallelism(2)
-				;
+				.setParallelism(4)
+				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(MqttStringPublisher.class.getSimpleName());
 
 		// @formatter:on
 

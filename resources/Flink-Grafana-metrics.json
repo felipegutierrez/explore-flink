@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1554388716834,
+  "iteration": 1554732698456,
   "links": [],
   "panels": [
     {
@@ -380,19 +380,6 @@
       }
     },
     {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 23
-      },
-      "id": 23,
-      "panels": [],
-      "title": "Network and CPU",
-      "type": "row"
-    },
-    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -400,12 +387,12 @@
       "datasource": "Prometheus",
       "fill": 1,
       "gridPos": {
-        "h": 11,
+        "h": 8,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 23
       },
-      "id": 26,
+      "id": 47,
       "legend": {
         "avg": false,
         "current": false,
@@ -421,19 +408,18 @@
       "nullPointMode": "null",
       "paceLength": 10,
       "percentage": false,
-      "pointradius": 5,
+      "pointradius": 2,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
-      "spaceLength": 10,
       "stack": false,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "flink_taskmanager_job_task_buffers_inputQueueLength",
+          "expr": "flink_taskmanager_job_task_operator_StationPlatformMapper_meter",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Input  - {{host}}-{{task_name}}",
+          "legendFormat": "{{host}}-{{task_name}}",
           "refId": "A"
         }
       ],
@@ -441,7 +427,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Queue Length Input",
+      "title": "StationPlatformMapper meter",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -458,7 +444,7 @@
       "yaxes": [
         {
           "format": "short",
-          "label": "queue length",
+          "label": null,
           "logBase": 1,
           "max": null,
           "min": null,
@@ -483,13 +469,110 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 23
+      },
+      "id": 49,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_operator_SensorSkewedJoinedMapFunction_meter",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{host}}-{{task_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "SensorSkewedJoinedMapFunction meter",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "id": 23,
+      "panels": [],
+      "title": "Network and CPU",
+      "type": "row"
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "Prometheus",
       "fill": 1,
       "gridPos": {
         "h": 11,
         "w": 12,
-        "x": 12,
-        "y": 24
+        "x": 0,
+        "y": 32
       },
       "id": 45,
       "legend": {
@@ -519,7 +602,7 @@
           "expr": "flink_taskmanager_job_task_buffers_outputQueueLength",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "Output  - {{host}}-{{task_name}}",
+          "legendFormat": "{{host}}-{{task_name}}",
           "refId": "B"
         }
       ],
@@ -570,13 +653,99 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
+      "fill": 1,
+      "gridPos": {
+        "h": 11,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 26,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_buffers_inputQueueLength",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{host}}-{{task_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Queue Length Input",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "queue length",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
       "description": "",
       "fill": 1,
       "gridPos": {
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 43
       },
       "id": 14,
       "legend": {
@@ -669,7 +838,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 51
       },
       "id": 21,
       "panels": [],
@@ -688,7 +857,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 44
+        "y": 52
       },
       "id": 19,
       "legend": {
@@ -799,7 +968,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 44
+        "y": 52
       },
       "id": 16,
       "legend": {
@@ -898,7 +1067,7 @@
       }
     }
   ],
-  "refresh": false,
+  "refresh": "2m",
   "schemaVersion": 18,
   "style": "dark",
   "tags": [],
@@ -982,9 +1151,8 @@
       {
         "allValue": null,
         "current": {
-          "tags": [],
-          "text": "MqttSensorPartitionByKeyDAG",
-          "value": "MqttSensorPartitionByKeyDAG"
+          "text": "MqttSensorDataSkewedJoinDAG",
+          "value": "MqttSensorDataSkewedJoinDAG"
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -1109,8 +1277,8 @@
     ]
   },
   "time": {
-    "from": "2019-04-04T12:14:30.189Z",
-    "to": "2019-04-04T16:14:30.189Z"
+    "from": "now-30m",
+    "to": "now"
   },
   "timepicker": {
     "refresh_intervals": [
@@ -1131,5 +1299,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 54
+  "version": 90
 }
