@@ -18,6 +18,10 @@ import org.sense.flink.mqtt.MqttStringPublisher;
 public class MqttSensorDataSkewedJoinDAG {
 
 	private final String topic = "topic-data-skewed-join";
+	private final String topic_station_01_trains = "topic-station-01-trains";
+	private final String topic_station_01_tickets = "topic-station-01-tickets";
+	private final String topic_station_02_trains = "topic-station-02-trains";
+	private final String topic_station_02_tickets = "topic-station-02-tickets";
 
 	public static void main(String[] args) throws Exception {
 		new MqttSensorDataSkewedJoinDAG("192.168.56.20", "192.168.56.1");
@@ -38,32 +42,46 @@ public class MqttSensorDataSkewedJoinDAG {
 		// obtain execution environment, run this example in "ingestion time"
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 		// the period of the emitted markers is 5 milliseconds
-		env.getConfig().setLatencyTrackingInterval(5L);
+		// env.getConfig().setLatencyTrackingInterval(5L);
 
+		// Data sources
 		DataStream<MqttSensor> streamTrainsStation01 = env
-				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-01-trains"))
-				.name(MqttSensorDataSkewedJoinDAG.class.getSimpleName() + "-topic-station-01-trains");
+				.addSource(new MqttSensorConsumer(ipAddressSource01, topic_station_01_trains))
+				.name(MqttSensorConsumer.class.getSimpleName() + "-" + topic_station_01_trains);
 		DataStream<MqttSensor> streamTicketsStation01 = env
-				.addSource(new MqttSensorConsumer(ipAddressSource01, "topic-station-01-tickets"))
-				.name(MqttSensorDataSkewedJoinDAG.class.getSimpleName() + "-topic-station-01-tickets");
+				.addSource(new MqttSensorConsumer(ipAddressSource01, topic_station_01_tickets))
+				.name(MqttSensorConsumer.class.getSimpleName() + "-" + topic_station_01_tickets);
+		DataStream<MqttSensor> streamTrainsStation02 = env
+				.addSource(new MqttSensorConsumer(ipAddressSource01, topic_station_02_trains))
+				.name(MqttSensorConsumer.class.getSimpleName() + "-" + topic_station_02_trains);
+		DataStream<MqttSensor> streamTicketsStation02 = env
+				.addSource(new MqttSensorConsumer(ipAddressSource01, topic_station_02_tickets))
+				.name(MqttSensorConsumer.class.getSimpleName() + "-" + topic_station_02_tickets);
+
+		// union the similar sets
+		DataStream<MqttSensor> streamTrainsStations = streamTrainsStation01.union(streamTrainsStation02);
+		DataStream<MqttSensor> streamTicketsStations = streamTicketsStation01.union(streamTicketsStation02);
 
 		// @formatter:off
-		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTrainsStation01 = streamTrainsStation01
-				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-trains01")
-				.setParallelism(4);
-		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTicketsStation01 = streamTicketsStation01
-				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-tickets01")
-				.setParallelism(4);
-		
-		mappedTrainsStation01.join(mappedTicketsStation01)
+		// map the keys
+		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTrainsStation = streamTrainsStations
+				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-trains")
+				// .setParallelism(4)
+				;
+		DataStream<Tuple2<CompositeKeyStationPlatform, MqttSensor>> mappedTicketsStation = streamTicketsStations
+				.map(new StationPlatformMapper()).name(StationPlatformMapper.class.getSimpleName() + "-tickets")
+				// .setParallelism(4)
+				;
+
+		mappedTrainsStation.join(mappedTicketsStation)
 				.where(new StationPlatformKeySelector())
 				.equalTo(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new SensorSkewedJoinFunction())
 				.map(new SensorSkewedJoinedMapFunction()).name(SensorSkewedJoinedMapFunction.class.getSimpleName())
-				.setParallelism(4)
+				// .setParallelism(4)
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(MqttStringPublisher.class.getSimpleName())
-				.setParallelism(2)
+				// .setParallelism(2)
 				;
 
 		// @formatter:on

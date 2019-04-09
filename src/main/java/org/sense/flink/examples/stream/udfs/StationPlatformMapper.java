@@ -35,7 +35,7 @@ public class StationPlatformMapper
 		// String platformType = value.getKey().f3;
 		Integer stationId = value.getKey().f4;
 		CompositeKeyStationPlatform compositeKey = new CompositeKeyStationPlatform(stationId, platformId);
-		System.out.println("Mapper: " + compositeKey + " - " + value);
+		// System.out.println("Mapper: " + compositeKey + " - " + value);
 
 		return Tuple2.of(compositeKey, value);
 	}

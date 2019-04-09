@@ -115,11 +115,4 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 			return defaultValue;
 		return rc;
 	}
-
-	private static String arg(String[] args, int index, String defaultValue) {
-		if (args != null && index < args.length)
-			return args[index];
-		else
-			return defaultValue;
-	}
 }
