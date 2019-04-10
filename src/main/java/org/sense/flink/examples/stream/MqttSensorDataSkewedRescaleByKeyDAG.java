@@ -14,9 +14,9 @@ import org.sense.flink.mqtt.MqttStationPlatformPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MqttSensorDataSkewedPartitionByKeyDAG {
+public class MqttSensorDataSkewedRescaleByKeyDAG {
 
-	final static Logger logger = LoggerFactory.getLogger(MqttSensorDataSkewedPartitionByKeyDAG.class);
+	final static Logger logger = LoggerFactory.getLogger(MqttSensorDataSkewedRescaleByKeyDAG.class);
 
 	private final String topic = "topic-data-skewed-join";
 	private final String topic_station_01_trains = "topic-station-01-trains";
@@ -30,12 +30,12 @@ public class MqttSensorDataSkewedPartitionByKeyDAG {
 	private final String metricSinkFunction = "SinkFunction";
 
 	public static void main(String[] args) throws Exception {
-		new MqttSensorDataSkewedPartitionByKeyDAG("192.168.56.20", "192.168.56.1");
+		new MqttSensorDataSkewedRescaleByKeyDAG("192.168.56.20", "192.168.56.1");
 	}
 
-	public MqttSensorDataSkewedPartitionByKeyDAG(String ipAddressSource01, String ipAddressSink) throws Exception {
+	public MqttSensorDataSkewedRescaleByKeyDAG(String ipAddressSource01, String ipAddressSink) throws Exception {
 
-		System.out.println("App 15 selected (Complex shuffle with aggregation over a window with keyBy and rebalance)");
+		System.out.println("App 16 selected (Complex shuffle with aggregation over a window with partitionCustom)");
 
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -62,7 +62,7 @@ public class MqttSensorDataSkewedPartitionByKeyDAG {
 				.union(streamTicketsStation01).union(streamTicketsStation02)
 				// map the keys
 				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
-				.rebalance()
+				.rescale()
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new StationPlatformRichWindowFunction(metricWindowFunction)).name(metricWindowFunction)
@@ -70,12 +70,21 @@ public class MqttSensorDataSkewedPartitionByKeyDAG {
 				.map(new StationPlatformMapper(metricSkewedMapper)).name(metricSkewedMapper)
 				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(metricSinkFunction)
 				;
+		/*
+		streamTrainsStation01.union(streamTrainsStation02)
+				.union(streamTicketsStation01).union(streamTicketsStation02)
+				// map the keys
+				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
+				.partitionCustom(new StationPlatformKeyCustomPartitioner(), new StationPlatformKeySelector())
+				.windowAll(TumblingProcessingTimeWindows.of(Time.seconds(20)))
+				.apply(new StationPlatformRichAllWindowFunction(metricWindowFunction)).name(metricWindowFunction)
+				.map(new StationPlatformMapper(metricSkewedMapper)).name(metricSkewedMapper)
+				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(metricSinkFunction)
+				;
+				*/
 		// @formatter:on
 
-		System.out.println("........................ ");
 		System.out.println("ExecutionPlan: " + env.getExecutionPlan());
-		System.out.println("........................ ");
-
-		env.execute(MqttSensorDataSkewedPartitionByKeyDAG.class.getSimpleName());
+		env.execute(MqttSensorDataSkewedRescaleByKeyDAG.class.getSimpleName());
 	}
 }

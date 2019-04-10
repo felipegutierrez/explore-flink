@@ -4,24 +4,25 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
 import org.apache.flink.metrics.Meter;
-import org.apache.flink.streaming.api.functions.windowing.RichWindowFunction;
+import org.apache.flink.streaming.api.functions.windowing.RichAllWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.sense.flink.mqtt.CompositeKeyStationPlatform;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.util.ProcessSomeStuff;
 
-public class StationPlatformRichWindowFunction extends
-		RichWindowFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>, MqttSensor, CompositeKeyStationPlatform, TimeWindow> {
-	private static final long serialVersionUID = 4806387107507484829L;
+public class StationPlatformRichAllWindowFunction
+		extends RichAllWindowFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>, MqttSensor, TimeWindow> {
+	private static final long serialVersionUID = 895693565650147235L;
+
 	private transient Meter meter;
 	private String metricName;
 
-	public StationPlatformRichWindowFunction() {
-		this.metricName = StationPlatformRichWindowFunction.class.getSimpleName();
+	public StationPlatformRichAllWindowFunction() {
+		this.metricName = StationPlatformRichAllWindowFunction.class.getSimpleName();
 	}
 
-	public StationPlatformRichWindowFunction(String metricName) {
+	public StationPlatformRichAllWindowFunction(String metricName) {
 		this.metricName = metricName;
 	}
 
@@ -34,17 +35,15 @@ public class StationPlatformRichWindowFunction extends
 	}
 
 	@Override
-	public void apply(CompositeKeyStationPlatform key, TimeWindow window,
-			Iterable<Tuple2<CompositeKeyStationPlatform, MqttSensor>> input, Collector<MqttSensor> out)
-			throws Exception {
+	public void apply(TimeWindow window, Iterable<Tuple2<CompositeKeyStationPlatform, MqttSensor>> values,
+			Collector<MqttSensor> out) throws Exception {
 		this.meter.markEvent();
 		// this.counter.inc();
 
-		ProcessSomeStuff.processSomeStuff(key, 5);
-
-		for (Tuple2<CompositeKeyStationPlatform, MqttSensor> tuple2 : input) {
-			// CompositeKeyStationPlatform tupleKey = tuple2.f0;
+		for (Tuple2<CompositeKeyStationPlatform, MqttSensor> tuple2 : values) {
+			CompositeKeyStationPlatform tupleKey = tuple2.f0;
 			MqttSensor tupleValue = tuple2.f1;
+			ProcessSomeStuff.processSomeStuff(tupleKey, 5);
 			out.collect(tupleValue);
 		}
 	}
