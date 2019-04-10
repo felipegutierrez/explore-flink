@@ -62,7 +62,7 @@ public class MqttSensorDataSkewedRescaleByKeyDAG {
 				.union(streamTicketsStation01).union(streamTicketsStation02)
 				// map the keys
 				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
-				.rescale()
+				.shuffle()// .rescale()
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new StationPlatformRichWindowFunction(metricWindowFunction)).name(metricWindowFunction)
@@ -71,6 +71,7 @@ public class MqttSensorDataSkewedRescaleByKeyDAG {
 				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(metricSinkFunction)
 				;
 		/*
+		// I cannot use parallelism when doing partitionCustom
 		streamTrainsStation01.union(streamTrainsStation02)
 				.union(streamTicketsStation01).union(streamTicketsStation02)
 				// map the keys
