@@ -5,9 +5,10 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.sense.flink.examples.stream.udfs.StationPlatformKeyCustomPartitioner;
 import org.sense.flink.examples.stream.udfs.StationPlatformKeySelector;
 import org.sense.flink.examples.stream.udfs.StationPlatformMapper;
-import org.sense.flink.examples.stream.udfs.StationPlatformRichWindowFunction;
+import org.sense.flink.examples.stream.udfs.StationPlatformRichAllWindowFunction;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.mqtt.MqttSensorConsumer;
 import org.sense.flink.mqtt.MqttStationPlatformPublisher;
@@ -58,19 +59,6 @@ public class MqttSensorDataSkewedRescaleByKeyDAG {
 				.name(MqttSensorConsumer.class.getSimpleName() + "-" + topic_station_02_tickets);
 
 		// @formatter:off
-		streamTrainsStation01.union(streamTrainsStation02)
-				.union(streamTicketsStation01).union(streamTicketsStation02)
-				// map the keys
-				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
-				.shuffle()// .rescale()
-				.keyBy(new StationPlatformKeySelector())
-				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
-				.apply(new StationPlatformRichWindowFunction(metricWindowFunction)).name(metricWindowFunction)
-				.setParallelism(4)
-				.map(new StationPlatformMapper(metricSkewedMapper)).name(metricSkewedMapper)
-				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(metricSinkFunction)
-				;
-		/*
 		// I cannot use parallelism when doing partitionCustom
 		streamTrainsStation01.union(streamTrainsStation02)
 				.union(streamTicketsStation01).union(streamTicketsStation02)
@@ -82,7 +70,6 @@ public class MqttSensorDataSkewedRescaleByKeyDAG {
 				.map(new StationPlatformMapper(metricSkewedMapper)).name(metricSkewedMapper)
 				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(metricSinkFunction)
 				;
-				*/
 		// @formatter:on
 
 		System.out.println("ExecutionPlan: " + env.getExecutionPlan());

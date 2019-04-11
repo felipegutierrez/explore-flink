@@ -3,9 +3,7 @@ package org.sense.flink.util;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
-import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 public class CountMinSketchTest extends TestCase {
 
