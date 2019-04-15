@@ -5,11 +5,11 @@ import java.util.Scanner;
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
+import org.sense.flink.examples.stream.MqttSensorDataSkewedCombinerByKeySkewedDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedJoinDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedPartitionByKeyDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedPartitionByKeySkewedDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedRescaleByKeyDAG;
-import org.sense.flink.examples.stream.MqttSensorRebalancePartitionByKeyDAG;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsJoinMqtt;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt;
 import org.sense.flink.examples.stream.MultiSensorMultiStationsReadingMqtt2;
@@ -217,8 +217,7 @@ public class App {
 					app = 0;
 					break;
 				case 18:
-					System.out.println("App 18 selected (Reducee with random partition by key over a window)");
-					new MqttSensorRebalancePartitionByKeyDAG(ipAddressSource01);
+					new MqttSensorDataSkewedCombinerByKeySkewedDAG(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				default:

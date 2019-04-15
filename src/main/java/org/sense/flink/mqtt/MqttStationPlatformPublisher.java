@@ -14,7 +14,6 @@ import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import org.sense.flink.examples.stream.udfs.PrinterSink;
 
 public class MqttStationPlatformPublisher extends RichSinkFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>> {
 	private static final long serialVersionUID = 2574156289932514868L;
@@ -72,7 +71,7 @@ public class MqttStationPlatformPublisher extends RichSinkFunction<Tuple2<Compos
 
 	@Override
 	public void invoke(Tuple2<CompositeKeyStationPlatform, MqttSensor> value) throws Exception {
-		System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
+		System.out.println(MqttStationPlatformPublisher.class.getSimpleName() + ": " + value);
 		System.out.flush();
 
 		int size = value.toString().length();
