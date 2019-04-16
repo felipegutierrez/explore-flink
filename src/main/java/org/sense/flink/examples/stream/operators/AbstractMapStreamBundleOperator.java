@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.flink.api.common.functions.util.FunctionUtils;
-import org.apache.flink.streaming.api.operators.AbstractUdfStreamOperator;
+import org.apache.flink.streaming.api.operators.AbstractStreamOperator;
 import org.apache.flink.streaming.api.operators.ChainingStrategy;
 import org.apache.flink.streaming.api.operators.OneInputStreamOperator;
 import org.apache.flink.streaming.api.operators.StreamOperator;
@@ -18,8 +18,7 @@ import org.apache.flink.util.Collector;
  * A {@link StreamOperator} for executing {@link MapBundleFunction
  * MapFunctions}.
  */
-public abstract class AbstractMapUdfStreamBundleOperator<K, V, IN, OUT>
-		extends AbstractUdfStreamOperator<OUT, MapBundleFunction<K, V, IN, OUT>>
+public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends AbstractStreamOperator<OUT>
 		implements OneInputStreamOperator<IN, OUT>, BundleTriggerCallback {
 
 	private static final long serialVersionUID = 1L;
@@ -40,9 +39,7 @@ public abstract class AbstractMapUdfStreamBundleOperator<K, V, IN, OUT>
 
 	private transient int numOfElements = 0;
 
-	public AbstractMapUdfStreamBundleOperator(MapBundleFunction<K, V, IN, OUT> function,
-			BundleTrigger<IN> bundleTrigger) {
-		super(function);
+	public AbstractMapStreamBundleOperator(MapBundleFunction<K, V, IN, OUT> function, BundleTrigger<IN> bundleTrigger) {
 		chainingStrategy = ChainingStrategy.ALWAYS;
 		this.bundle = new HashMap<>();
 		this.function = checkNotNull(function, "function is null");
@@ -69,12 +66,13 @@ public abstract class AbstractMapUdfStreamBundleOperator<K, V, IN, OUT>
 		final IN input = element.getValue();
 		final K bundleKey = getKey(input);
 		final V bundleValue = this.bundle.get(bundleKey);
+
 		// get a new value after adding this element to bundle
 		final V newBundleValue = this.function.addInput(bundleValue, input);
-		// final V newBundleValue = this.userFunction.addInput(bundleValue, input);
 
 		// update to map bundle
 		bundle.put(bundleKey, newBundleValue);
+
 		numOfElements++;
 		bundleTrigger.onElement(input);
 	}

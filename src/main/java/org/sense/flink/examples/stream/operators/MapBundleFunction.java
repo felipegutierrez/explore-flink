@@ -66,8 +66,9 @@ public abstract class MapBundleFunction<K, V, IN, OUT> implements Function {
 	 * Called when a bundle is finished. Transform a bundle to zero, one, or more
 	 * output elements.
 	 */
-	public abstract void finishBundle(Map<K, V> buffer, Collector<OUT> out) throws Exception;
+	public abstract List<OUT> finishBundle(Map<K, V> buffer, Collector<OUT> out) throws Exception;
 
+	/*
 	public int getFinishCount() {
 		return finishCount;
 	}
@@ -75,4 +76,5 @@ public abstract class MapBundleFunction<K, V, IN, OUT> implements Function {
 	public List<V> getOutputs() {
 		return outputs;
 	}
+	*/
 }

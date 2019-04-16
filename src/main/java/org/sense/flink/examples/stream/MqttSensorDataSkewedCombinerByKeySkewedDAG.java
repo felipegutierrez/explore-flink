@@ -11,7 +11,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.examples.stream.operators.CountBundleTrigger;
 import org.sense.flink.examples.stream.operators.MapBundleFunction;
 import org.sense.flink.examples.stream.operators.MapBundleFunctionImpl;
-import org.sense.flink.examples.stream.operators.MapUdfStreamBundleOperator;
+import org.sense.flink.examples.stream.operators.MapStreamBundleOperator;
 import org.sense.flink.examples.stream.udfs.SensorTypePlatformStationMapper;
 import org.sense.flink.examples.stream.udfs.StationPlatformKeySelector;
 import org.sense.flink.examples.stream.udfs.StationPlatformMapper;
@@ -82,7 +82,7 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 
 		streamTrainsStation01.union(streamTrainsStation02).union(streamTicketsStation01).union(streamTicketsStation02)
 				.map(new SensorTypePlatformStationMapper(metricSensorMapper)).name(metricSensorMapper)
-				.transform("myStreamMapOperator", info, new MapUdfStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector))
+				.transform("myStreamMapOperator", info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector))
 				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
