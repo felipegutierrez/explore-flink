@@ -7,7 +7,7 @@ import org.apache.flink.metrics.Meter;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
-import org.sense.flink.mqtt.CompositeKeySensorType;
+import org.sense.flink.mqtt.CompositeKeySensorTypePlatformStation;
 import org.sense.flink.mqtt.MqttSensor;
 
 /**
@@ -20,7 +20,7 @@ import org.sense.flink.mqtt.MqttSensor;
  *
  */
 public class MetricsProcessWindowFunction extends
-		ProcessWindowFunction<Tuple2<CompositeKeySensorType, MqttSensor>, Tuple2<CompositeKeySensorType, MqttSensor>, CompositeKeySensorType, TimeWindow> {
+		ProcessWindowFunction<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation, TimeWindow> {
 	private static final long serialVersionUID = 6630717069617679992L;
 
 	// Create metrics
@@ -37,14 +37,14 @@ public class MetricsProcessWindowFunction extends
 	}
 
 	@Override
-	public void process(CompositeKeySensorType arg0,
-			ProcessWindowFunction<Tuple2<CompositeKeySensorType, MqttSensor>, Tuple2<CompositeKeySensorType, MqttSensor>, CompositeKeySensorType, TimeWindow>.Context arg1,
-			Iterable<Tuple2<CompositeKeySensorType, MqttSensor>> records,
-			Collector<Tuple2<CompositeKeySensorType, MqttSensor>> out) throws Exception {
+	public void process(CompositeKeySensorTypePlatformStation arg0,
+			ProcessWindowFunction<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation, TimeWindow>.Context arg1,
+			Iterable<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> records,
+			Collector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> out) throws Exception {
 		this.meter.markEvent();
 		// this.counter.inc();
 
-		for (Tuple2<CompositeKeySensorType, MqttSensor> record : records) {
+		for (Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor> record : records) {
 			out.collect(record);
 		}
 	}

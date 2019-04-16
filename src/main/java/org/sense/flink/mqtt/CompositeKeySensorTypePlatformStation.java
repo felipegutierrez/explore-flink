@@ -2,20 +2,20 @@ package org.sense.flink.mqtt;
 
 import java.io.Serializable;
 
-public class CompositeKeySensorType implements Serializable {
+public class CompositeKeySensorTypePlatformStation implements Serializable {
 	private static final long serialVersionUID = 158522745086544211L;
 
+	private String sensorType;
 	private Integer stationId;
 	private Integer platformId;
-	private String sensorType;
 
-	public CompositeKeySensorType() {
+	public CompositeKeySensorTypePlatformStation() {
 		this.stationId = null;
 		this.platformId = null;
 		this.sensorType = "";
 	}
 
-	public CompositeKeySensorType(Integer stationId, Integer platformId, String sensorType) {
+	public CompositeKeySensorTypePlatformStation(Integer stationId, Integer platformId, String sensorType) {
 		this.stationId = stationId;
 		this.platformId = platformId;
 		this.sensorType = sensorType;
@@ -63,7 +63,7 @@ public class CompositeKeySensorType implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		CompositeKeySensorType other = (CompositeKeySensorType) obj;
+		CompositeKeySensorTypePlatformStation other = (CompositeKeySensorTypePlatformStation) obj;
 		if (platformId == null) {
 			if (other.platformId != null)
 				return false;
