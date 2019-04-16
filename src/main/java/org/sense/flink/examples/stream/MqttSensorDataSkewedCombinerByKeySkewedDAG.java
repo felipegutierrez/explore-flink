@@ -1,13 +1,20 @@
 package org.sense.flink.examples.stream;
 
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.sense.flink.examples.stream.operators.MyMapFunction;
+import org.sense.flink.examples.stream.operators.MyMapFunctionImpl;
+import org.sense.flink.examples.stream.operators.MyStreamMapOperator;
 import org.sense.flink.examples.stream.udfs.StationPlatformKeySelector;
 import org.sense.flink.examples.stream.udfs.StationPlatformMapper;
 import org.sense.flink.examples.stream.udfs.StationPlatformRichWindowFunction;
+import org.sense.flink.mqtt.CompositeKeyStationPlatform;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.mqtt.MqttSensorConsumer;
 import org.sense.flink.mqtt.MqttStationPlatformPublisher;
@@ -30,7 +37,9 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 	private final String metricSinkFunction = "SinkFunction";
 
 	public static void main(String[] args) throws Exception {
-		new MqttSensorDataSkewedCombinerByKeySkewedDAG("192.168.56.20", "192.168.56.1");
+		// new MqttSensorDataSkewedCombinerByKeySkewedDAG("192.168.56.20",
+		// "192.168.56.1");
+		new MqttSensorDataSkewedCombinerByKeySkewedDAG("127.0.0.1", "127.0.0.1");
 	}
 
 	public MqttSensorDataSkewedCombinerByKeySkewedDAG(String ipAddressSource01, String ipAddressSink) throws Exception {
@@ -58,13 +67,15 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 				.addSource(new MqttSensorConsumer(ipAddressSource01, topic_station_02_tickets))
 				.name(MqttSensorConsumer.class.getSimpleName() + "-" + topic_station_02_tickets);
 
-		// OneInputStreamOperatorTestHarness<Integer, Integer> testHarness = new
-		// OneInputStreamOperatorTestHarness<Integer, Integer>(operator);
+		MyMapFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>, Tuple2<CompositeKeyStationPlatform, MqttSensor>> myMapFunction = new MyMapFunctionImpl();
+		TypeInformation<Tuple2<CompositeKeyStationPlatform, MqttSensor>> info = TypeInformation
+				.of(new TypeHint<Tuple2<CompositeKeyStationPlatform, MqttSensor>>() {
+				});
 
 		// @formatter:off
 		streamTrainsStation01.union(streamTrainsStation02).union(streamTicketsStation01).union(streamTicketsStation02)
 				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
-				// .transform("myFilter", TypeInformation.of(new TypeHint<Tuple2<CompositeKeyStationPlatform, MqttSensor>>(){}), new MyFilter())
+				.transform("myStreamMapOperator", info, new MyStreamMapOperator<>(myMapFunction))
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new StationPlatformRichWindowFunction(metricWindowFunction)).name(metricWindowFunction)
@@ -80,5 +91,4 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 
 		env.execute(MqttSensorDataSkewedCombinerByKeySkewedDAG.class.getSimpleName());
 	}
-
 }
