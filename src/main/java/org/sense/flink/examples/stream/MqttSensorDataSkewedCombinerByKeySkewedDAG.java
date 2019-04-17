@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 
-	final static Logger logger = LoggerFactory.getLogger(MqttSensorDataSkewedCombinerByKeySkewedDAG.class);
+	private static final Logger logger = LoggerFactory.getLogger(MqttSensorDataSkewedCombinerByKeySkewedDAG.class);
 
 	private final String topic = "topic-data-skewed-join";
 	private final String topic_station_01_trains = "topic-station-01-trains";
@@ -74,11 +74,10 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 		// Create my own operator using AbstractUdfStreamOperator
 		MapBundleFunction<CompositeKeySensorTypePlatformStation, MqttSensor, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, MqttSensor> myMapBundleFunction = new MapBundleFunctionImpl();
 		CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> bundleTrigger = 
-				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(3);
+				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(20);
 		KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation> keyBundleSelector = 
 				(KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation>) value -> value.f0;
 		TypeInformation<MqttSensor> info = TypeInformation.of(MqttSensor.class);
-		// MapUdfStreamBundleOperator<CompositeKeySensorTypePlatformStation, MqttSensor, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, MqttSensor> mapUdfStreamBundleOperator = new MapUdfStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector);
 
 		streamTrainsStation01.union(streamTrainsStation02).union(streamTicketsStation01).union(streamTicketsStation02)
 				.map(new SensorTypePlatformStationMapper(metricSensorMapper)).name(metricSensorMapper)

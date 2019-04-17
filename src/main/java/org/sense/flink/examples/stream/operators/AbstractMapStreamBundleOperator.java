@@ -13,6 +13,8 @@ import org.apache.flink.streaming.api.operators.StreamOperator;
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 import org.apache.flink.util.Collector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link StreamOperator} for executing {@link MapBundleFunction
@@ -21,6 +23,7 @@ import org.apache.flink.util.Collector;
 public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends AbstractStreamOperator<OUT>
 		implements OneInputStreamOperator<IN, OUT>, BundleTriggerCallback {
 
+	private static final Logger logger = LoggerFactory.getLogger(AbstractMapStreamBundleOperator.class);
 	private static final long serialVersionUID = 1L;
 
 	/** The map in heap to store elements. */
@@ -88,7 +91,6 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 		if (!bundle.isEmpty()) {
 			numOfElements = 0;
 			function.finishBundle(bundle, collector);
-			// userFunction.finishBundle(bundle, collector);
 			bundle.clear();
 		}
 		bundleTrigger.reset();

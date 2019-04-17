@@ -43,18 +43,6 @@ public abstract class MapBundleFunction<K, V, IN, OUT> implements Function {
 	protected int finishCount = 0;
 
 	/**
-	 * The mapping method. Takes an element from the input data set and transforms
-	 * it into exactly one element.
-	 *
-	 * @param value The input value.
-	 * @return The transformed value
-	 *
-	 * @throws Exception This method may throw exceptions. Throwing an exception
-	 *                   will cause the operation to fail and may trigger recovery.
-	 */
-	// public abstract OUT map(IN input) throws Exception;
-
-	/**
 	 * Adds the given input to the given value, returning the new bundle value.
 	 *
 	 * @param value the existing bundle value, maybe null
@@ -66,15 +54,6 @@ public abstract class MapBundleFunction<K, V, IN, OUT> implements Function {
 	 * Called when a bundle is finished. Transform a bundle to zero, one, or more
 	 * output elements.
 	 */
-	public abstract List<OUT> finishBundle(Map<K, V> buffer, Collector<OUT> out) throws Exception;
+	public abstract void finishBundle(Map<K, V> buffer, Collector<OUT> out) throws Exception;
 
-	/*
-	public int getFinishCount() {
-		return finishCount;
-	}
-
-	public List<V> getOutputs() {
-		return outputs;
-	}
-	*/
 }

@@ -1,9 +1,12 @@
 package org.sense.flink.examples.stream.operators;
 
 import org.apache.flink.api.java.functions.KeySelector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MapStreamBundleOperator<K, V, IN, OUT> extends AbstractMapStreamBundleOperator<K, V, IN, OUT> {
 
+	private static final Logger logger = LoggerFactory.getLogger(MapStreamBundleOperator.class);
 	private static final long serialVersionUID = 6556268125924098320L;
 
 	/** KeySelector is used to extract key for bundle map. */

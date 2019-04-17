@@ -1,6 +1,8 @@
 package org.sense.flink.examples.stream.operators;
 
 import org.apache.flink.util.Preconditions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link BundleTrigger} that fires once the count of elements in a bundle
@@ -8,6 +10,7 @@ import org.apache.flink.util.Preconditions;
  */
 public class CountBundleTrigger<T> implements BundleTrigger<T> {
 
+	private static final Logger logger = LoggerFactory.getLogger(CountBundleTrigger.class);
 	private static final long serialVersionUID = -4343892739180507503L;
 
 	private final long maxCount;
