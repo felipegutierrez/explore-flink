@@ -1,9 +1,10 @@
-package org.sense.flink.examples.stream.operators;
+package org.sense.flink.examples.stream.udf.impl;
 
 import java.util.Map;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
+import org.sense.flink.examples.stream.udf.MapBundleFunction;
 import org.sense.flink.mqtt.CompositeKeySensorTypePlatformStation;
 import org.sense.flink.mqtt.MqttSensor;
 import org.slf4j.Logger;

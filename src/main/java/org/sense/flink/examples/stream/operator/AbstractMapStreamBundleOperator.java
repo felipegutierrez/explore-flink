@@ -1,4 +1,4 @@
-package org.sense.flink.examples.stream.operators;
+package org.sense.flink.examples.stream.operator;
 
 import static org.apache.flink.util.Preconditions.checkNotNull;
 
@@ -11,6 +11,9 @@ import org.apache.flink.streaming.api.operators.OneInputStreamOperator;
 import org.apache.flink.streaming.api.operators.StreamOperator;
 import org.apache.flink.streaming.api.operators.TimestampedCollector;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
+import org.sense.flink.examples.stream.trigger.BundleTrigger;
+import org.sense.flink.examples.stream.trigger.BundleTriggerCallback;
+import org.sense.flink.examples.stream.udf.MapBundleFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

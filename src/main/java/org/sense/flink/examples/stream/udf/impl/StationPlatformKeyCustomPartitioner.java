@@ -1,4 +1,4 @@
-package org.sense.flink.examples.stream.udfs;
+package org.sense.flink.examples.stream.udf.impl;
 
 import org.apache.flink.api.common.functions.Partitioner;
 import org.sense.flink.mqtt.CompositeKeyStationPlatform;

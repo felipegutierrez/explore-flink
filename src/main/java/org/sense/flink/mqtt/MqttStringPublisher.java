@@ -13,7 +13,7 @@ import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import org.sense.flink.examples.stream.udfs.PrinterSink;
+import org.sense.flink.examples.stream.udf.impl.PrinterSink;
 
 public class MqttStringPublisher extends RichSinkFunction<String> {
 	private static final long serialVersionUID = 1736047291991894958L;

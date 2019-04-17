@@ -1,6 +1,9 @@
-package org.sense.flink.examples.stream.operators;
+package org.sense.flink.examples.stream.operator.impl;
 
 import org.apache.flink.api.java.functions.KeySelector;
+import org.sense.flink.examples.stream.operator.AbstractMapStreamBundleOperator;
+import org.sense.flink.examples.stream.trigger.BundleTrigger;
+import org.sense.flink.examples.stream.udf.MapBundleFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

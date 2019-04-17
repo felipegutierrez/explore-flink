@@ -1,6 +1,8 @@
-package org.sense.flink.examples.stream.operators;
+package org.sense.flink.examples.stream.trigger.impl;
 
 import org.apache.flink.util.Preconditions;
+import org.sense.flink.examples.stream.trigger.BundleTrigger;
+import org.sense.flink.examples.stream.trigger.BundleTriggerCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

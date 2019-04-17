@@ -1,4 +1,4 @@
-package org.sense.flink.examples.stream.operators;
+package org.sense.flink.examples.stream.trigger;
 
 /**
  * Interface for Map trigger callbacks that can be registered to a

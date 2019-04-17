@@ -1,4 +1,4 @@
-package org.sense.flink.examples.stream.udfs;
+package org.sense.flink.examples.stream.udf.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package org.sense.flink.examples.stream.udfs;
+package org.sense.flink.examples.stream.udf.impl;
 
 import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;

@@ -14,7 +14,7 @@ import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import org.sense.flink.examples.stream.udfs.PrinterSink;
+import org.sense.flink.examples.stream.udf.impl.PrinterSink;
 
 public class MqttSensorPublisher extends RichSinkFunction<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> {
 	private static final long serialVersionUID = 8945311203644429670L;

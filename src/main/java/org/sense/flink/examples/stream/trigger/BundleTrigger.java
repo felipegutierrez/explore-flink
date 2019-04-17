@@ -1,4 +1,4 @@
-package org.sense.flink.examples.stream.operators;
+package org.sense.flink.examples.stream.trigger;
 
 import java.io.Serializable;
 

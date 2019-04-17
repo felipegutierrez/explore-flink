@@ -8,14 +8,14 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.operators.CountBundleTrigger;
-import org.sense.flink.examples.stream.operators.MapBundleFunction;
-import org.sense.flink.examples.stream.operators.MapBundleFunctionImpl;
-import org.sense.flink.examples.stream.operators.MapStreamBundleOperator;
-import org.sense.flink.examples.stream.udfs.SensorTypePlatformStationMapper;
-import org.sense.flink.examples.stream.udfs.StationPlatformKeySelector;
-import org.sense.flink.examples.stream.udfs.StationPlatformMapper;
-import org.sense.flink.examples.stream.udfs.StationPlatformRichWindowFunction;
+import org.sense.flink.examples.stream.operator.impl.MapStreamBundleOperator;
+import org.sense.flink.examples.stream.trigger.impl.CountBundleTrigger;
+import org.sense.flink.examples.stream.udf.MapBundleFunction;
+import org.sense.flink.examples.stream.udf.impl.MapBundleFunctionImpl;
+import org.sense.flink.examples.stream.udf.impl.SensorTypePlatformStationMapper;
+import org.sense.flink.examples.stream.udf.impl.StationPlatformKeySelector;
+import org.sense.flink.examples.stream.udf.impl.StationPlatformMapper;
+import org.sense.flink.examples.stream.udf.impl.StationPlatformRichWindowFunction;
 import org.sense.flink.mqtt.CompositeKeySensorTypePlatformStation;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.mqtt.MqttSensorConsumer;
@@ -74,7 +74,7 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 		// Create my own operator using AbstractUdfStreamOperator
 		MapBundleFunction<CompositeKeySensorTypePlatformStation, MqttSensor, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, MqttSensor> myMapBundleFunction = new MapBundleFunctionImpl();
 		CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> bundleTrigger = 
-				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(500);
+				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(1000);
 		KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation> keyBundleSelector = 
 				(KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation>) value -> value.f0;
 		TypeInformation<MqttSensor> info = TypeInformation.of(MqttSensor.class);
