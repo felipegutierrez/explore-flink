@@ -9,8 +9,6 @@ import org.sense.flink.mqtt.MqttSensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-// import com.esotericsoftware.minlog.Log;
-
 public class MapBundleFunctionImpl extends
 		MapBundleFunction<CompositeKeySensorTypePlatformStation, MqttSensor, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, MqttSensor> {
 

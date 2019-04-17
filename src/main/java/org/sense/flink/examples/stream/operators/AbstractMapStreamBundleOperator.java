@@ -127,7 +127,7 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 			}
 
 			if (exception != null) {
-				LOG.warn("Errors occurred while closing the BundleOperator.", exception);
+				logger.warn("Errors occurred while closing the BundleOperator.", exception);
 			}
 		}
 	}

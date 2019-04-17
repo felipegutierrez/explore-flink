@@ -34,14 +34,14 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 	private final String topic_station_02_tickets = "topic-station-02-tickets";
 
 	private final String metricSensorMapper = "SensorTypeStationPlatformMapper";
+	private final String metricCombiner = "SensorTypeStationPlatformCombiner";
 	private final String metricMapper = "StationPlatformMapper";
 	private final String metricWindowFunction = "StationPlatformRichWindowFunction";
 	private final String metricSkewedMapper = "StationPlatformSkewedMapper";
 	private final String metricSinkFunction = "SinkFunction";
 
 	public static void main(String[] args) throws Exception {
-		// new MqttSensorDataSkewedCombinerByKeySkewedDAG("192.168.56.20",
-		// "192.168.56.1");
+		// newMqttSensorDataSkewedCombinerByKeySkewedDAG("192.168.56.20","192.168.56.1");
 		new MqttSensorDataSkewedCombinerByKeySkewedDAG("127.0.0.1", "127.0.0.1");
 	}
 
@@ -81,8 +81,11 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 
 		streamTrainsStation01.union(streamTrainsStation02).union(streamTicketsStation01).union(streamTicketsStation02)
 				.map(new SensorTypePlatformStationMapper(metricSensorMapper)).name(metricSensorMapper)
-				.transform("myStreamMapOperator", info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector))
+				.setParallelism(4)
+				.transform(metricCombiner, info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(metricCombiner)
+				.setParallelism(4)
 				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
+				.setParallelism(4)
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new StationPlatformRichWindowFunction(metricWindowFunction)).name(metricWindowFunction)
