@@ -38,9 +38,8 @@ public abstract class MapBundleFunction<K, V, IN, OUT> implements Function {
 
 	private static final long serialVersionUID = 3034447909940154208L;
 
-	protected List<V> outputs = new ArrayList<V>();
-
-	protected int finishCount = 0;
+	// protected List<V> outputs = new ArrayList<V>();
+	// protected int finishCount = 0;
 
 	/**
 	 * Adds the given input to the given value, returning the new bundle value.

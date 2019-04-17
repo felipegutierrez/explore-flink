@@ -6,13 +6,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.flink.api.common.functions.util.FunctionUtils;
-import org.apache.flink.streaming.api.operators.AbstractStreamOperator;
+import org.apache.flink.streaming.api.operators.AbstractUdfStreamOperator;
 import org.apache.flink.streaming.api.operators.ChainingStrategy;
 import org.apache.flink.streaming.api.operators.OneInputStreamOperator;
 import org.apache.flink.streaming.api.operators.StreamOperator;
+import org.apache.flink.streaming.api.operators.TimestampedCollector;
 import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
-import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +20,8 @@ import org.slf4j.LoggerFactory;
  * A {@link StreamOperator} for executing {@link MapBundleFunction
  * MapFunctions}.
  */
-public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends AbstractStreamOperator<OUT>
+public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT>
+		extends AbstractUdfStreamOperator<OUT, MapBundleFunction<K, V, IN, OUT>>
 		implements OneInputStreamOperator<IN, OUT>, BundleTriggerCallback {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractMapStreamBundleOperator.class);
@@ -30,7 +31,7 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 	private final Map<K, V> bundle;
 
 	/** The function used to process when receiving element. */
-	private final MapBundleFunction<K, V, IN, OUT> function;
+	// private final MapBundleFunction<K, V, IN, OUT> function;
 
 	/**
 	 * The trigger that determines how many elements should be put into a bundle.
@@ -38,14 +39,16 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 	private final BundleTrigger<IN> bundleTrigger;
 
 	/** Output for stream records. */
-	private transient Collector<OUT> collector;
+	// private transient Collector<OUT> collector;
+	private transient TimestampedCollector<OUT> collector;
 
 	private transient int numOfElements = 0;
 
 	public AbstractMapStreamBundleOperator(MapBundleFunction<K, V, IN, OUT> function, BundleTrigger<IN> bundleTrigger) {
+		super(function);
 		chainingStrategy = ChainingStrategy.ALWAYS;
 		this.bundle = new HashMap<>();
-		this.function = checkNotNull(function, "function is null");
+		// this.function = checkNotNull(function, "function is null");
 		this.bundleTrigger = checkNotNull(bundleTrigger, "bundleTrigger is null");
 	}
 
@@ -53,8 +56,9 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 	public void open() throws Exception {
 		super.open();
 
-		this.numOfElements = 0;
-		this.collector = new StreamRecordCollector<>(output);
+		numOfElements = 0;
+		// collector = new StreamRecordCollector<>(output);
+		collector = new TimestampedCollector<>(output);
 
 		bundleTrigger.registerCallback(this);
 		// reset trigger
@@ -71,7 +75,8 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 		final V bundleValue = this.bundle.get(bundleKey);
 
 		// get a new value after adding this element to bundle
-		final V newBundleValue = this.function.addInput(bundleValue, input);
+		// final V newBundleValue = this.function.addInput(bundleValue, input);
+		final V newBundleValue = userFunction.addInput(bundleValue, input);
 
 		// update to map bundle
 		bundle.put(bundleKey, newBundleValue);
@@ -90,12 +95,15 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 	public void finishBundle() throws Exception {
 		if (!bundle.isEmpty()) {
 			numOfElements = 0;
-			function.finishBundle(bundle, collector);
+			// collector.setTimestamp(element);
+			// function.finishBundle(bundle, collector);
+			userFunction.finishBundle(bundle, collector);
 			bundle.clear();
 		}
 		bundleTrigger.reset();
 	}
 
+	/*
 	@Override
 	public void processWatermark(Watermark mark) throws Exception {
 		finishBundle();
@@ -115,8 +123,10 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 			Exception exception = null;
 			try {
 				super.close();
-				if (function != null) {
-					FunctionUtils.closeFunction(function);
+				// if (function != null) {
+				if (userFunction != null) {
+					// FunctionUtils.closeFunction(function);
+					FunctionUtils.closeFunction(userFunction);
 				}
 			} catch (InterruptedException interrupted) {
 				exception = interrupted;
@@ -131,4 +141,5 @@ public abstract class AbstractMapStreamBundleOperator<K, V, IN, OUT> extends Abs
 			}
 		}
 	}
+	*/
 }

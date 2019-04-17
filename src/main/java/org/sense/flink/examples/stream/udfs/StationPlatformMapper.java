@@ -36,6 +36,7 @@ public class StationPlatformMapper
 
 	@Override
 	public Tuple2<CompositeKeyStationPlatform, MqttSensor> map(MqttSensor value) throws Exception {
+		System.out.println("StationPlatformMapper: " + value.getKey() + " | " + value.getTrip());
 		this.meter.markEvent();
 		// this.counter.inc();
 		// every sensor key: sensorId, sensorType, platformId, platformType, stationId
@@ -45,7 +46,7 @@ public class StationPlatformMapper
 		// String platformType = value.getKey().f3;
 		Integer stationId = value.getKey().f4;
 		CompositeKeyStationPlatform compositeKey = new CompositeKeyStationPlatform(stationId, platformId);
-		// System.out.println("Mapper: " + compositeKey + " - " + value);
+		// System.out.println("StationPlatformMapper: " + compositeKey + " - " + value);
 
 		return Tuple2.of(compositeKey, value);
 	}

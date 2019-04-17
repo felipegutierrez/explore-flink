@@ -42,7 +42,7 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 
 	public static void main(String[] args) throws Exception {
 		// newMqttSensorDataSkewedCombinerByKeySkewedDAG("192.168.56.20","192.168.56.1");
-		new MqttSensorDataSkewedCombinerByKeySkewedDAG("127.0.0.1", "127.0.0.1");
+		new MqttSensorDataSkewedCombinerByKeySkewedDAG("192.168.56.20", "127.0.0.1");
 	}
 
 	public MqttSensorDataSkewedCombinerByKeySkewedDAG(String ipAddressSource01, String ipAddressSink) throws Exception {
@@ -74,22 +74,22 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 		// Create my own operator using AbstractUdfStreamOperator
 		MapBundleFunction<CompositeKeySensorTypePlatformStation, MqttSensor, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, MqttSensor> myMapBundleFunction = new MapBundleFunctionImpl();
 		CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> bundleTrigger = 
-				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(20);
+				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(500);
 		KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation> keyBundleSelector = 
 				(KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation>) value -> value.f0;
 		TypeInformation<MqttSensor> info = TypeInformation.of(MqttSensor.class);
 
 		streamTrainsStation01.union(streamTrainsStation02).union(streamTicketsStation01).union(streamTicketsStation02)
 				.map(new SensorTypePlatformStationMapper(metricSensorMapper)).name(metricSensorMapper)
-				.setParallelism(4)
+				// .setParallelism(4)
 				.transform(metricCombiner, info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(metricCombiner)
-				.setParallelism(4)
+				// .setParallelism(4)
 				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
-				.setParallelism(4)
+				// .setParallelism(4)
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new StationPlatformRichWindowFunction(metricWindowFunction)).name(metricWindowFunction)
-				.setParallelism(4)
+				// .setParallelism(4)
 				.map(new StationPlatformMapper(metricSkewedMapper)).name(metricSkewedMapper)
 				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(metricSinkFunction)
 				;
