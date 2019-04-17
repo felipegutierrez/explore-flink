@@ -18,10 +18,11 @@ public class MapBundleFunctionImpl extends
 	@Override
 	public MqttSensor addInput(MqttSensor value, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor> input) {
 		if (value == null) {
-			System.out.println("addInput: input.f1: " + input.f1.getKey() + " | " + input.f1.getTrip());
+			// System.out.println("addInput: input.f1: "+input.f1.getKey()+" |
+			// "+input.f1.getTrip());
 			return input.f1;
 		} else {
-			// System.out.println("addInput: value: " + value.getKey() + " | " + value.getTrip());
+			// System.out.println("addInput: value: "+value.getKey()+" | "+value.getTrip());
 			// pre-aggregate values
 			MqttSensor currentInput = input.f1;
 
@@ -37,7 +38,8 @@ public class MapBundleFunctionImpl extends
 			Double v = value.getValue() + currentInput.getValue();
 			String trip = value.getTrip() + "|" + currentInput.getTrip();
 			MqttSensor newValue = new MqttSensor(value.getTopic(), value.getKey(), timestamp, v, trip);
-			System.out.println("addInput: newValue: " + newValue.getKey() + " | " + newValue.getTrip());
+			// System.out.println("addInput: newValue: "+newValue.getKey()+" |
+			// "+newValue.getTrip());
 			return newValue;
 		}
 	}
@@ -45,15 +47,10 @@ public class MapBundleFunctionImpl extends
 	@Override
 	public void finishBundle(Map<CompositeKeySensorTypePlatformStation, MqttSensor> buffer, Collector<MqttSensor> out)
 			throws Exception {
-		// finishCount++;
-		// outputs.clear();
-		int i = 0;
 		for (Map.Entry<CompositeKeySensorTypePlatformStation, MqttSensor> entry : buffer.entrySet()) {
-			// outputs.add(entry.getValue());
 			out.collect(entry.getValue());
-			System.out.println("finishBundle: " + entry.getValue().getKey() + " | " + entry.getValue().getTrip());
-			i++;
+			// System.out.println("finishBundle: "+entry.getValue().getKey()+" |
+			// "+entry.getValue().getTrip());
 		}
-		// out.collect(record);
 	}
 }

@@ -81,15 +81,11 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 
 		streamTrainsStation01.union(streamTrainsStation02).union(streamTicketsStation01).union(streamTicketsStation02)
 				.map(new SensorTypePlatformStationMapper(metricSensorMapper)).name(metricSensorMapper)
-				// .setParallelism(4)
 				.transform(metricCombiner, info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(metricCombiner)
-				// .setParallelism(4)
 				.map(new StationPlatformMapper(metricMapper)).name(metricMapper)
-				// .setParallelism(4)
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new StationPlatformRichWindowFunction(metricWindowFunction)).name(metricWindowFunction)
-				// .setParallelism(4)
 				.map(new StationPlatformMapper(metricSkewedMapper)).name(metricSkewedMapper)
 				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(metricSinkFunction)
 				;

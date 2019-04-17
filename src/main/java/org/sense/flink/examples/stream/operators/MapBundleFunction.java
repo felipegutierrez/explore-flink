@@ -1,7 +1,5 @@
 package org.sense.flink.examples.stream.operators;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
@@ -37,9 +35,6 @@ import org.apache.flink.util.Collector;
 public abstract class MapBundleFunction<K, V, IN, OUT> implements Function {
 
 	private static final long serialVersionUID = 3034447909940154208L;
-
-	// protected List<V> outputs = new ArrayList<V>();
-	// protected int finishCount = 0;
 
 	/**
 	 * Adds the given input to the given value, returning the new bundle value.
