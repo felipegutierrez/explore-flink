@@ -83,7 +83,7 @@ public class MqttSensorDataCombinerByKeySkewedDAG {
 		// Create my own operator using AbstractUdfStreamOperator
 		RichMapBundleFunction<CompositeKeySensorTypePlatformStation, MqttSensor, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, MqttSensor> myMapBundleFunction = new RichMapBundleFunctionImpl();
 		CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> bundleTrigger = 
-				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(500);
+				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(1000);
 		KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation> keyBundleSelector = 
 				(KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation>) value -> value.f0;
 		TypeInformation<MqttSensor> info = TypeInformation.of(MqttSensor.class);
