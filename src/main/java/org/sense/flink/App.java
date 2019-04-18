@@ -5,6 +5,7 @@ import java.util.Scanner;
 import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
+import org.sense.flink.examples.stream.MqttSensorDataCombinerByKeySkewedDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedCombinerByKeySkewedDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedJoinDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedPartitionByKeyDAG;
@@ -54,7 +55,8 @@ public class App {
 				System.out.println("15 - Partition by Key and Reducing over a window");
 				System.out.println("16 - Custom Partition by Key and Reducing over a window");
 				System.out.println("17 - Random Partition by Key and Reducing over a window");
-				System.out.println("18 - Rebalance Partition by Key and Reducing over a window");
+				System.out.println("18 - Combiner on the map phase just before shuffling and Reducing over a window");
+				System.out.println("19 - Combiner on the map phase just before shuffling and Reducing over a window with RichFunction");
 				// @formatter:on
 
 				String msg = "0";
@@ -218,6 +220,10 @@ public class App {
 					break;
 				case 18:
 					new MqttSensorDataSkewedCombinerByKeySkewedDAG(ipAddressSource01, ipAddressSink);
+					app = 0;
+					break;
+				case 19:
+					new MqttSensorDataCombinerByKeySkewedDAG(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				default:
