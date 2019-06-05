@@ -75,6 +75,14 @@ List all the applications that are running on the Flink cluster and chose the on
 ./bin/flink cancel ID_OF_THE_APPLICATION_RUNNING_ON_THE_CLUSTER
 ```
 
+### Testing the Cardinality estimation using strem-lib library
+
+[stream-lib](https://github.com/addthis/stream-lib) is a Java library for summarizing data in streams for which it is infeasible to store all events. The class below test this library with out running it on Flink.
+
+```
+java -cp target/explore-flink.jar org.sense.flink.examples.stream.TestHyperLogLog
+```
+
 ### Troubleshooting
 
 

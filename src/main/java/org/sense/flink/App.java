@@ -20,6 +20,7 @@ import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP2;
 import org.sense.flink.examples.stream.SensorsReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.TemperatureAverageExample;
+import org.sense.flink.examples.stream.TestHyperLogLog;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
 
@@ -57,6 +58,7 @@ public class App {
 				System.out.println("17 - Random Partition by Key and Reducing over a window");
 				System.out.println("18 - Combiner on the map phase just before shuffling and Reducing over a window");
 				System.out.println("19 - Combiner on the map phase just before shuffling and Reducing over a window with RichFunction");
+				System.out.println("20 - Test HyperLogLog library");
 				// @formatter:on
 
 				String msg = "0";
@@ -224,6 +226,10 @@ public class App {
 					break;
 				case 19:
 					new MqttSensorDataCombinerByKeySkewedDAG(ipAddressSource01, ipAddressSink);
+					app = 0;
+					break;
+				case 20:
+					new TestHyperLogLog();
 					app = 0;
 					break;
 				default:
