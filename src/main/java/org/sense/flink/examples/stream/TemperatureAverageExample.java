@@ -25,19 +25,10 @@ public class TemperatureAverageExample {
 		env.getConfig().disableSysoutLogging();
 
 		// Tuple of (TYPE, ID, READING)
-		DataStream<Tuple3<Integer, Integer, Integer>> input = env.fromElements(
-				new Tuple3<>(0, 0, 10),
-				new Tuple3<>(0, 0, 11), 
-				new Tuple3<>(0, 0, 12), 
-				new Tuple3<>(1, 0, 113), 
-				new Tuple3<>(0, 0, 114),
-				new Tuple3<>(0, 0, 16), 
-				new Tuple3<>(2, 0, 19), 
-				new Tuple3<>(0, 0, 18), 
-				new Tuple3<>(1, 0, 15),
-				new Tuple3<>(0, 0, 17), 
-				new Tuple3<>(2, 0, 20), 
-				new Tuple3<>(0, 0, 21));
+		DataStream<Tuple3<Integer, Integer, Integer>> input = env.fromElements(new Tuple3<>(0, 0, 10),
+				new Tuple3<>(0, 0, 11), new Tuple3<>(0, 0, 12), new Tuple3<>(1, 0, 113), new Tuple3<>(0, 0, 114),
+				new Tuple3<>(0, 0, 16), new Tuple3<>(2, 0, 19), new Tuple3<>(0, 0, 18), new Tuple3<>(1, 0, 15),
+				new Tuple3<>(0, 0, 17), new Tuple3<>(2, 0, 20), new Tuple3<>(0, 0, 21));
 
 		input.keyBy(1).flatMap(
 				new RichFlatMapFunction<Tuple3<Integer, Integer, Integer>, Tuple3<Integer, Integer, Integer>>() {
@@ -80,5 +71,9 @@ public class TemperatureAverageExample {
 		System.out.println("........................ ");
 
 		env.execute("TemperatureAverageExample");
+	}
+
+	public static void main(String[] args) throws Exception {
+		new TemperatureAverageExample();
 	}
 }

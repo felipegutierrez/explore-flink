@@ -20,6 +20,7 @@ import org.sense.flink.examples.stream.SensorsMultipleReadingMqttEdgentQEP2;
 import org.sense.flink.examples.stream.SensorsReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.TemperatureAverageExample;
+import org.sense.flink.examples.stream.TwitterExample;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
 
@@ -57,7 +58,7 @@ public class App {
 				System.out.println("17 - Random Partition by Key and Reducing over a window");
 				System.out.println("18 - Combiner on the map phase just before shuffling and Reducing over a window");
 				System.out.println("19 - Combiner on the map phase just before shuffling and Reducing over a window with RichFunction");
-				System.out.println("20 - ");
+				System.out.println("20 - TwitterExample");
 				// @formatter:on
 
 				String msg = "0";
@@ -72,7 +73,9 @@ public class App {
 					} else {
 						msg = "999";
 					}
-					if (args.length > 1) {
+					if (msg.equals("20")) { // testing twitter application
+						System.out.println("testing Twitter application");
+					} else if (args.length > 1) {
 						ipAddressSource01 = args[1];
 						if (!validIP(ipAddressSource01)) {
 							ipAddressSource01 = "127.0.0.1";
@@ -228,6 +231,8 @@ public class App {
 					app = 0;
 					break;
 				case 20:
+					System.out.println("application 20");
+					new TwitterExample(args);
 					app = 0;
 					break;
 				default:
