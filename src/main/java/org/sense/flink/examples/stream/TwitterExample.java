@@ -17,12 +17,6 @@ import org.apache.flink.util.Collector;
 
 public class TwitterExample {
 
-	// private static String parameter = "--twitter-source.consumerKey
-	// rQHqp5fXUnFA8sywnymCqh77K --twitter-source.consumerSecret
-	// k8PKqjJaCiQUVCRch5nwkznoNmX3ivEWrWZFpvVykjAgePLDTJ --twitter-source.token
-	// 2355077832-jht8B3DQKrWNxAUpoHbFCr9ciQIqsx7sd3A4DBx
-	// --twitter-source.tokenSecret i8FFjxluoZplCskLhapSlxo05Zv7DsdnnBPyhfx8NKGFq";
-
 	public static void main(String[] args) throws Exception {
 		// String[] parameters = parameter.split(" ");
 		new TwitterExample(args);
@@ -46,15 +40,6 @@ public class TwitterExample {
 		props.setProperty(TwitterSource.TOKEN, "******************");
 		props.setProperty(TwitterSource.TOKEN_SECRET, "******************");
 		DataStream<String> streamSource = env.addSource(new TwitterSource(props));
-
-		/*
-		// get input data
-		DataStream<String> streamSource = null;
-		if (params.has(TwitterSource.CONSUMER_KEY) && params.has(TwitterSource.CONSUMER_SECRET)
-				&& params.has(TwitterSource.TOKEN) && params.has(TwitterSource.TOKEN_SECRET)) {
-			streamSource = env.addSource(new TwitterSource(params.getProperties()));
-		}
-		*/
 
 		DataStream<Tuple2<String, Integer>> tweets = streamSource
 				// selecting English tweets and splitting to (word, 1)
