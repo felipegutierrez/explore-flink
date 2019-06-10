@@ -30,10 +30,10 @@ public class WordCountDistinctSocketFilterQEP {
 		// @formatter:off
 		env.socketTextStream("localhost", 9000)
 				.flatMap(new SplitterFlatMap())
-				.keyBy(new MyKeySelector())
+				.keyBy(new WordKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
 				.reduce(new CountReduceFunction())
-				.map(new SwapMapFunction())
+				.map(new WordSwapMapFunction())
 				.keyBy(0)
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
 				.reduce(new CountDistinctFunction())
@@ -44,12 +44,11 @@ public class WordCountDistinctSocketFilterQEP {
 		System.out.println("ExecutionPlan ........................ ");
 		System.out.println(executionPlan);
 		System.out.println("........................ ");
-		// dataStream.print();
 
 		env.execute("WordCountDistinctSocketFilterQEP");
 	}
 
-	public static class SwapMapFunction implements MapFunction<Tuple2<String, Integer>, Tuple2<Integer, String>> {
+	public static class WordSwapMapFunction implements MapFunction<Tuple2<String, Integer>, Tuple2<Integer, String>> {
 		private static final long serialVersionUID = 5148172163266330182L;
 
 		@Override
@@ -69,7 +68,7 @@ public class WordCountDistinctSocketFilterQEP {
 		}
 	}
 
-	public static class MyKeySelector implements KeySelector<Tuple2<String, Integer>, String> {
+	public static class WordKeySelector implements KeySelector<Tuple2<String, Integer>, String> {
 		private static final long serialVersionUID = 2787589690596587044L;
 
 		@Override
