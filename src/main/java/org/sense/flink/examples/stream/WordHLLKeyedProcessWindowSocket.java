@@ -1,5 +1,6 @@
 package org.sense.flink.examples.stream;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,11 +73,12 @@ public class WordHLLKeyedProcessWindowSocket {
 		}
 	}
 
-	public static class HLLWithTimestamp {
-		private HyperLogLog hyperLogLog;
-		private List<String> distinctWords;
-		private Integer distinctCount;
-		private long lastModified;
+	public static class HLLWithTimestamp implements Serializable {
+		private static final long serialVersionUID = 175895958203648517L;
+		public HyperLogLog hyperLogLog;
+		public List<String> distinctWords;
+		public Integer distinctCount;
+		public long lastModified;
 
 		public HLLWithTimestamp() {
 			this.hyperLogLog = new HyperLogLog(16);
