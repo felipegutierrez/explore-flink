@@ -5,6 +5,7 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -17,15 +18,16 @@ import org.apache.flink.util.Collector;
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class WordCountDistinctSocketFilterQEP {
+public class WordDistinctCountSocket {
 
 	public static void main(String[] args) throws Exception {
-		new WordCountDistinctSocketFilterQEP();
+		new WordDistinctCountSocket();
 	}
 
-	public WordCountDistinctSocketFilterQEP() throws Exception {
+	public WordDistinctCountSocket() throws Exception {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
 		// @formatter:off
 		env.socketTextStream("localhost", 9000)
@@ -48,22 +50,13 @@ public class WordCountDistinctSocketFilterQEP {
 		env.execute("WordCountDistinctSocketFilterQEP");
 	}
 
-	public static class WordSwapMapFunction implements MapFunction<Tuple2<String, Integer>, Tuple2<Integer, String>> {
-		private static final long serialVersionUID = 5148172163266330182L;
-
-		@Override
-		public Tuple2<Integer, String> map(Tuple2<String, Integer> value) throws Exception {
-			return Tuple2.of(1, value.f0);
-		}
-	}
-
 	public static class SplitterFlatMap implements FlatMapFunction<String, Tuple2<String, Integer>> {
 		private static final long serialVersionUID = 3121588720675797629L;
 
 		@Override
 		public void flatMap(String sentence, Collector<Tuple2<String, Integer>> out) throws Exception {
 			for (String word : sentence.split(" ")) {
-				out.collect(new Tuple2<String, Integer>(word, 1));
+				out.collect(new Tuple2<String, Integer>(word, 0));
 			}
 		}
 	}
@@ -83,7 +76,16 @@ public class WordCountDistinctSocketFilterQEP {
 		@Override
 		public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2)
 				throws Exception {
-			return Tuple2.of(value1.f0, value1.f1 + value2.f1);
+			return Tuple2.of(value1.f0, 0);
+		}
+	}
+
+	public static class WordSwapMapFunction implements MapFunction<Tuple2<String, Integer>, Tuple2<Integer, String>> {
+		private static final long serialVersionUID = 5148172163266330182L;
+
+		@Override
+		public Tuple2<Integer, String> map(Tuple2<String, Integer> value) throws Exception {
+			return Tuple2.of(1, value.f0);
 		}
 	}
 
