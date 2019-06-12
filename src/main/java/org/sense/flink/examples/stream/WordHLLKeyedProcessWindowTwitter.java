@@ -53,7 +53,8 @@ public class WordHLLKeyedProcessWindowTwitter {
 		DataStream<Tuple3<Integer, Long, String>> tweets = streamSource
 				.flatMap(new SelectWordsAndTokenizeFlatMap())
 				.keyBy(new WordKeySelector())
-				.process(new HLLKeyedProcessFunction());
+				.process(new HLLKeyedProcessFunction())
+				;
 
 		tweets.print();
 		// @formatter:on
