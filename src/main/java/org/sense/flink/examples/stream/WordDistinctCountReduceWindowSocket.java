@@ -10,18 +10,22 @@ import org.apache.flink.util.Collector;
 
 /**
  * On the terminal execute "nc -lk 9000", run this class and type words back on
- * the terminal
+ * the terminal.
+ * 
+ * This program does the count distinct like in SQL. It first distinct all
+ * worlds and then counts the number of words. In other words it does not count
+ * the duplicates words in a data stream.
  * 
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class WordDistinctCountProcessTimeWindowSocket {
+public class WordDistinctCountReduceWindowSocket {
 
 	public static void main(String[] args) throws Exception {
-		new WordDistinctCountProcessTimeWindowSocket();
+		new WordDistinctCountReduceWindowSocket();
 	}
 
-	public WordDistinctCountProcessTimeWindowSocket() throws Exception {
+	public WordDistinctCountReduceWindowSocket() throws Exception {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		// env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
@@ -43,7 +47,7 @@ public class WordDistinctCountProcessTimeWindowSocket {
 		System.out.println(executionPlan);
 		System.out.println("........................ ");
 
-		env.execute("WordDistinctCountProcessTimeWindowSocket");
+		env.execute("WordDistinctCountReduceWindowSocket");
 	}
 
 	public static class SplitterFlatMap implements FlatMapFunction<String, Tuple2<String, Integer>> {
