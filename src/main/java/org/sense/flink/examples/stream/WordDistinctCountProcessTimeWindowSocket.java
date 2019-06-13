@@ -5,9 +5,7 @@ import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 /**
@@ -34,7 +32,7 @@ public class WordDistinctCountProcessTimeWindowSocket {
 				.flatMap(new SplitterFlatMap())
 				.keyBy(new WordKeySelector())
 				.timeWindow(time)
-				.process(new DistinctProcessWindowFunction())
+				.reduce(new DistinctReduceFunction())
 				.timeWindowAll(time)
 				.reduce(new CountReduceFunction())
 				.print();
@@ -68,16 +66,13 @@ public class WordDistinctCountProcessTimeWindowSocket {
 		}
 	}
 
-	public static class DistinctProcessWindowFunction
-			extends ProcessWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, String, TimeWindow> {
-		private static final long serialVersionUID = -712802393634597999L;
+	public static class DistinctReduceFunction implements ReduceFunction<Tuple2<String, Integer>> {
+		private static final long serialVersionUID = -5389931813617389139L;
 
 		@Override
-		public void process(String key,
-				ProcessWindowFunction<Tuple2<String, Integer>, Tuple2<String, Integer>, String, TimeWindow>.Context ctx,
-				Iterable<Tuple2<String, Integer>> values, Collector<Tuple2<String, Integer>> out) throws Exception {
-			Tuple2<String, Integer> value = values.iterator().next();
-			out.collect(Tuple2.of(value.f0, 1));
+		public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2)
+				throws Exception {
+			return Tuple2.of(value1.f0, value1.f1);
 		}
 	}
 

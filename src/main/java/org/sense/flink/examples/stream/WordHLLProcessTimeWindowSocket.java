@@ -5,15 +5,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.functions.RichReduceFunction;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
 import com.clearspring.analytics.stream.cardinality.HyperLogLog;
@@ -25,23 +29,27 @@ import com.clearspring.analytics.stream.cardinality.HyperLogLog;
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class WordHLLKeyedProcessWindowSocket {
+public class WordHLLProcessTimeWindowSocket {
 
 	public static void main(String[] args) throws Exception {
-		new WordHLLKeyedProcessWindowSocket();
+		new WordHLLProcessTimeWindowSocket();
 	}
 
-	public WordHLLKeyedProcessWindowSocket() throws Exception {
+	public WordHLLProcessTimeWindowSocket() throws Exception {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		// env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
+		Time time = Time.seconds(5);
 
 		// @formatter:off
 		env.socketTextStream("localhost", 9000)
 				.flatMap(new SplitterFlatMap())
 				.keyBy(new WordKeySelector())
-				.process(new HLLProcessFunction())
+				.timeWindow(time)
+				.reduce(new HLLRichReduceFunction())
+				// .process(new DistinctProcessWindowFunction())
+				// .timeWindowAll(time)
+				// .reduce(new CountReduceFunction())
 				.print();
 		// @formatter:on
 
@@ -50,7 +58,15 @@ public class WordHLLKeyedProcessWindowSocket {
 		System.out.println(executionPlan);
 		System.out.println("........................ ");
 
-		env.execute("WordHLLKeyedProcessWindowSocket");
+		env.execute("WordHLLProcessTimeWindowSocket");
+	}
+
+	public static class HLLRichReduceFunction extends RichReduceFunction<Tuple2<Integer, String>> {
+		@Override
+		public Tuple2<Integer, String> reduce(Tuple2<Integer, String> value1, Tuple2<Integer, String> value2)
+				throws Exception {
+			return null;
+		}
 	}
 
 	public static class SplitterFlatMap implements FlatMapFunction<String, Tuple2<Integer, String>> {
@@ -59,7 +75,7 @@ public class WordHLLKeyedProcessWindowSocket {
 		@Override
 		public void flatMap(String sentence, Collector<Tuple2<Integer, String>> out) throws Exception {
 			for (String word : sentence.split(" ")) {
-				out.collect(new Tuple2<Integer, String>(0, word));
+				out.collect(new Tuple2<Integer, String>(1, word));
 			}
 		}
 	}
@@ -70,6 +86,29 @@ public class WordHLLKeyedProcessWindowSocket {
 		@Override
 		public Integer getKey(Tuple2<Integer, String> value) throws Exception {
 			return value.f0;
+		}
+	}
+
+	public static class DistinctProcessWindowFunction
+			extends ProcessWindowFunction<Tuple2<Integer, String>, Tuple2<Integer, String>, Integer, TimeWindow> {
+		private static final long serialVersionUID = -712802393634597999L;
+
+		@Override
+		public void process(Integer key,
+				ProcessWindowFunction<Tuple2<Integer, String>, Tuple2<Integer, String>, Integer, TimeWindow>.Context ctx,
+				Iterable<Tuple2<Integer, String>> values, Collector<Tuple2<Integer, String>> out) throws Exception {
+			Tuple2<Integer, String> value = values.iterator().next();
+			out.collect(Tuple2.of(1, value.f1));
+		}
+	}
+
+	public static class CountReduceFunction implements ReduceFunction<Tuple2<String, Integer>> {
+		private static final long serialVersionUID = 8047191633772408164L;
+
+		@Override
+		public Tuple2<String, Integer> reduce(Tuple2<String, Integer> value1, Tuple2<String, Integer> value2)
+				throws Exception {
+			return Tuple2.of(value1.f0 + "-" + value2.f0, value1.f1 + value2.f1);
 		}
 	}
 
