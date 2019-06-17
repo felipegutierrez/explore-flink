@@ -74,7 +74,6 @@ public class WordHLLKeyedProcessWindowSocket {
 
 		@Override
 		public void processElement(String value, Context ctx, Collector<String> out) throws Exception {
-			// System.out.println("processElement: " + value);
 			// get current time and compute timeout time
 			long currentTime = ctx.timerService().currentProcessingTime();
 			long timeoutTime = currentTime + timeOut;
