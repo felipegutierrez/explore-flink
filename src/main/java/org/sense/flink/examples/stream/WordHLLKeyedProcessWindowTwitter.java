@@ -76,8 +76,8 @@ public class WordHLLKeyedProcessWindowTwitter {
 			boolean isSpanish = jsonNode.has("lang") && jsonNode.get("lang").asText().equalsIgnoreCase("es");
 			boolean isGerman = jsonNode.has("lang") && jsonNode.get("lang").asText().equalsIgnoreCase("de");
 			boolean hasText = jsonNode.has("text");
-			if ((isEnglish) && hasText) {
-				// if ((isEnglish || isPortuguese || isSpanish || isGerman) && hasText) {
+			// if ((isEnglish) && hasText) {
+			if ((isEnglish || isPortuguese || isSpanish || isGerman) && hasText) {
 				// System.out.println(jsonNode.get("text").asText());
 				// message of tweet
 				StringTokenizer tokenizer = new StringTokenizer(jsonNode.get("text").asText());
@@ -140,7 +140,8 @@ public class WordHLLKeyedProcessWindowTwitter {
 			System.out.println("onTimer: " + timestamp + " - " + currentHLLState.getLastTimer() + " = "
 					+ (currentHLLState.getLastTimer() - timestamp));
 			// it was, so no data was received afterwards. fire an alert.
-			out.collect("estimate cardinality: " + currentHLLState.cardinality());
+			out.collect("estimate cardinality: " + currentHLLState.cardinality() + " real cardinality: "
+					+ currentHLLState.getValues().size());
 			hllStateTwitter.clear();
 		}
 	}

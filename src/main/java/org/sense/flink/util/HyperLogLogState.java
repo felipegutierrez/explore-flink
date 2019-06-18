@@ -1,17 +1,21 @@
 package org.sense.flink.util;
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.clearspring.analytics.stream.cardinality.HyperLogLog;
 
 public class HyperLogLogState implements Serializable {
 	private static final long serialVersionUID = -8562159355843952620L;
 	private HyperLogLog hyperLogLog;
+	private Set<Object> values;
 	private long lastTimer;
 
 	public HyperLogLogState() {
 		this.hyperLogLog = new HyperLogLog(16);
 		this.lastTimer = 0L;
+		this.values = new HashSet<Object>();
 	}
 
 	public HyperLogLog getHyperLogLog() {
@@ -32,9 +36,14 @@ public class HyperLogLogState implements Serializable {
 
 	public void offer(Object o) {
 		this.hyperLogLog.offer(o);
+		this.values.add(o);
 	}
 
 	public long cardinality() {
 		return this.hyperLogLog.cardinality();
+	}
+
+	public Set<Object> getValues() {
+		return values;
 	}
 }
