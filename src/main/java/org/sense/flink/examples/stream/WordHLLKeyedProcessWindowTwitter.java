@@ -117,13 +117,14 @@ public class WordHLLKeyedProcessWindowTwitter {
 			// get current time and compute timeout time
 			long currentTime = ctx.timerService().currentProcessingTime();
 			long timeoutTime = currentTime + timeOut;
-			// register timer for timeout time
-			ctx.timerService().registerProcessingTimeTimer(timeoutTime);
 
 			// update HLL state
 			HyperLogLogState currentHLLState = hllStateTwitter.value();
 			if (currentHLLState == null) {
+				System.out.println("process: " + currentTime + " - " + timeoutTime);
 				currentHLLState = new HyperLogLogState();
+				// register timer for timeout time
+				ctx.timerService().registerProcessingTimeTimer(timeoutTime);
 			}
 			currentHLLState.offer(value);
 
@@ -136,12 +137,11 @@ public class WordHLLKeyedProcessWindowTwitter {
 		public void onTimer(long timestamp, OnTimerContext ctx, Collector<String> out) throws Exception {
 			// check if this was the last timer we registered
 			HyperLogLogState currentHLLState = hllStateTwitter.value();
-			// System.out.println("onTimer : " + timestamp + " - " +
-			// currentHLLState.getLastTimer());
-			if (timestamp == currentHLLState.getLastTimer()) {
-				// it was, so no data was received afterwards. fire an alert.
-				out.collect("estimate cardinality: " + currentHLLState.cardinality());
-			}
+			System.out.println("onTimer: " + timestamp + " - " + currentHLLState.getLastTimer() + " = "
+					+ (currentHLLState.getLastTimer() - timestamp));
+			// it was, so no data was received afterwards. fire an alert.
+			out.collect("estimate cardinality: " + currentHLLState.cardinality());
+			hllStateTwitter.clear();
 		}
 	}
 }

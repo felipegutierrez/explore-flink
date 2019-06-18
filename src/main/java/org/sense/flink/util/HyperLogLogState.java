@@ -7,7 +7,7 @@ import com.clearspring.analytics.stream.cardinality.HyperLogLog;
 public class HyperLogLogState implements Serializable {
 	private static final long serialVersionUID = -8562159355843952620L;
 	private HyperLogLog hyperLogLog;
-	private Long lastTimer;
+	private long lastTimer;
 
 	public HyperLogLogState() {
 		this.hyperLogLog = new HyperLogLog(16);
@@ -22,11 +22,11 @@ public class HyperLogLogState implements Serializable {
 		this.hyperLogLog = hyperLogLog;
 	}
 
-	public Long getLastTimer() {
+	public long getLastTimer() {
 		return lastTimer;
 	}
 
-	public void setLastTimer(Long lastTimer) {
+	public void setLastTimer(long lastTimer) {
 		this.lastTimer = lastTimer;
 	}
 

@@ -90,6 +90,9 @@ public class WordHLLKeyedProcessWindowSocket {
 			// remember timeout time
 			currentHLLState.setLastTimer(timeoutTime);
 			hllState.update(currentHLLState);
+			System.out.println("----------- process");
+			System.out.println("currentTime: " + currentTime);
+			System.out.println("timeoutTime: " + timeoutTime);
 		}
 
 		@Override
@@ -97,6 +100,9 @@ public class WordHLLKeyedProcessWindowSocket {
 			// System.out.println("onTimer: " + timestamp);
 			// check if this was the last timer we registered
 			HyperLogLogState currentHLLState = hllState.value();
+			System.out.println("--------------------------------- onTimer");
+			System.out.println("timestamp: " + timestamp);
+			System.out.println("LastTimer: " + currentHLLState.getLastTimer());
 			if (timestamp == currentHLLState.getLastTimer()) {
 				// it was, so no data was received afterwards. fire an alert.
 				out.collect("estimate cardinality: " + currentHLLState.cardinality());
