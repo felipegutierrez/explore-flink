@@ -6,6 +6,7 @@ import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.AdaptiveFilterRangeMqttEdgent;
 import org.sense.flink.examples.stream.MqttSensorDataCombinerByKeySkewedDAG;
+import org.sense.flink.examples.stream.MqttSensorDataHLLKeyedProcessWindow;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedCombinerByKeySkewedDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedJoinDAG;
 import org.sense.flink.examples.stream.MqttSensorDataSkewedPartitionByKeyDAG;
@@ -59,6 +60,9 @@ public class App {
 				System.out.println("18 - Combiner on the map phase just before shuffling and Reducing over a window");
 				System.out.println("19 - Combiner on the map phase just before shuffling and Reducing over a window with RichFunction");
 				System.out.println("20 - TwitterExample");
+				System.out.println("21 - Estimate cardinality with HyperLogLog");
+				System.out.println("22 - Estimate cardinality with HyperLogLogPlus");
+				System.out.println("23 - Estimate cardinality with Bloom Filter");
 				// @formatter:on
 
 				String msg = "0";
@@ -233,6 +237,11 @@ public class App {
 				case 20:
 					System.out.println("application 20");
 					new TwitterExample(args);
+					app = 0;
+					break;
+				case 21:
+					System.out.println("Estimate cardinality with HyperLogLog");
+					new MqttSensorDataHLLKeyedProcessWindow(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				default:
