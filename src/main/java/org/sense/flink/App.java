@@ -24,7 +24,7 @@ import org.sense.flink.examples.stream.TemperatureAverageExample;
 import org.sense.flink.examples.stream.TwitterExample;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
-import org.sense.flink.examples.stream.table.WordDistinctCountTableAPISocket;
+import org.sense.flink.examples.stream.table.MqttSensorDataJoinTableAPI;
 
 /**
  * 
@@ -64,7 +64,7 @@ public class App {
 				System.out.println("21 - Estimate cardinality with HyperLogLog");
 				System.out.println("22 - Estimate cardinality with HyperLogLogPlus");
 				System.out.println("23 - Estimate cardinality with Bloom Filter");
-				System.out.println("24 - Count distinct words using Flink Table API");
+				System.out.println("24 - Executin join over MQTT data using Flink Table API");
 				// @formatter:on
 
 				String msg = "0";
@@ -247,7 +247,7 @@ public class App {
 					app = 0;
 					break;
 				case 24:
-					new WordDistinctCountTableAPISocket();
+					new MqttSensorDataJoinTableAPI(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				default:
