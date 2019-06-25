@@ -24,7 +24,7 @@ import org.sense.flink.examples.stream.TemperatureAverageExample;
 import org.sense.flink.examples.stream.TwitterExample;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
-import org.sense.flink.examples.stream.table.MqttSensorDataJoinTableAPI;
+import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
 
 /**
  * 
@@ -247,7 +247,7 @@ public class App {
 					app = 0;
 					break;
 				case 24:
-					new MqttSensorDataJoinTableAPI(ipAddressSource01, ipAddressSink);
+					new MqttSensorDataAverageTableAPI(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				default:
