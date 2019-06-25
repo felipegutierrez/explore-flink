@@ -49,7 +49,8 @@ public class MqttSensorDataAverageTableAPI {
 		Table result = tableEnv.scan("PeopleStation01")
 				.window(Tumble.over("5.seconds").on("eventTime").as("eventTimeWindow"))
 				.groupBy("eventTimeWindow, stationId, platformType, sensorType")
-				.select("stationId, platformType, sensorType, eventTimeWindow.end as second, value.avg as avgValue")
+				.select("eventTimeWindow.end as second, stationId, platformType, sensorType, value.avg as avgValue")
+				.filter("platformType = 'CIT'")
 				;
 
 		tableEnv.toAppendStream(result, Row.class).print();
