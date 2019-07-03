@@ -60,7 +60,8 @@ public class MqttSensorTupleConsumer
 			String[] arr = payload.split("\\|");
 
 			// @formatter:off
-			// 11|COUNT_PE|2|CIT|1|18
+			// 11      | COUNT_PE  | 2         | CIT         | 1        | timestamp| 18   | Berlin-Paris
+			// sensorId, sensorType, platformId, platformType, stationId, timestamp, value, trip
 			// @formatter:on
 
 			Integer sensorId = 0;

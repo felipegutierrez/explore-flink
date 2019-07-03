@@ -62,7 +62,6 @@ public class MqttSensorDataHLLKeyedProcessWindow {
 		streamStation01.union(streamStation02)
 				// .map(new SensorTypePlatformStationMapper(metricSensorMapper)).name(metricSensorMapper)
 				.keyBy(new NullByteKeySelector<MqttSensor>())
-				// .keyBy(new CompositeKeySensorTypePlatformStationKeySelector())
 				.process(new CompositeKeySensorTypePlatformStationKeyedProcessFunction(5 * 1000))
 				.print();
 		// @formatter:on
