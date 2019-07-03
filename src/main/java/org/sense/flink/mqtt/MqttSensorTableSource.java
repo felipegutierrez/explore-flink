@@ -1,5 +1,15 @@
 package org.sense.flink.mqtt;
 
+import static org.sense.flink.util.SensorColumn.EVENTTIME;
+import static org.sense.flink.util.SensorColumn.PLATFORM_ID;
+import static org.sense.flink.util.SensorColumn.PLATFORM_TYPE;
+import static org.sense.flink.util.SensorColumn.SENSOR_ID;
+import static org.sense.flink.util.SensorColumn.SENSOR_TYPE;
+import static org.sense.flink.util.SensorColumn.STATION_ID;
+import static org.sense.flink.util.SensorColumn.TIMESTAMP;
+import static org.sense.flink.util.SensorColumn.TRIP;
+import static org.sense.flink.util.SensorColumn.VALUE;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -23,14 +33,20 @@ import org.apache.flink.types.Row;
 public class MqttSensorTableSource implements StreamTableSource<Row>, DefinedRowtimeAttributes {
 	private final String topic;
 	private final String ipAddressSource;
+	private final String flag;
 
 	public MqttSensorTableSource() {
-		this("127.0.0.1", "topic-station-01-people");
+		this("127.0.0.1", "topic-station-01-people", "");
 	}
 
 	public MqttSensorTableSource(String ipAddressSource, String topic) {
+		this(ipAddressSource, topic, "");
+	}
+
+	public MqttSensorTableSource(String ipAddressSource, String topic, String flag) {
 		this.ipAddressSource = ipAddressSource;
 		this.topic = topic;
+		this.flag = flag;
 	}
 
 	@Override
@@ -47,14 +63,14 @@ public class MqttSensorTableSource implements StreamTableSource<Row>, DefinedRow
 				Types.STRING
 		};
 		String[] names = new String[] {
-				"sensorId", 
-				"sensorType", 
-				"platformId", 
-				"platformType", 
-				"stationId",
-				"timestamp", 
-				"value", 
-				"trip"
+				this.flag + SENSOR_ID, 
+				this.flag + SENSOR_TYPE, 
+				this.flag + PLATFORM_ID, 
+				this.flag + PLATFORM_TYPE, 
+				this.flag + STATION_ID,
+				this.flag + TIMESTAMP, 
+				this.flag + VALUE, 
+				this.flag + TRIP
 		};
 		// @formatter:on
 		return new RowTypeInfo(types, names);
@@ -75,15 +91,15 @@ public class MqttSensorTableSource implements StreamTableSource<Row>, DefinedRow
 				Types.SQL_TIMESTAMP
 		};
 		String[] names = new String[] {
-				"sensorId", 
-				"sensorType", 
-				"platformId", 
-				"platformType", 
-				"stationId",
-				"timestamp", 
-				"value", 
-				"trip", 
-				"eventTime"
+				this.flag + SENSOR_ID, 
+				this.flag + SENSOR_TYPE, 
+				this.flag + PLATFORM_ID, 
+				this.flag + PLATFORM_TYPE, 
+				this.flag + STATION_ID,
+				this.flag + TIMESTAMP, 
+				this.flag + VALUE, 
+				this.flag + TRIP, 
+				this.flag + EVENTTIME
 		};
 		// @formatter:on
 		return new TableSchema(names, types);
@@ -106,8 +122,8 @@ public class MqttSensorTableSource implements StreamTableSource<Row>, DefinedRow
 
 	@Override
 	public List<RowtimeAttributeDescriptor> getRowtimeAttributeDescriptors() {
-		RowtimeAttributeDescriptor descriptor = new RowtimeAttributeDescriptor("eventTime", new StreamRecordTimestamp(),
-				new PreserveWatermarks());
+		RowtimeAttributeDescriptor descriptor = new RowtimeAttributeDescriptor(this.flag + EVENTTIME,
+				new StreamRecordTimestamp(), new PreserveWatermarks());
 		return Collections.singletonList(descriptor);
 	}
 

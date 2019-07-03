@@ -13,15 +13,12 @@ import org.apache.flink.util.Collector;
 import org.sense.flink.mqtt.MqttSensorTupleConsumer;
 import org.sense.flink.mqtt.MqttSensorTuplePublisher;
 import org.sense.flink.util.SensorHyperLogLogState;
+import org.sense.flink.util.SensorTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MqttSensorKeyHLLKeyedProcessWindow {
 	private static final Logger logger = LoggerFactory.getLogger(MqttSensorKeyHLLKeyedProcessWindow.class);
-	private final String TOPIC_STATION_01_PLAT_01_TICKETS = "topic-station-01-plat-01-tickets";
-	private final String TOPIC_STATION_01_PLAT_02_TICKETS = "topic-station-01-plat-02-tickets";
-	private final String TOPIC_STATION_01_PLAT_01_TICKETS_CARDINALITY = "topic-station-01-plat-01-tickets-car";
-	private final String TOPIC_STATION_01_PLAT_02_TICKETS_CARDINALITY = "topic-station-01-plat-02-tickets-car";
 
 	public static void main(String[] args) throws Exception {
 		// new MqttSensorKeyHLLKeyedProcessWindow("192.168.56.20","192.168.56.1");
@@ -37,20 +34,20 @@ public class MqttSensorKeyHLLKeyedProcessWindow {
 
 		// Data sources
 		DataStream<Tuple8<Integer, String, Integer, String, Integer, Long, Double, String>> streamTicketsStation01Plat01 = env
-				.addSource(new MqttSensorTupleConsumer(ipAddressSource01, TOPIC_STATION_01_PLAT_01_TICKETS))
-				.name(MqttSensorTupleConsumer.class.getSimpleName() + "-" + TOPIC_STATION_01_PLAT_01_TICKETS);
+				.addSource(new MqttSensorTupleConsumer(ipAddressSource01, SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS.getValue()))
+				.name(MqttSensorTupleConsumer.class.getSimpleName() + "-" + SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS.getValue());
 		DataStream<Tuple8<Integer, String, Integer, String, Integer, Long, Double, String>> streamTicketsStation01Plat02 = env
-				.addSource(new MqttSensorTupleConsumer(ipAddressSource01, TOPIC_STATION_01_PLAT_02_TICKETS))
-				.name(MqttSensorTupleConsumer.class.getSimpleName() + "-" + TOPIC_STATION_01_PLAT_02_TICKETS);
+				.addSource(new MqttSensorTupleConsumer(ipAddressSource01, SensorTopics.TOPIC_STATION_01_PLAT_02_TICKETS.getValue()))
+				.name(MqttSensorTupleConsumer.class.getSimpleName() + "-" + SensorTopics.TOPIC_STATION_01_PLAT_02_TICKETS.getValue());
 
 		streamTicketsStation01Plat01
 				.keyBy(new NullByteKeySelector<Tuple8<Integer, String, Integer, String, Integer, Long, Double, String>>())
 				.process(new TicketIdKeyedProcessFunction(60 * 1000))
-				.addSink(new MqttSensorTuplePublisher(TOPIC_STATION_01_PLAT_01_TICKETS_CARDINALITY));
+				.addSink(new MqttSensorTuplePublisher(SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS_CARDINALITY.getValue()));
 		streamTicketsStation01Plat02
 				.keyBy(new NullByteKeySelector<Tuple8<Integer, String, Integer, String, Integer, Long, Double, String>>())
 				.process(new TicketIdKeyedProcessFunction(60 * 1000))
-				.addSink(new MqttSensorTuplePublisher(TOPIC_STATION_01_PLAT_02_TICKETS_CARDINALITY));
+				.addSink(new MqttSensorTuplePublisher(SensorTopics.TOPIC_STATION_01_PLAT_02_TICKETS_CARDINALITY.getValue()));
 
 		// 11      | COUNT_PE  | 2         | CIT         | 1        | timestamp| 18   | Berlin-Paris
 		// 11      | COUNT_TI  | 2         | CIT         | 1        | timestamp| 18   | Berlin-Paris
