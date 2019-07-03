@@ -24,6 +24,8 @@ import org.slf4j.LoggerFactory;
 
 public class MqttTicketSensorJoinApp {
 	private static final Logger logger = LoggerFactory.getLogger(MqttTicketSensorJoinApp.class);
+	private static final String TICKETS_STATION_01_PLATFORM_01 = "TicketsStation01Plat01";
+	private static final String TICKETS_STATION_01_PLATFORM_02 = "TicketsStation01Plat02";
 
 	public static void main(String[] args) throws Exception {
 		// new MqttSensorDataAverageTableAPI("192.168.56.20","192.168.56.1");
@@ -45,19 +47,20 @@ public class MqttTicketSensorJoinApp {
 
 		// @formatter:off
 		// Register Data Source Stream tables in the table environment
-		tableEnv.registerTableSource("TicketsStation01Plat01", new MqttSensorTableSource(ipAddressSource01,
+		tableEnv.registerTableSource(TICKETS_STATION_01_PLATFORM_01, new MqttSensorTableSource(ipAddressSource01,
 				SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS.getValue(), LEFT));
-		tableEnv.registerTableSource("TicketsStation01Plat02", new MqttSensorTableSource(ipAddressSource01,
+		tableEnv.registerTableSource(TICKETS_STATION_01_PLATFORM_02, new MqttSensorTableSource(ipAddressSource01,
 				SensorTopics.TOPIC_STATION_01_PLAT_02_TICKETS.getValue(), RIGHT));
 
-		Table left = tableEnv.scan("TicketsStation01Plat01");
-		Table right = tableEnv.scan("TicketsStation01Plat02");
+		Table left = tableEnv.scan(TICKETS_STATION_01_PLATFORM_01);
+		Table right = tableEnv.scan(TICKETS_STATION_01_PLATFORM_02);
 		// Query
-		String whereClause = LEFT + VALUE + " = " + RIGHT + VALUE + " && " + LEFT + EVENTTIME + " >= " + RIGHT
-				+ EVENTTIME + " && " + LEFT + EVENTTIME + " < " + RIGHT + EVENTTIME + " + 10.seconds";
-		String selectClause = LEFT + STATION_ID + ", " + LEFT + SENSOR_TYPE + ", " + LEFT + PLATFORM_TYPE + ", " + LEFT
-				+ PLATFORM_ID + ", " + RIGHT + PLATFORM_ID + ", " + LEFT + VALUE + ", " + LEFT + TRIP + ", " + RIGHT
-				+ VALUE + ", " + RIGHT + TRIP;
+		String whereClause = LEFT + VALUE + " = " + RIGHT + VALUE + " && " + 
+				LEFT + EVENTTIME + " >= " + RIGHT + EVENTTIME + " && " + 
+				LEFT + EVENTTIME + " < " + RIGHT + EVENTTIME + " + 10.seconds";
+		String selectClause = LEFT + STATION_ID + ", " + LEFT + SENSOR_TYPE + ", " + 
+				LEFT + PLATFORM_TYPE + ", " + LEFT + PLATFORM_ID + ", " + RIGHT + PLATFORM_ID + ", " + 
+				LEFT + VALUE + ", " + LEFT + TRIP + ", " + RIGHT + VALUE + ", " + RIGHT + TRIP;
 		Table result = left.join(right).where(whereClause).select(selectClause);
 
 		tableEnv.toAppendStream(result, Row.class).print();
