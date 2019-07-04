@@ -1,8 +1,9 @@
 package org.sense.flink.examples.stream.table;
 
-import static org.sense.flink.util.SensorColumn.VALUE;
-import static org.sense.flink.util.SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS;
+import static org.sense.flink.util.SensorTopics.*;
+import static org.sense.flink.util.SensorColumn.*;
 
+import org.apache.calcite.rel.rules.FilterMergeRule;
 import org.apache.calcite.rel.rules.ReduceExpressionsRule;
 import org.apache.calcite.tools.RuleSets;
 import org.apache.flink.api.common.time.Time;
@@ -16,6 +17,7 @@ import org.apache.flink.table.calcite.CalciteConfigBuilder;
 import org.apache.flink.table.plan.rules.datastream.DataStreamRetractionRules;
 import org.apache.flink.types.Row;
 import org.sense.calcite.rules.MyDataStreamRule;
+import org.sense.calcite.rules.MyFilterReduceExpressionRule;
 import org.sense.flink.mqtt.MqttSensorTableSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,9 +62,11 @@ public class HelloWorldCalcitePlanTableAPI {
 		// Calcite configuration file to change the query execution plan
 		// CalciteConfig cc = tableEnv.getConfig().getCalciteConfig();
 		CalciteConfig cc = new CalciteConfigBuilder()
-				// .addNormRuleSet(RuleSets.ofList(MyDataStreamRule.INSTANCE))
 				// .addNormRuleSet(RuleSets.ofList(ReduceExpressionsRule.FILTER_INSTANCE))
-				// .replaceDecoRuleSet(RuleSets.ofList(DataStreamRetractionRules.DEFAULT_RETRACTION_INSTANCE()))
+				.addNormRuleSet(RuleSets.ofList(MyFilterReduceExpressionRule.FILTER_INSTANCE))
+			    // .replaceLogicalOptRuleSet(RuleSets.ofList(FilterMergeRule.INSTANCE))
+			    // .replacePhysicalOptRuleSet(RuleSets.ofList(FilterMergeRule.INSTANCE))
+			    // .replaceDecoRuleSet(RuleSets.ofList(DataStreamRetractionRules.DEFAULT_RETRACTION_INSTANCE))
 				.replaceDecoRuleSet(RuleSets.ofList(MyDataStreamRule.INSTANCE))
 				.build();
 		tableEnv.getConfig().setCalciteConfig(cc);
