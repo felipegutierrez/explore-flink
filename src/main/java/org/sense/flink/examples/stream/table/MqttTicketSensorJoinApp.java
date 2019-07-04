@@ -9,6 +9,8 @@ import static org.sense.flink.util.SensorColumn.SENSOR_TYPE;
 import static org.sense.flink.util.SensorColumn.STATION_ID;
 import static org.sense.flink.util.SensorColumn.TRIP;
 import static org.sense.flink.util.SensorColumn.VALUE;
+import static org.sense.flink.util.SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS;
+import static org.sense.flink.util.SensorTopics.TOPIC_STATION_01_PLAT_02_TICKETS;
 
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -18,7 +20,6 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
 import org.sense.flink.mqtt.MqttSensorTableSource;
-import org.sense.flink.util.SensorTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,10 +48,10 @@ public class MqttTicketSensorJoinApp {
 
 		// @formatter:off
 		// Register Data Source Stream tables in the table environment
-		tableEnv.registerTableSource(TICKETS_STATION_01_PLATFORM_01, new MqttSensorTableSource(ipAddressSource01,
-				SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS.getValue(), LEFT));
-		tableEnv.registerTableSource(TICKETS_STATION_01_PLATFORM_02, new MqttSensorTableSource(ipAddressSource01,
-				SensorTopics.TOPIC_STATION_01_PLAT_02_TICKETS.getValue(), RIGHT));
+		tableEnv.registerTableSource(TICKETS_STATION_01_PLATFORM_01, 
+				new MqttSensorTableSource(ipAddressSource01, TOPIC_STATION_01_PLAT_01_TICKETS, LEFT));
+		tableEnv.registerTableSource(TICKETS_STATION_01_PLATFORM_02, 
+				new MqttSensorTableSource(ipAddressSource01, TOPIC_STATION_01_PLAT_02_TICKETS, RIGHT));
 
 		Table left = tableEnv.scan(TICKETS_STATION_01_PLATFORM_01);
 		Table right = tableEnv.scan(TICKETS_STATION_01_PLATFORM_02);

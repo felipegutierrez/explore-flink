@@ -15,7 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 		<scala.binary.version>2.11</scala.binary.version>
-		<flink.version>1.8.0</flink.version>
+		<flink.version>1.8.1</flink.version>
 		<junit.version>4.12</junit.version>
 	</properties>
 
@@ -54,6 +54,11 @@
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-table-api-java-bridge_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-table-api-java</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
 		<dependency>
