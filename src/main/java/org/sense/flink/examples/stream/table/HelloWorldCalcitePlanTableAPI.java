@@ -1,5 +1,6 @@
 package org.sense.flink.examples.stream.table;
 
+import static org.sense.flink.util.SensorColumn.VALUE;
 import static org.sense.flink.util.SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS;
 
 import org.apache.calcite.rel.rules.ReduceExpressionsRule;
@@ -12,7 +13,9 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.table.calcite.CalciteConfig;
 import org.apache.flink.table.calcite.CalciteConfigBuilder;
+import org.apache.flink.table.plan.rules.datastream.DataStreamRetractionRules;
 import org.apache.flink.types.Row;
+import org.sense.calcite.rules.MyDataStreamRule;
 import org.sense.flink.mqtt.MqttSensorTableSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,21 +54,29 @@ public class HelloWorldCalcitePlanTableAPI {
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-		// StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env,
-		// tableConfig);
+		// StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env, tableConfig);
 		StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+
+		// Calcite configuration file to change the query execution plan
 		// CalciteConfig cc = tableEnv.getConfig().getCalciteConfig();
 		CalciteConfig cc = new CalciteConfigBuilder()
-				.addNormRuleSet(RuleSets.ofList(ReduceExpressionsRule.FILTER_INSTANCE)).build();
+				// .addNormRuleSet(RuleSets.ofList(MyDataStreamRule.INSTANCE))
+				// .addNormRuleSet(RuleSets.ofList(ReduceExpressionsRule.FILTER_INSTANCE))
+				// .replaceDecoRuleSet(RuleSets.ofList(DataStreamRetractionRules.DEFAULT_RETRACTION_INSTANCE()))
+				.replaceDecoRuleSet(RuleSets.ofList(MyDataStreamRule.INSTANCE))
+				.build();
 		tableEnv.getConfig().setCalciteConfig(cc);
 
 		// obtain query configuration from TableEnvironment
 		StreamQueryConfig qConfig = tableEnv.queryConfig();
 		qConfig.withIdleStateRetentionTime(Time.minutes(30), Time.hours(2));
+
 		// Register Data Source Stream tables in the table environment
 		tableEnv.registerTableSource(TICKETS_STATION_01_PLATFORM_01,
 				new MqttSensorTableSource(ipAddressSource01, TOPIC_STATION_01_PLAT_01_TICKETS));
-		Table result = tableEnv.scan(TICKETS_STATION_01_PLATFORM_01);
+		Table result = tableEnv.scan(TICKETS_STATION_01_PLATFORM_01)
+				.filter(VALUE + " >= 50 && " + VALUE + " <= 100 && " + VALUE + " >= 50")
+				;
 		tableEnv.toAppendStream(result, Row.class).print();
 
 		result.printSchema();
