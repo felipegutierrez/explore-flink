@@ -24,8 +24,8 @@ public class MyDataStreamRule extends RelOptRule {
 	}
 
 	public void onMatch(RelOptRuleCall call) {
-		DataStreamRel dataStreamRel = (DataStreamRel) call.rel(0);
 		System.out.println("======================= MyDataStreamRule.onMatch ====================");
+		final DataStreamRel dataStreamRel = (DataStreamRel) call.rel(0);
 		/*
 		final Filter topFilter = call.rel(0);
 		final Filter bottomFilter = call.rel(1);
@@ -46,8 +46,6 @@ public class MyDataStreamRule extends RelOptRule {
 
 		call.transformTo(relBuilder.build());
 		*/
-		// final RelBuilder relBuilder = call.builder();
-		// call.transformTo(relBuilder.build());
 	}
 	// @formatter:on
 }
