@@ -7,24 +7,28 @@ import org.apache.calcite.plan.RelTraitSet;
 import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.rel.core.Filter;
 import org.apache.calcite.rel.core.RelFactories;
-import org.apache.calcite.rel.logical.LogicalFilter;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.tools.RelBuilderFactory;
 
 public class MyFilterRule extends RelOptRule {
-	public static final MyFilterRule INSTANCE = new MyFilterRule(LogicalFilter.class, RelFactories.LOGICAL_BUILDER);
+	public static final MyFilterRule INSTANCE = new MyFilterRule(Filter.class, RelFactories.LOGICAL_BUILDER);
 
-	private MyFilterRule(Class<? extends Filter> clazz, RelBuilderFactory relBuilderFactory) {
-		super(RelOptRule.operand(clazz, RelOptRule.any()), relBuilderFactory, null);
+	private MyFilterRule(Class<? extends Filter> filterClazz, RelBuilderFactory relBuilderFactory) {
+		super(RelOptRule.operand(filterClazz, RelOptRule.any()), relBuilderFactory, null);
 	}
 
 	@Override
 	public void onMatch(RelOptRuleCall call) {
-		System.out.println("======================= MyFilterReduceExpressionRule.onMatch ====================");
-		final LogicalFilter logicalFilter = (LogicalFilter) call.rel(0);
-		final RelNode input = logicalFilter.getInput();
-		final MyFilter myFilter = new MyFilter(input.getCluster(), input.getTraitSet(), input,
-				logicalFilter.getCondition());
+		System.out.println("======================= MyFilterRule.onMatch ====================");
+		final Filter filter = (Filter) call.rel(0);
+
+		final RelNode inputFilter = filter.getInput();
+		final MyFilter myFilter = new MyFilter(inputFilter.getCluster(), inputFilter.getTraitSet(), inputFilter,
+				filter.getCondition());
+
+		RexNode condition = filter.getCondition();
+
+		System.out.println();
 		call.transformTo(myFilter);
 	}
 

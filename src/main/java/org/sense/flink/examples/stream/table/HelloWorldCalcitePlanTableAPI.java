@@ -29,27 +29,6 @@ public class HelloWorldCalcitePlanTableAPI {
 
 	public HelloWorldCalcitePlanTableAPI(String ipAddressSource01, String ipAddressSink) throws Exception {
 		// @formatter:off
-		/*
-		 * CalciteConfig cc = new CalciteConfigBuilder()
-		 * .addNormRuleSet(RuleSets.ofList(ReduceExpressionsRule.FILTER_INSTANCE))
-		 * .replaceLogicalOptRuleSet(RuleSets.ofList(FilterMergeRule.INSTANCE))
-		 * .replacePhysicalOptRuleSet(RuleSets.ofList(FilterMergeRule.INSTANCE))
-		 * .replaceDecoRuleSet(RuleSets.ofList(DataStreamRetractionRules.
-		 * DEFAULT_RETRACTION_INSTANCE())).build();
-		 * 
-		 * assertFalse(cc.replacesNormRuleSet());
-		 * assertTrue(cc.getNormRuleSet().isDefined());
-		 * 
-		 * assertTrue(cc.replacesLogicalOptRuleSet());
-		 * assertTrue(cc.getLogicalOptRuleSet().isDefined());
-		 * 
-		 * assertTrue(cc.replacesPhysicalOptRuleSet());
-		 * assertTrue(cc.getPhysicalOptRuleSet().isDefined());
-		 * 
-		 * assertTrue(cc.replacesDecoRuleSet());
-		 * assertTrue(cc.getDecoRuleSet().isDefined());
-		 */
-
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
@@ -57,11 +36,8 @@ public class HelloWorldCalcitePlanTableAPI {
 		StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
 		// Calcite configuration file to change the query execution plan
-		// CalciteConfig cc = tableEnv.getConfig().getCalciteConfig();
 		CalciteConfig cc = new CalciteConfigBuilder()
 				.addLogicalOptRuleSet(RuleSets.ofList(MyFilterRule.INSTANCE))
-			    // .replaceLogicalOptRuleSet(RuleSets.ofList(FilterMergeRule.INSTANCE))
-			    // .replacePhysicalOptRuleSet(RuleSets.ofList(FilterMergeRule.INSTANCE))
 			    // .replaceDecoRuleSet(RuleSets.ofList(DataStreamRetractionRules.DEFAULT_RETRACTION_INSTANCE))
 				.replaceDecoRuleSet(RuleSets.ofList(MyDataStreamRule.INSTANCE))
 				.build();
@@ -76,7 +52,8 @@ public class HelloWorldCalcitePlanTableAPI {
 				new MqttSensorTableSource(ipAddressSource01, TOPIC_STATION_01_PLAT_01_TICKETS));
 		Table result = tableEnv.scan(TICKETS_STATION_01_PLATFORM_01)
 				// .filter(VALUE + " >= 50 ")
-				.filter(VALUE + " >= 50 && " + VALUE + " <= 100 && " + VALUE + " >= 50")
+				// .filter(VALUE + " >= 50 && " + VALUE + " <= 100 && " + VALUE + " >= 50")
+				.filter(VALUE + " == 50 || " + VALUE + " == 51 || " + VALUE + " == 52 || " + VALUE + " == 53 || " + VALUE + " == 54 || " + VALUE + " == 55")
 				;
 		tableEnv.toAppendStream(result, Row.class).print();
 

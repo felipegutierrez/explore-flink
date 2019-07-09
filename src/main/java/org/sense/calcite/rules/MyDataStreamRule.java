@@ -2,25 +2,18 @@ package org.sense.calcite.rules;
 
 import org.apache.calcite.plan.RelOptRule;
 import org.apache.calcite.plan.RelOptRuleCall;
-import org.apache.calcite.plan.RelOptRuleOperand;
-import org.apache.calcite.rel.core.Filter;
-import org.apache.calcite.rex.RexProgram;
-import org.apache.calcite.rex.RexProgramBuilder;
-import org.apache.calcite.tools.RelBuilder;
+import org.apache.calcite.rel.core.RelFactories;
 import org.apache.calcite.tools.RelBuilderFactory;
 import org.apache.flink.table.plan.nodes.datastream.DataStreamRel;
 
 public class MyDataStreamRule extends RelOptRule {
 	// @formatter:off
-	// public static final MyDataStreamRule INSTANCE = new MyDataStreamRule(RelFactories.LOGICAL_BUILDER);
-	public static final MyDataStreamRule INSTANCE = new MyDataStreamRule(operand(DataStreamRel.class, none()), "MyDataStreamRule");
+	// public static final MyDataStreamRule INSTANCE = new MyDataStreamRule(operand(DataStreamRel.class, none()), "MyDataStreamRule");
+	public static final MyDataStreamRule INSTANCE = new MyDataStreamRule(DataStreamRel.class, RelFactories.LOGICAL_BUILDER);
 
-	public MyDataStreamRule(RelOptRuleOperand operand, String description) {
-		super(operand, "MyDataStreamRule:" + description);
-	}
-
-	public MyDataStreamRule(RelBuilderFactory relBuilderFactory) {
-		super(operand(DataStreamRel.class, any()), relBuilderFactory, null);
+	private MyDataStreamRule(Class<? extends DataStreamRel> dataStreamRelClazz, RelBuilderFactory relBuilderFactory) {
+		super(RelOptRule.operand(dataStreamRelClazz, RelOptRule.any()), relBuilderFactory,
+				null);
 	}
 
 	public void onMatch(RelOptRuleCall call) {

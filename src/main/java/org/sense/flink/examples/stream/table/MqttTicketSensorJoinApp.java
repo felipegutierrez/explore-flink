@@ -12,13 +12,18 @@ import static org.sense.flink.util.SensorColumn.VALUE;
 import static org.sense.flink.util.SensorTopics.TOPIC_STATION_01_PLAT_01_TICKETS;
 import static org.sense.flink.util.SensorTopics.TOPIC_STATION_01_PLAT_02_TICKETS;
 
+import org.apache.calcite.tools.RuleSets;
 import org.apache.flink.api.common.time.Time;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.StreamQueryConfig;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
+import org.apache.flink.table.calcite.CalciteConfig;
+import org.apache.flink.table.calcite.CalciteConfigBuilder;
 import org.apache.flink.types.Row;
+import org.sense.calcite.rules.MyFilterIntoJoinRule;
+import org.sense.calcite.rules.MyFilterJoinRule;
 import org.sense.flink.mqtt.MqttSensorTableSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +39,20 @@ public class MqttTicketSensorJoinApp {
 	}
 
 	public MqttTicketSensorJoinApp(String ipAddressSource01, String ipAddressSink) throws Exception {
+		// @formatter:off
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
 		// Create Stream table environment
 		StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+
+		// Calcite configuration file to change the query execution plan
+		CalciteConfig cc = new CalciteConfigBuilder()
+				// .addLogicalOptRuleSet(RuleSets.ofList(MyFilterIntoJoinRule.INSTANCE))
+				.addLogicalOptRuleSet(RuleSets.ofList(MyFilterJoinRule.FILTER_ON_JOIN))
+				.build();
+		tableEnv.getConfig().setCalciteConfig(cc);
 
 		// obtain query configuration from TableEnvironment
 		StreamQueryConfig qConfig = tableEnv.queryConfig();
@@ -75,5 +88,6 @@ public class MqttTicketSensorJoinApp {
 		// @formatter:on
 
 		env.execute("MqttTicketSensorJoinApp");
+		// @formatter:on
 	}
 }
