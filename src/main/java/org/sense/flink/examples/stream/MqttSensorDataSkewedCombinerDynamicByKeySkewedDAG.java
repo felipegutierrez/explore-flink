@@ -19,8 +19,8 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.operator.impl.MapStreamBundleOperator;
-import org.sense.flink.examples.stream.trigger.impl.CountBundleTrigger;
+import org.sense.flink.examples.stream.operator.impl.MapStreamBundleOperatorDynamic;
+import org.sense.flink.examples.stream.trigger.impl.CountBundleTriggerDynamic;
 import org.sense.flink.examples.stream.udf.MapBundleFunction;
 import org.sense.flink.examples.stream.udf.impl.MapBundleFunctionImpl;
 import org.sense.flink.examples.stream.udf.impl.SensorTypePlatformStationMapper;
@@ -34,18 +34,20 @@ import org.sense.flink.mqtt.MqttStationPlatformPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
+public class MqttSensorDataSkewedCombinerDynamicByKeySkewedDAG {
 
-	private static final Logger logger = LoggerFactory.getLogger(MqttSensorDataSkewedCombinerByKeySkewedDAG.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(MqttSensorDataSkewedCombinerDynamicByKeySkewedDAG.class);
 
 	private final String topic = "topic-data-skewed-join";
 
 	public static void main(String[] args) throws Exception {
-		// newMqttSensorDataSkewedCombinerByKeySkewedDAG("192.168.56.20","192.168.56.1");
-		new MqttSensorDataSkewedCombinerByKeySkewedDAG("127.0.0.1", "127.0.0.1");
+		// MqttSensorDataSkewedCombinerDynamicByKeySkewedDAG("192.168.56.20","192.168.56.1");
+		new MqttSensorDataSkewedCombinerDynamicByKeySkewedDAG("127.0.0.1", "127.0.0.1");
 	}
 
-	public MqttSensorDataSkewedCombinerByKeySkewedDAG(String ipAddressSource01, String ipAddressSink) throws Exception {
+	public MqttSensorDataSkewedCombinerDynamicByKeySkewedDAG(String ipAddressSource01, String ipAddressSink)
+			throws Exception {
 		// @formatter:off
 		System.out.println("App 18 selected (Complex shuffle with aggregation over a window with keyBy skewed)");
 		System.out.println("This Flink application fix the skewed key of the App 15");
@@ -73,15 +75,15 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 
 		// Create my own operator using AbstractUdfStreamOperator
 		MapBundleFunction<CompositeKeySensorTypePlatformStation, MqttSensor, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, MqttSensor> myMapBundleFunction = new MapBundleFunctionImpl();
-		CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> bundleTrigger = 
-				new CountBundleTrigger<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>(1000);
+		CountBundleTriggerDynamic<CompositeKeySensorTypePlatformStation, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>> bundleTrigger = 
+				new CountBundleTriggerDynamic<CompositeKeySensorTypePlatformStation, Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>>();
 		KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation> keyBundleSelector = 
 				(KeySelector<Tuple2<CompositeKeySensorTypePlatformStation, MqttSensor>, CompositeKeySensorTypePlatformStation>) value -> value.f0;
 		TypeInformation<MqttSensor> info = TypeInformation.of(MqttSensor.class);
 
 		streamTrainsStation01.union(streamTrainsStation02).union(streamTicketsStation01).union(streamTicketsStation02)
 				.map(new SensorTypePlatformStationMapper(METRIC_SENSOR_MAPPER)).name(METRIC_SENSOR_MAPPER)
-				.transform(METRIC_COMBINER, info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(METRIC_COMBINER)
+				.transform(METRIC_COMBINER, info, new MapStreamBundleOperatorDynamic<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(METRIC_COMBINER)
 				.map(new StationPlatformMapper(METRIC_MAPPER)).name(METRIC_MAPPER)
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
@@ -94,7 +96,7 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 		System.out.println("ExecutionPlan: " + env.getExecutionPlan());
 		System.out.println("........................ ");
 
-		env.execute(MqttSensorDataSkewedCombinerByKeySkewedDAG.class.getSimpleName());
+		env.execute(MqttSensorDataSkewedCombinerDynamicByKeySkewedDAG.class.getSimpleName());
 		// @formatter:on
 	}
 }
