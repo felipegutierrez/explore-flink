@@ -15,6 +15,7 @@ local.properties
 .settings/
 .loadpath
 .recommenders
+.cache-tests
 
 # External tool builders
 .externalToolBuilders/
