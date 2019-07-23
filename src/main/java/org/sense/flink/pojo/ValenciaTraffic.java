@@ -3,16 +3,11 @@ package org.sense.flink.pojo;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
-public class ValenciaTraffic implements Serializable {
+public class ValenciaTraffic extends ValenciaItem implements Serializable {
 	private static final long serialVersionUID = -3147914413052930222L;
-	private Integer id;
 	private String street;
-	private Date update;
 	private Integer status;
-	private List<Point> coordinates;
 	private String uri;
 
 	// 2019-07-22T12:51:04.681+02:00

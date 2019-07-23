@@ -10,7 +10,6 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
-import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaPollution;
 
 /**
@@ -63,8 +62,7 @@ public class ValenciaPollutionConsumer extends RichSourceFunction<ValenciaPollut
 						JsonNode nodeProperties = jsonNode.get("properties");
 						JsonNode nodeGeometry = jsonNode.get("geometry");
 						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
-						Point p = new Point(arrayNodeCoordinates.get(0).asDouble(),
-								arrayNodeCoordinates.get(1).asDouble());
+						String p = arrayNodeCoordinates.get(0).asText() + "," + arrayNodeCoordinates.get(1).asText();
 
 						ValenciaPollution valenciaPollution = new ValenciaPollution(
 								nodeProperties.get("direccion").asText(), nodeProperties.get("mediciones").asText(),

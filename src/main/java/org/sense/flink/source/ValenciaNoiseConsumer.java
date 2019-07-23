@@ -1,17 +1,24 @@
 package org.sense.flink.source;
 
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
-import org.sense.flink.pojo.Point;
+import org.geotools.data.FileDataStore;
+import org.geotools.data.FileDataStoreFinder;
+import org.geotools.data.Query;
+import org.geotools.data.shapefile.dbf.DbaseFileReader;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.FeatureIterator;
+import org.opengis.feature.Property;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.sense.flink.pojo.ValenciaPollution;
+import org.sense.flink.util.ZipUtil;
 
 /**
  * @author Felipe Oliveira Gutierrez
@@ -20,70 +27,83 @@ import org.sense.flink.pojo.ValenciaPollution;
 public class ValenciaNoiseConsumer extends RichSourceFunction<ValenciaPollution> {
 	private static final long serialVersionUID = -2373602610753429092L;
 	public static final String VALENCIA_NOISE_URL = "http://mapas.valencia.es/lanzadera/opendata/mapa_ruido/SHAPE";
-	private String zipFile;
+	private static final String OUTPUT_DIR = "out/noise/zip";
+	private String urlZipFile;
 	private long delayTime;
 
 	public ValenciaNoiseConsumer() {
 		this(VALENCIA_NOISE_URL, 10000);
 	}
 
-	public ValenciaNoiseConsumer(String json) {
-		this(json, 10000);
+	public ValenciaNoiseConsumer(String urlZipFile) {
+		this(urlZipFile, 10000);
 	}
 
-	public ValenciaNoiseConsumer(String zipFile, long delayTime) {
-		this.zipFile = zipFile;
+	public ValenciaNoiseConsumer(String urlZipFile, long delayTime) {
+		this.urlZipFile = urlZipFile;
 		this.delayTime = delayTime;
 	}
 
 	@Override
 	public void run(SourceContext<ValenciaPollution> ctx) throws Exception {
-		URL url = new URL(this.zipFile);
+
+		URL url = new URL(this.urlZipFile);
 
 		while (true) {
-			InputStream is = url.openStream();
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
-			StringBuilder builder = new StringBuilder();
-			String line;
+			ZipUtil.unpackZipFile(url, new File(OUTPUT_DIR));
 
-			try {
-				while ((line = bufferedReader.readLine()) != null) {
-					builder.append(line + "\n");
-				}
-				bufferedReader.close();
+			// TODO
+			ctx.collect(null);
 
-				ObjectMapper mapper = new ObjectMapper();
-				JsonNode actualObj = mapper.readTree(builder.toString());
-
-				boolean isFeatures = actualObj.has("features");
-				if (isFeatures) {
-					ArrayNode arrayNodeFeatures = (ArrayNode) actualObj.get("features");
-					for (JsonNode jsonNode : arrayNodeFeatures) {
-
-						JsonNode nodeProperties = jsonNode.get("properties");
-						JsonNode nodeGeometry = jsonNode.get("geometry");
-						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
-						Point p = new Point(arrayNodeCoordinates.get(0).asDouble(),
-								arrayNodeCoordinates.get(1).asDouble());
-
-						ValenciaPollution valenciaPollution = new ValenciaPollution(
-								nodeProperties.get("direccion").asText(), nodeProperties.get("mediciones").asText(),
-								nodeProperties.get("mediciones").asText(), p);
-
-						ctx.collect(valenciaPollution);
-					}
-				}
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				Thread.sleep(this.delayTime);
-			}
+			Thread.sleep(delayTime);
 		}
 	}
 
 	@Override
 	public void cancel() {
+	}
+
+	public static void main(String[] args) {
+		try {
+			// reading shapefile
+			File file = new File("out/zip/noise/MAPA_RUIDO.shp");
+			FileDataStore myData = FileDataStoreFinder.getDataStore(file);
+			SimpleFeatureSource source = myData.getFeatureSource();
+			SimpleFeatureType schema = source.getSchema();
+
+			Query query = new Query(schema.getTypeName());
+			query.setMaxFeatures(1);
+
+			FeatureCollection<SimpleFeatureType, SimpleFeature> collection = source.getFeatures(query);
+			try (FeatureIterator<SimpleFeature> features = collection.features()) {
+				while (features.hasNext()) {
+					SimpleFeature feature = features.next();
+					System.out.println(feature.getID() + ": ");
+					for (Property attribute : feature.getProperties()) {
+						if (!"the_geom".equals(attribute.getName().toString())) {
+							System.out.println("\t" + attribute.getName() + ":" + attribute.getValue());
+						}
+					}
+				}
+			}
+
+			// reading DBF file
+			FileInputStream fis = new FileInputStream("out/zip/noise/MAPA_RUIDO.dbf");
+			DbaseFileReader dbfReader = new DbaseFileReader(fis.getChannel(), false, Charset.forName("ISO-8859-1"));
+
+			while (dbfReader.hasNext()) {
+				final Object[] fields = dbfReader.readEntry();
+
+				Object field1 = fields[0];
+				Object field2 = fields[1];
+
+				System.out.println("DBF field 1 value is: " + field1 + " - DBF field 2 value is: " + field2);
+			}
+
+			dbfReader.close();
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
