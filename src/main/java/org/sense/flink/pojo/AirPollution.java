@@ -61,7 +61,6 @@ public class AirPollution implements Serializable {
 			while (true) {
 				InputStream is = url.openStream();
 				BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
-				// StringBuilder builder = new StringBuilder();
 				String line;
 				int count = 0;
 
@@ -81,7 +80,6 @@ public class AirPollution implements Serializable {
 				
 				while ((line = bufferedReader.readLine()) != null) {
 					if (count != 0) {
-						// builder.append(line + "\n");
 						String[] values = line.split(";");
 						if (values.length > 0) {
 							so2_sum = so2_sum + Double.parseDouble(Strings.isNullOrEmpty(values[1]) ? "0.0" : values[1].replace(",", "."));
@@ -124,11 +122,10 @@ public class AirPollution implements Serializable {
 				}
 				count--;
 				bufferedReader.close();
-				AirPollution airPollution = new AirPollution(so2_sum / 2, co_sum / 2, ozono_sum / 2, nox_sum / 2,
-						no_sum / 2, no2_sum / 2, benc_sum / 2, tolue_sum / 2, xilen_sum / 2, pm10_sum / 2,
-						pm2_5_sum / 2, spl_sum / 2);
+				AirPollution airPollution = new AirPollution(so2_sum / count, co_sum / count, ozono_sum / count, nox_sum / count,
+						no_sum / count, no2_sum / count, benc_sum / count, tolue_sum / count, xilen_sum / count, pm10_sum / count,
+						pm2_5_sum / count, spl_sum / count);
 				return airPollution;
-				// builder.toString();
 				// @formatter:on
 			}
 		} catch (MalformedURLException e) {

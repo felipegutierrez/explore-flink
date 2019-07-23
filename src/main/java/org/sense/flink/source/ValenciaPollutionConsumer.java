@@ -55,15 +55,16 @@ public class ValenciaPollutionConsumer extends RichSourceFunction<ValenciaPollut
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode actualObj = mapper.readTree(builder.toString());
 
-				boolean isResources = actualObj.has("features");
-				if (isResources) {
-					ArrayNode arrayNodeResources = (ArrayNode) actualObj.get("features");
-					for (JsonNode jsonNode : arrayNodeResources) {
+				boolean isFeatures = actualObj.has("features");
+				if (isFeatures) {
+					ArrayNode arrayNodeFeatures = (ArrayNode) actualObj.get("features");
+					for (JsonNode jsonNode : arrayNodeFeatures) {
 
 						JsonNode nodeProperties = jsonNode.get("properties");
 						JsonNode nodeGeometry = jsonNode.get("geometry");
-						ArrayNode coordinates = (ArrayNode) nodeGeometry.get("coordinates");
-						Point p = new Point(coordinates.get(0).asDouble(), coordinates.get(1).asDouble());
+						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
+						Point p = new Point(arrayNodeCoordinates.get(0).asDouble(),
+								arrayNodeCoordinates.get(1).asDouble());
 
 						ValenciaPollution valenciaPollution = new ValenciaPollution(
 								nodeProperties.get("direccion").asText(), nodeProperties.get("mediciones").asText(),
