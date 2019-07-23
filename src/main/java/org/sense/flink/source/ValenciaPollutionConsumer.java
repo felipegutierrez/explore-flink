@@ -9,6 +9,7 @@ import java.net.URL;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.sense.flink.pojo.ValenciaPollution;
 
@@ -54,11 +55,23 @@ public class ValenciaPollutionConsumer extends RichSourceFunction<ValenciaPollut
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode actualObj = mapper.readTree(builder.toString());
 
+				boolean isCRS = actualObj.has("crs");
 				boolean isFeatures = actualObj.has("features");
+				String typeCSR = "";
+
+				if (isCRS) {
+					ObjectNode objectNodeCsr = (ObjectNode) actualObj.get("crs");
+					ObjectNode objectNodeProperties = (ObjectNode) objectNodeCsr.get("properties");
+					typeCSR = objectNodeProperties.get("name").asText();
+					typeCSR = typeCSR.substring(typeCSR.indexOf("EPSG"));
+				} else {
+
+				}
+
 				if (isFeatures) {
 					ArrayNode arrayNodeFeatures = (ArrayNode) actualObj.get("features");
-					for (JsonNode jsonNode : arrayNodeFeatures) {
 
+					for (JsonNode jsonNode : arrayNodeFeatures) {
 						JsonNode nodeProperties = jsonNode.get("properties");
 						JsonNode nodeGeometry = jsonNode.get("geometry");
 						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
@@ -66,7 +79,7 @@ public class ValenciaPollutionConsumer extends RichSourceFunction<ValenciaPollut
 
 						ValenciaPollution valenciaPollution = new ValenciaPollution(
 								nodeProperties.get("direccion").asText(), nodeProperties.get("mediciones").asText(),
-								nodeProperties.get("mediciones").asText(), p);
+								nodeProperties.get("mediciones").asText(), p, typeCSR);
 
 						ctx.collect(valenciaPollution);
 					}

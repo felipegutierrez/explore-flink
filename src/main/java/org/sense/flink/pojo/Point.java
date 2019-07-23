@@ -21,11 +21,17 @@ public class Point implements Serializable {
 	private Double x;
 	private Double y;
 	private Coordinate coordinates;
+	private String csr;
 
 	public Point(Double x, Double y) {
+		this(x, y, "EPSG:32630");
+	}
+
+	public Point(Double x, Double y, String csr) {
 		this.x = x;
 		this.y = y;
 		this.coordinates = new Coordinate(x, y);
+		this.csr = csr;
 	}
 
 	/**
@@ -62,7 +68,7 @@ public class Point implements Serializable {
 	 * @param coordinates
 	 * @return
 	 */
-	public static List<Point> extract(String coordinates) {
+	public static List<Point> extract(String coordinates, String csr) {
 		if (Strings.isNullOrEmpty(coordinates)) {
 			return null;
 		}
@@ -71,7 +77,7 @@ public class Point implements Serializable {
 		for (int i = 0; i < coor.length; i++) {
 			String[] point = coor[i].replace("[", "").replace("]", "").split(",");
 			if (point.length == 2) {
-				points.add(new Point(Double.parseDouble(point[0]), Double.parseDouble(point[1])));
+				points.add(new Point(Double.parseDouble(point[0]), Double.parseDouble(point[1]), csr));
 			}
 		}
 		return points;

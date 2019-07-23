@@ -11,12 +11,12 @@ public class ValenciaNoise extends ValenciaItem implements Serializable {
 	public ValenciaNoise() {
 	}
 
-	public ValenciaNoise(String street, String parameters, String uri, String coordinates) {
+	public ValenciaNoise(String street, String parameters, String uri, String coordinates, String csr) {
 		this.id = 0;
 		this.street = street;
 		this.update = new Date();
 		this.uri = uri;
-		this.coordinates = Point.extract(coordinates);
+		this.coordinates = Point.extract(coordinates, csr);
 	}
 
 	@Override

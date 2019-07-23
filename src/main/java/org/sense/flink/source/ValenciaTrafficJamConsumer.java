@@ -63,7 +63,7 @@ public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraff
 
 						ValenciaTraffic valenciaTraffic = new ValenciaTraffic(jsonNode.get("idtramo").asInt(),
 								jsonNode.get("denominacion").asText(), jsonNode.get("modified").asText(),
-								jsonNode.get("estado").asInt(), jsonNode.get("coordinates").asText(),
+								jsonNode.get("estado").asInt(), jsonNode.get("coordinates").asText(), "EPSG:32630",
 								jsonNode.get("uri").asText());
 
 						ctx.collect(valenciaTraffic);

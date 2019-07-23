@@ -16,11 +16,11 @@ public class ValenciaTraffic extends ValenciaItem implements Serializable {
 	public ValenciaTraffic() {
 	}
 
-	public ValenciaTraffic(Integer id, String street, String update, Integer status, String coordinates, String uri) {
+	public ValenciaTraffic(Integer id, String street, String update, Integer status, String coordinates, String csr, String uri) {
 		this.id = id;
 		this.street = street;
 		this.status = status;
-		this.coordinates = Point.extract(coordinates);
+		this.coordinates = Point.extract(coordinates, csr);
 		this.uri = uri;
 		try {
 			this.update = formatter.parse(update);
