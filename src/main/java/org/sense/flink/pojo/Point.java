@@ -24,7 +24,7 @@ public class Point implements Serializable {
 	private String csr;
 
 	public Point(Double x, Double y) {
-		this(x, y, "EPSG:32630");
+		this(x, y, null);
 	}
 
 	public Point(Double x, Double y, String csr) {
