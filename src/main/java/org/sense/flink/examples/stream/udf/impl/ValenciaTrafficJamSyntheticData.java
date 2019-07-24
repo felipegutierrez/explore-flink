@@ -24,7 +24,7 @@ public class ValenciaTrafficJamSyntheticData implements FlatMapFunction<Valencia
 	 * Constructor with default values
 	 */
 	public ValenciaTrafficJamSyntheticData() {
-		this(new Point(724513.232, 4373018.548), 1000.0);
+		this(new Point(725737.858, 4370806.847), 100.0);
 	}
 
 	public ValenciaTrafficJamSyntheticData(Point point, double distance) {
@@ -41,7 +41,7 @@ public class ValenciaTrafficJamSyntheticData implements FlatMapFunction<Valencia
 				// min = 1 , max = 3, range = (max - min)
 				int min = 1, max = 3;
 				value.setStatus(new Random().nextInt((max - min) + 1) + min);
-				// System.out.println("CHANGED value");
+				// System.out.println("CHANGED value ValenciaTraffic");
 				out.collect(value);
 				return;
 			}

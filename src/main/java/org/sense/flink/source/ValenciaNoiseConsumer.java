@@ -66,7 +66,7 @@ public class ValenciaNoiseConsumer extends RichSourceFunction<ValenciaNoise> {
 	public static void main(String[] args) {
 		try {
 			// reading shapefile
-			File file = new File("out/zip/noise/MAPA_RUIDO.shp");
+			File file = new File("out/noise/zip/MAPA_RUIDO.shp");
 			FileDataStore myData = FileDataStoreFinder.getDataStore(file);
 			SimpleFeatureSource source = myData.getFeatureSource();
 			SimpleFeatureType schema = source.getSchema();
@@ -80,15 +80,16 @@ public class ValenciaNoiseConsumer extends RichSourceFunction<ValenciaNoise> {
 					SimpleFeature feature = features.next();
 					System.out.println(feature.getID() + ": ");
 					for (Property attribute : feature.getProperties()) {
-						if (!"the_geom".equals(attribute.getName().toString())) {
-							System.out.println("\t" + attribute.getName() + ":" + attribute.getValue());
+						if ("the_geom".equals(attribute.getName().toString())) {
+							System.out.println("\t" + attribute.getName() + ": "
+									+ attribute.getValue().toString().substring(0, 100));
 						}
 					}
 				}
 			}
 
 			// reading DBF file
-			FileInputStream fis = new FileInputStream("out/zip/noise/MAPA_RUIDO.dbf");
+			FileInputStream fis = new FileInputStream("out/noise/zip/MAPA_RUIDO.dbf");
 			DbaseFileReader dbfReader = new DbaseFileReader(fis.getChannel(), false, Charset.forName("ISO-8859-1"));
 
 			while (dbfReader.hasNext()) {

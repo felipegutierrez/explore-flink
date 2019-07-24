@@ -3,6 +3,8 @@ package org.sense.flink.pojo;
 import java.io.Serializable;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 public class ValenciaTraffic extends ValenciaItem implements Serializable {
 	private static final long serialVersionUID = -3147914413052930222L;
@@ -28,6 +30,14 @@ public class ValenciaTraffic extends ValenciaItem implements Serializable {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public ValenciaTraffic(Integer id, String street, Date update, Integer status, List<Point> coordinates) {
+		this.id = id;
+		this.street = street;
+		this.update = update;
+		this.status = status;
+		this.coordinates = coordinates;
 	}
 
 	public String getStreet() {

@@ -44,8 +44,8 @@ public class ValenciaDataSkewedExampleSocket {
 				.addSource(new ValenciaNoiseConsumer()).name(ValenciaNoiseConsumer.class.getName());
 
 		// Join -> Print
-		// streamTrafficJam.print();
-		streamAirPollution.print();
+		streamTrafficJam.print();
+		// streamAirPollution.print();
 		
 		env.execute(ValenciaDataSkewedExampleSocket.class.getName());
 		// @formatter:on

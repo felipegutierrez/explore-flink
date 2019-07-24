@@ -5,11 +5,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
+import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaTraffic;
 
 /**
@@ -31,7 +36,7 @@ import org.sense.flink.pojo.ValenciaTraffic;
 public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraffic> {
 
 	private static final long serialVersionUID = 8320419468972434516L;
-	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://apigobiernoabiertortod.valencia.es/apirtod/datos/estado_trafico.json";
+	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";
 	private String json;
 	private long delayTime;
 
@@ -66,18 +71,36 @@ public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraff
 
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode actualObj = mapper.readTree(builder.toString());
+				List<Point> points = new ArrayList<Point>();
 
-				// boolean isSummary = actualObj.has("summary"); // not used
-				boolean isResources = actualObj.has("resources");
-				if (isResources) {
-					ArrayNode arrayNodeResources = (ArrayNode) actualObj.get("resources");
-					for (JsonNode jsonNode : arrayNodeResources) {
+				boolean isCRS = actualObj.has("crs");
+				boolean isFeatures = actualObj.has("features");
+				String typeCSR = "";
 
-						ValenciaTraffic valenciaTraffic = new ValenciaTraffic(jsonNode.get("idtramo").asInt(),
-								jsonNode.get("denominacion").asText(), jsonNode.get("modified").asText(),
-								jsonNode.get("estado").asInt(), jsonNode.get("coordinates").asText(), "EPSG:32630",
-								jsonNode.get("uri").asText());
+				if (isCRS) {
+					ObjectNode objectNodeCsr = (ObjectNode) actualObj.get("crs");
+					ObjectNode objectNodeProperties = (ObjectNode) objectNodeCsr.get("properties");
+					typeCSR = objectNodeProperties.get("name").asText();
+					typeCSR = typeCSR.substring(typeCSR.indexOf("EPSG"));
+				} else {
+					System.out.println("Wrong CoordinateReferenceSystem (CSR) type");
+				}
 
+				if (isFeatures) {
+					ArrayNode arrayNodeFeatures = (ArrayNode) actualObj.get("features");
+					ValenciaTraffic valenciaTraffic = null;
+					for (JsonNode jsonNode : arrayNodeFeatures) {
+						JsonNode nodeProperties = jsonNode.get("properties");
+						JsonNode nodeGeometry = jsonNode.get("geometry");
+						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
+
+						for (JsonNode coordinates : arrayNodeCoordinates) {
+							ArrayNode xy = (ArrayNode) coordinates;
+							points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));
+						}
+						valenciaTraffic = new ValenciaTraffic(nodeProperties.get("idtramo").asInt(),
+								nodeProperties.get("denominacion").asText(), new Date(),
+								nodeProperties.get("estado").asInt(), points);
 						ctx.collect(valenciaTraffic);
 					}
 				}

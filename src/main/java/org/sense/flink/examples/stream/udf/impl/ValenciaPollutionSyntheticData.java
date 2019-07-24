@@ -24,7 +24,7 @@ public class ValenciaPollutionSyntheticData implements FlatMapFunction<ValenciaP
 	 * Constructor with default values
 	 */
 	public ValenciaPollutionSyntheticData() {
-		this(new Point(724513.232, 4373018.548), 1500.0);
+		this(new Point(725737.858, 4370806.847), 100.0);
 	}
 
 	public ValenciaPollutionSyntheticData(Point point, double distance) {
@@ -40,12 +40,12 @@ public class ValenciaPollutionSyntheticData implements FlatMapFunction<ValenciaP
 			if (d <= distance) {
 				value.setParameters(
 						new AirPollution(20.0, 20.0, 60.0, 45.0, 40.0, 70.0, 70.0, 85.0, 70.0, 23.0, 13.0, 80.0));
-				System.out.println("CHANGED value");
+				// System.out.println("CHANGED value ValenciaPollution");
 				out.collect(value);
 				return;
 			}
 		}
-		System.out.println("KEEP value as it was received");
+		// System.out.println("KEEP value as it was received");
 		out.collect(value);
 	}
 }

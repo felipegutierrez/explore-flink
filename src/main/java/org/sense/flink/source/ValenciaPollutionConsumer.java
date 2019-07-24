@@ -65,7 +65,7 @@ public class ValenciaPollutionConsumer extends RichSourceFunction<ValenciaPollut
 					typeCSR = objectNodeProperties.get("name").asText();
 					typeCSR = typeCSR.substring(typeCSR.indexOf("EPSG"));
 				} else {
-
+					System.out.println("Wrong CoordinateReferenceSystem (CSR) type");
 				}
 
 				if (isFeatures) {

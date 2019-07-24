@@ -22,16 +22,16 @@ public class ZipUtilTest extends TestCase {
 
 	public void testUnpackZipFileFromValenciaOpenDataPortal() {
 		try {
-			FileUtils.deleteDirectory(new File("out/zip/noise"));
+			FileUtils.deleteDirectory(new File("out/noise/zip"));
 
 			URL url = new URL("http://mapas.valencia.es/lanzadera/opendata/mapa_ruido/SHAPE");
-			File destDir = new File("out/zip/noise");
+			File destDir = new File("out/noise/zip");
 			ZipUtil.unpackZipFile(url, destDir);
 
-			File dbf = new File("out/zip/noise/MAPA_RUIDO.dbf");
-			File prj = new File("out/zip/noise/MAPA_RUIDO.prj");
-			File shp = new File("out/zip/noise/MAPA_RUIDO.shp");
-			File shx = new File("out/zip/noise/MAPA_RUIDO.shx");
+			File dbf = new File("out/noise/zip/MAPA_RUIDO.dbf");
+			File prj = new File("out/noise/zip/MAPA_RUIDO.prj");
+			File shp = new File("out/noise/zip/MAPA_RUIDO.shp");
+			File shx = new File("out/noise/zip/MAPA_RUIDO.shx");
 
 			assertTrue(dbf.exists());
 			assertTrue(prj.exists());

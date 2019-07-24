@@ -34,6 +34,16 @@ public class Point implements Serializable {
 		this.csr = csr;
 	}
 
+	public Point(String coordinatesXY, String csr) {
+		String[] xy = coordinatesXY.replace("[", "").replace("]", "").split(",");
+		if (xy.length == 2) {
+			this.x = Double.parseDouble(xy[0]);
+			this.y = Double.parseDouble(xy[1]);
+			this.coordinates = new Coordinate(this.x, this.y);
+		}
+		this.csr = csr;
+	}
+
 	/**
 	 * Calculate the distance in meters between the current point to the
 	 * destination.
