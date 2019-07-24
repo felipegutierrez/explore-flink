@@ -28,7 +28,7 @@ public class ValenciaNoiseSocket {
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
 		// @formatter:off
-		env.addSource(new ValenciaNoiseConsumer(ValenciaNoiseConsumer.VALENCIA_NOISE_URL))
+		env.addSource(new ValenciaNoiseConsumer())
 			.print();
 
 		env.execute(ValenciaNoiseSocket.class.getName());

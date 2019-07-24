@@ -17,16 +17,16 @@ import org.geotools.feature.FeatureIterator;
 import org.opengis.feature.Property;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.sense.flink.pojo.ValenciaPollution;
+import org.sense.flink.pojo.ValenciaNoise;
 import org.sense.flink.util.ZipUtil;
 
 /**
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class ValenciaNoiseConsumer extends RichSourceFunction<ValenciaPollution> {
+public class ValenciaNoiseConsumer extends RichSourceFunction<ValenciaNoise> {
 	private static final long serialVersionUID = -2373602610753429092L;
-	public static final String VALENCIA_NOISE_URL = "http://mapas.valencia.es/lanzadera/opendata/mapa_ruido/SHAPE";
+	private static final String VALENCIA_NOISE_URL = "http://mapas.valencia.es/lanzadera/opendata/mapa_ruido/SHAPE";
 	private static final String OUTPUT_DIR = "out/noise/zip";
 	private String urlZipFile;
 	private long delayTime;
@@ -45,7 +45,7 @@ public class ValenciaNoiseConsumer extends RichSourceFunction<ValenciaPollution>
 	}
 
 	@Override
-	public void run(SourceContext<ValenciaPollution> ctx) throws Exception {
+	public void run(SourceContext<ValenciaNoise> ctx) throws Exception {
 
 		URL url = new URL(this.urlZipFile);
 

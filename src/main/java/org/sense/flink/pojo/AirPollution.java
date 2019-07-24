@@ -25,7 +25,16 @@ public class AirPollution implements Serializable {
 	private Double pm2_5;
 	private Double spl;
 
+	/**
+	 * Constructor with default values
+	 */
 	public AirPollution() {
+		// normal environment
+		// this(3.0, 0.1, 47.0, 33.0, 7.0, 22.0, 0.0, 0.0, 0.0, 11.0, 5.0, 60.0);
+		// threshold for a acceptable environment
+		this(15.0, 15.0, 50.0, 35.0, 30.0, 60.0, 60.0, 75.0, 60.0, 13.0, 7.0, 70.0);
+		// very clean environment
+		// this(2.0, 0.1, 40.0, 30.0, 5.0, 19.0, 0.0, 0.0, 0.0, 9.0, 3.0, 50.0);
 	}
 
 	public AirPollution(Double so2, Double co, Double ozono, Double nox, Double no, Double no2, Double benc,
@@ -44,11 +53,152 @@ public class AirPollution implements Serializable {
 		this.spl = spl;
 	}
 
+	public Double getSo2() {
+		return so2;
+	}
+
+	public void setSo2(Double so2) {
+		this.so2 = so2;
+	}
+
+	public Double getCo() {
+		return co;
+	}
+
+	public void setCo(Double co) {
+		this.co = co;
+	}
+
+	public Double getOzono() {
+		return ozono;
+	}
+
+	public void setOzono(Double ozono) {
+		this.ozono = ozono;
+	}
+
+	public Double getNox() {
+		return nox;
+	}
+
+	public void setNox(Double nox) {
+		this.nox = nox;
+	}
+
+	public Double getNo() {
+		return no;
+	}
+
+	public void setNo(Double no) {
+		this.no = no;
+	}
+
+	public Double getNo2() {
+		return no2;
+	}
+
+	public void setNo2(Double no2) {
+		this.no2 = no2;
+	}
+
+	public Double getBenc() {
+		return benc;
+	}
+
+	public void setBenc(Double benc) {
+		this.benc = benc;
+	}
+
+	public Double getTolue() {
+		return tolue;
+	}
+
+	public void setTolue(Double tolue) {
+		this.tolue = tolue;
+	}
+
+	public Double getXilen() {
+		return xilen;
+	}
+
+	public void setXilen(Double xilen) {
+		this.xilen = xilen;
+	}
+
+	public Double getPm10() {
+		return pm10;
+	}
+
+	public void setPm10(Double pm10) {
+		this.pm10 = pm10;
+	}
+
+	public Double getPm2_5() {
+		return pm2_5;
+	}
+
+	public void setPm2_5(Double pm2_5) {
+		this.pm2_5 = pm2_5;
+	}
+
+	public Double getSpl() {
+		return spl;
+	}
+
+	public void setSpl(Double spl) {
+		this.spl = spl;
+	}
+
+	public void compareAirPollution(AirPollution threshold) {
+		// @formatter:off
+		if (threshold == null) {
+			return;
+		}
+		if (this.so2 != null && this.so2.doubleValue() >= threshold.so2.doubleValue()) {
+			System.out.println("SO2(µg/m³) [" + this.so2.doubleValue() + "] exceeded he threshold [" + threshold.so2.doubleValue() + "]");
+		}
+		if (this.co != null && this.co.doubleValue() >= threshold.co.doubleValue()) {
+			System.out.println("CO(mg/m³) [" + this.co.doubleValue() + "] exceeded he threshold [" + threshold.co.doubleValue() + "]");
+		}
+		if (this.ozono != null && this.ozono.doubleValue() >= threshold.ozono.doubleValue()) {
+			System.out.println("Ozono(µg/m³) [" + this.ozono.doubleValue() + "] exceeded he threshold [" + threshold.ozono.doubleValue() + "]");
+		}
+		if (this.nox != null && this.nox.doubleValue() >= threshold.nox.doubleValue()) {
+			System.out.println("NOx(µg/m³) [" + this.nox.doubleValue() + "] exceeded he threshold [" + threshold.nox.doubleValue() + "]");
+		}
+		if (this.no != null && this.no.doubleValue() >= threshold.no.doubleValue()) {
+			System.out.println("NO(µg/m³) [" + this.no.doubleValue() + "] exceeded he threshold [" + threshold.no.doubleValue() + "]");
+		}
+		if (this.no2 != null && this.no2.doubleValue() >= threshold.no2.doubleValue()) {
+			System.out.println("NO2(µg/m³) [" + this.no2.doubleValue() + "] exceeded he threshold [" + threshold.no2.doubleValue() + "]");
+		}
+		if (this.benc != null && this.benc.doubleValue() >= threshold.benc.doubleValue()) {
+			System.out.println("Benceno(µg/m³) [" + this.benc.doubleValue() + "] exceeded he threshold [" + threshold.benc.doubleValue() + "]");
+		}
+		if (this.tolue != null && this.tolue.doubleValue() >= threshold.tolue.doubleValue()) {
+			System.out.println("Tolueno(µg/m³) [" + this.tolue.doubleValue() + "] exceeded he threshold [" + threshold.tolue.doubleValue() + "]");
+		}
+		if (this.xilen != null && this.xilen.doubleValue() >= threshold.xilen.doubleValue()) {
+			System.out.println("Xileno(µg/m³) [" + this.xilen.doubleValue() + "] exceeded he threshold [" + threshold.xilen.doubleValue() + "]");
+		}
+		if (this.pm10 != null && this.pm10.doubleValue() >= threshold.pm10.doubleValue()) {
+			System.out.println("PM10(µg/m³) [" + this.pm10.doubleValue() + "] exceeded he threshold [" + threshold.pm10.doubleValue() + "]");
+		}
+		if (this.pm2_5 != null && this.pm2_5.doubleValue() >= threshold.pm2_5.doubleValue()) {
+			System.out.println("PM2,5(µg/m³) [" + this.pm2_5.doubleValue() + "] exceeded he threshold [" + threshold.pm2_5.doubleValue() + "]");
+		}
+		if (this.spl != null && this.spl.doubleValue() >= threshold.spl.doubleValue()) {
+			System.out.println("Ruido(dBA) [" + this.spl.doubleValue() + "] exceeded he threshold [" + threshold.spl.doubleValue() + "]");
+		}
+		// @formatter:on
+	}
+
 	@Override
 	public String toString() {
-		return "AirPollution [so2=" + so2 + ", co=" + co + ", ozono=" + ozono + ", nox=" + nox + ", no=" + no + ", no2="
-				+ no2 + ", benc=" + benc + ", tolue=" + tolue + ", xilen=" + xilen + ", pm10=" + pm10 + ", pm2_5="
-				+ pm2_5 + ", spl=" + spl + "]";
+		return "AirPollution [SO2(µg/m³)=" + so2 + ", CO(mg/m³)=" + co + ", Ozono(µg/m³)=" + ozono + ", NOx(µg/m³)="
+				+ nox + ", NO(µg/m³)=" + no + ", NO2(µg/m³)=" + no2 + ", Benceno(µg/m³)=" + benc + ", Tolueno(µg/m³)="
+				+ tolue + ", Xileno(µg/m³)=" + xilen + ", PM10(µg/m³)=" + pm10 + ", PM2,5(µg/m³)=" + pm2_5
+				+ ", Ruido(dBA)=" + spl + "]";
 	}
 
 	public static AirPollution extract(String uri) {

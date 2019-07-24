@@ -28,7 +28,7 @@ public class ValenciaPollutionSocket {
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
 		// @formatter:off
-		env.addSource(new ValenciaPollutionConsumer(ValenciaPollutionConsumer.VALENCIA_POLLUTION_URL))
+		env.addSource(new ValenciaPollutionConsumer())
 			.print();
 
 		env.execute(ValenciaPollutionSocket.class.getName());

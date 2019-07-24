@@ -13,13 +13,25 @@ import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.sense.flink.pojo.ValenciaTraffic;
 
 /**
+ * <pre>
+ * The data comes from http://gobiernoabierto.valencia.es/en/dataset/?id=estado-trafico-tiempo-real and the attributes are:
+ * 
+ * Idtramo: Identificador único del tramo.
+ * Denominacion: Denominación del tramo.
+ * Estado: Estado del tráfico en tiempo real del tramo. Los códigos de los estados del tráfico son los siguientes:
+ * 0 Fluido
+ * 1 Denso
+ * 2 Congestionado
+ * 3 Cortado
+ * </pre>
+ * 
  * @author Felipe Oliveira Gutierrez
  *
  */
 public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraffic> {
 
 	private static final long serialVersionUID = 8320419468972434516L;
-	public static final String VALENCIA_TRAFFIC_JAM_URL = "http://apigobiernoabiertortod.valencia.es/apirtod/datos/estado_trafico.json";
+	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://apigobiernoabiertortod.valencia.es/apirtod/datos/estado_trafico.json";
 	private String json;
 	private long delayTime;
 

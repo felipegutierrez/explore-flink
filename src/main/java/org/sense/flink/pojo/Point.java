@@ -41,7 +41,7 @@ public class Point implements Serializable {
 	 * @param dest
 	 * @return distance in meters
 	 */
-	public double distance(Point dest) {
+	public double euclideanDistance(Point dest) {
 		if (this.coordinates == null || dest == null || dest.coordinates == null) {
 			return 0.0;
 		}
@@ -56,7 +56,7 @@ public class Point implements Serializable {
 	 * @param dest
 	 * @return distance in meters
 	 */
-	public double distance(Coordinate dest) {
+	public double euclideanDistance(Coordinate dest) {
 		if (this.coordinates == null || dest == null) {
 			return 0.0;
 		}

@@ -16,7 +16,7 @@ public class PointTest extends TestCase {
 	public void testDistance() {
 		Point orig = new Point(729664.353, 4373064.801);
 		Point dest = new Point(730021.116, 4373070.406);
-		double d = orig.distance(dest);
+		double d = orig.euclideanDistance(dest);
 		assertEquals(356.807, d, 0.005);
 	}
 }

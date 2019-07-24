@@ -21,6 +21,30 @@ public class ValenciaPollution extends ValenciaItem implements Serializable {
 		this.coordinates = Point.extract(coordinates, csr);
 	}
 
+	public String getStreet() {
+		return street;
+	}
+
+	public void setStreet(String street) {
+		this.street = street;
+	}
+
+	public AirPollution getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(AirPollution parameters) {
+		this.parameters = parameters;
+	}
+
+	public String getUri() {
+		return uri;
+	}
+
+	public void setUri(String uri) {
+		this.uri = uri;
+	}
+
 	@Override
 	public String toString() {
 		return "ValenciaPollution [id=" + id + ", coordinates=" + coordinates + ", street=" + street + ", parameters="

@@ -19,7 +19,7 @@ import org.sense.flink.pojo.ValenciaPollution;
  */
 public class ValenciaPollutionConsumer extends RichSourceFunction<ValenciaPollution> {
 	private static final long serialVersionUID = -2924802972034800231L;
-	public static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
+	private static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
 	private String json;
 	private long delayTime;
 
