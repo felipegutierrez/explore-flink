@@ -17,7 +17,7 @@
 		<flink.version>1.8.1</flink.version>
 		<junit.version>4.12</junit.version>
 		<scala.version>2.11.12</scala.version>
-		<geotools.version>11.1</geotools.version>
+		<geotools.version>21.2</geotools.version>
 	</properties>
 
 	<repositories>
@@ -113,7 +113,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
-			<artifactId>gt-api</artifactId>
+			<artifactId>gt-referencing</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
 		<dependency>
@@ -123,12 +123,17 @@
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
-			<artifactId>gt-shapefile</artifactId>
+			<artifactId>gt-geojsondatastore</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
-			<artifactId>gt-sfs</artifactId>
+			<artifactId>gt-metadata</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
 		<!-- Make Scala available in project. Pay extra attention to the version -->
