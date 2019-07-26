@@ -31,6 +31,30 @@ public class Point implements Serializable {
 		this.csr = csr;
 	}
 
+	public Double getX() {
+		return x;
+	}
+
+	public void setX(Double x) {
+		this.x = x;
+	}
+
+	public Double getY() {
+		return y;
+	}
+
+	public void setY(Double y) {
+		this.y = y;
+	}
+
+	public String getCsr() {
+		return csr;
+	}
+
+	public void setCsr(String csr) {
+		this.csr = csr;
+	}
+
 	/**
 	 * Calculate the distance in meters between the current point to the
 	 * destination.
@@ -66,6 +90,6 @@ public class Point implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Point [x=" + x + ", y=" + y + "]";
+		return "Point(" + x + " " + y + ")";
 	}
 }
