@@ -16,12 +16,26 @@ public class ValenciaDistrictsTest extends TestCase {
 	public void testDistrictId() {
 		Integer id = ValenciaDistricts.getDistrictId("Ciutat Vella");
 		assertEquals(Integer.valueOf(1), id);
+
+		id = ValenciaDistricts.getDistrictId("l'Eixample");
+		assertEquals(Integer.valueOf(2), id);
+		id = ValenciaDistricts.getDistrictId("Eixample");
+		assertEquals(Integer.valueOf(2), id);
+
 		id = ValenciaDistricts.getDistrictId("");
 		assertEquals(Integer.valueOf(0), id);
+
 		id = ValenciaDistricts.getDistrictId("Ciutat       ");
 		assertEquals(Integer.valueOf(1), id);
+
 		id = ValenciaDistricts.getDistrictId("Pla del Real");
 		assertEquals(Integer.valueOf(6), id);
+
+		id = ValenciaDistricts.getDistrictId("Camins al Grau");
+		assertEquals(Integer.valueOf(12), id);
+		id = ValenciaDistricts.getDistrictId("Camins del Grau");
+		assertEquals(Integer.valueOf(12), id);
+
 		id = ValenciaDistricts.getDistrictId("Benicalap");
 		assertEquals(Integer.valueOf(16), id);
 

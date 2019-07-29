@@ -3,6 +3,7 @@ package org.sense.flink.examples.stream;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.sense.flink.examples.stream.udf.impl.ValenciaTrafficAdminLevelMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaPollutionFilter;
 import org.sense.flink.examples.stream.udf.impl.ValenciaPollutionSyntheticData;
 import org.sense.flink.examples.stream.udf.impl.ValenciaTrafficFilter;

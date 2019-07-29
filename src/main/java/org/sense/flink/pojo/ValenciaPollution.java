@@ -47,7 +47,7 @@ public class ValenciaPollution extends ValenciaItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ValenciaPollution [adminLevel=" + adminLevel + ", coordinates=" + coordinates + ", street=" + street
-				+ ", parameters=" + parameters + ", update=" + update + ", uri=" + uri + "]";
+		return "ValenciaItem [id=" + id + ", adminLevel=" + adminLevel + ", district=" + district + ", update=" + update
+				+ ", parameters=" + parameters + ", coordinates=" + coordinates + "]";
 	}
 }

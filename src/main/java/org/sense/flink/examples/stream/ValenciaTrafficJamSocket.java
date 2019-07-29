@@ -2,7 +2,7 @@ package org.sense.flink.examples.stream;
 
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.sense.flink.examples.stream.udf.impl.AdminLevelMapFunction;
+import org.sense.flink.examples.stream.udf.impl.ValenciaTrafficAdminLevelMap;
 import org.sense.flink.source.ValenciaTrafficJamConsumer;
 
 /**
@@ -23,7 +23,7 @@ public class ValenciaTrafficJamSocket {
 
 		// @formatter:off
 		env.addSource(new ValenciaTrafficJamConsumer())
-			.map(new AdminLevelMapFunction())
+			.map(new ValenciaTrafficAdminLevelMap())
 			.print();
 
 		env.execute(ValenciaTrafficJamSocket.class.getName());

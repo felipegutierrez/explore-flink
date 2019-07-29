@@ -2,6 +2,7 @@ package org.sense.flink.examples.stream;
 
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.sense.flink.examples.stream.udf.impl.ValenciaPollutionAdminLevelMap;
 import org.sense.flink.source.ValenciaPollutionConsumer;
 
 /**
@@ -29,6 +30,7 @@ public class ValenciaPollutionSocket {
 
 		// @formatter:off
 		env.addSource(new ValenciaPollutionConsumer())
+			.map(new ValenciaPollutionAdminLevelMap())
 			.print();
 
 		env.execute(ValenciaPollutionSocket.class.getName());

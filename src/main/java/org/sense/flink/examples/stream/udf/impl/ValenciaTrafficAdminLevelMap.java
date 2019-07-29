@@ -9,8 +9,8 @@ import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaTraffic;
 import org.sense.flink.util.SimpleGeographicalPolygons;
 
-public class AdminLevelMapFunction extends RichMapFunction<ValenciaTraffic, ValenciaTraffic> {
-	private static final long serialVersionUID = 2731115309791316318L;
+public class ValenciaTrafficAdminLevelMap extends RichMapFunction<ValenciaTraffic, ValenciaTraffic> {
+	private static final long serialVersionUID = 4766259632616291841L;
 	private SimpleGeographicalPolygons sgp;
 
 	@Override
