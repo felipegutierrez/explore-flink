@@ -18,9 +18,9 @@ public class ValenciaTraffic extends ValenciaItem implements Serializable {
 	public ValenciaTraffic() {
 	}
 
-	public ValenciaTraffic(Integer id, String street, String update, Integer status, String coordinates, String csr,
-			String uri) {
-		this.id = id;
+	public ValenciaTraffic(Long adminLevel, String street, String update, Integer status, String coordinates,
+			String csr, String uri) {
+		this.adminLevel = adminLevel;
 		this.street = street;
 		this.status = status;
 		this.coordinates = Point.extract(coordinates, csr);
@@ -32,8 +32,8 @@ public class ValenciaTraffic extends ValenciaItem implements Serializable {
 		}
 	}
 
-	public ValenciaTraffic(Integer id, String street, Date update, Integer status, List<Point> coordinates) {
-		this.id = id;
+	public ValenciaTraffic(Long adminLevel, String street, Date update, Integer status, List<Point> coordinates) {
+		this.adminLevel = adminLevel;
 		this.street = street;
 		this.update = update;
 		this.status = status;
@@ -63,11 +63,4 @@ public class ValenciaTraffic extends ValenciaItem implements Serializable {
 	public void setUri(String uri) {
 		this.uri = uri;
 	}
-
-	@Override
-	public String toString() {
-		return "ValenciaTraffic [id=" + id + ", status=" + status + ", update=" + update + ", coordinates="
-				+ coordinates + ", street=" + street + ", uri=" + uri + "]";
-	}
-
 }

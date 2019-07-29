@@ -13,7 +13,7 @@ public class ValenciaPollution extends ValenciaItem implements Serializable {
 	}
 
 	public ValenciaPollution(String street, String parameters, String uri, String coordinates, String csr) {
-		this.id = 0;
+		this.adminLevel = 0L;
 		this.street = street;
 		this.parameters = AirPollution.extract(uri);
 		this.update = new Date();
@@ -47,7 +47,7 @@ public class ValenciaPollution extends ValenciaItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ValenciaPollution [id=" + id + ", coordinates=" + coordinates + ", street=" + street + ", parameters="
-				+ parameters + ", update=" + update + ", uri=" + uri + "]";
+		return "ValenciaPollution [adminLevel=" + adminLevel + ", coordinates=" + coordinates + ", street=" + street
+				+ ", parameters=" + parameters + ", update=" + update + ", uri=" + uri + "]";
 	}
 }

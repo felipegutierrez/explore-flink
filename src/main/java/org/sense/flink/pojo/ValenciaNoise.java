@@ -12,7 +12,7 @@ public class ValenciaNoise extends ValenciaItem implements Serializable {
 	}
 
 	public ValenciaNoise(String street, String parameters, String uri, String coordinates, String csr) {
-		this.id = 0;
+		this.adminLevel = 0L;
 		this.street = street;
 		this.update = new Date();
 		this.uri = uri;
@@ -21,7 +21,7 @@ public class ValenciaNoise extends ValenciaItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ValenciaNoise [id=" + id + ", coordinates=" + coordinates + ", street=" + street + ", update=" + update
-				+ ", uri=" + uri + "]";
+		return "ValenciaNoise [adminLevel=" + adminLevel + ", coordinates=" + coordinates + ", street=" + street
+				+ ", update=" + update + ", uri=" + uri + "]";
 	}
 }

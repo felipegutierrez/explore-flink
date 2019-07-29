@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.flink.shaded.guava18.com.google.common.base.Strings;
+import org.sense.flink.util.CRSCoordinateTransformer;
 
 public class Point implements Serializable {
 	private static final long serialVersionUID = -5344602209568822697L;
@@ -13,7 +14,7 @@ public class Point implements Serializable {
 	private String csr;
 
 	public Point(Double x, Double y) {
-		this(x, y, null);
+		this(x, y, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE);
 	}
 
 	public Point(Double x, Double y, String csr) {

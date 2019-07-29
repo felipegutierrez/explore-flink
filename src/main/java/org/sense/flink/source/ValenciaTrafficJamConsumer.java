@@ -81,7 +81,7 @@ public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraff
 					ObjectNode objectNodeCsr = (ObjectNode) actualObj.get("crs");
 					ObjectNode objectNodeProperties = (ObjectNode) objectNodeCsr.get("properties");
 					typeCSR = objectNodeProperties.get("name").asText();
-					typeCSR = typeCSR.substring(typeCSR.indexOf("EPSG"));
+					typeCSR = typeCSR.substring(typeCSR.indexOf("EPSG")).replace("::", ":");
 				} else {
 					System.out.println("Wrong CoordinateReferenceSystem (CSR) type");
 				}
@@ -98,9 +98,8 @@ public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraff
 							ArrayNode xy = (ArrayNode) coordinates;
 							points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));
 						}
-						valenciaTraffic = new ValenciaTraffic(nodeProperties.get("idtramo").asInt(),
-								nodeProperties.get("denominacion").asText(), new Date(),
-								nodeProperties.get("estado").asInt(), points);
+						valenciaTraffic = new ValenciaTraffic(null, nodeProperties.get("denominacion").asText(),
+								new Date(), nodeProperties.get("estado").asInt(), points);
 						ctx.collect(valenciaTraffic);
 					}
 				}
