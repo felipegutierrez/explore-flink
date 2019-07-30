@@ -23,6 +23,7 @@ public class ValenciaTrafficFilter implements FilterFunction<ValenciaTraffic> {
 		boolean flag = false;
 		for (int i = 0; i < status.length; i++) {
 			if (value.getStatus().intValue() == this.status[i].intValue()) {
+				// System.out.println(value);
 				flag = true;
 			}
 

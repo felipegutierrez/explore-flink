@@ -6,6 +6,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * This class was developed based on the metadata available at
+ * http://gobiernoabierto.valencia.es/en/dataset/?id=estado-trafico-tiempo-real
+ * 
+ * @author felipe
+ *
+ */
 public class ValenciaTraffic extends ValenciaItem implements Serializable {
 	private static final long serialVersionUID = -3147914413052930222L;
 	private String street;

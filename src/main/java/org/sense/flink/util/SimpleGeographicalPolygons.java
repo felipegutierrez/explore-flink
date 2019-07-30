@@ -23,8 +23,11 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.spatial.Contains;
 import org.opengis.referencing.operation.TransformException;
 import org.sense.flink.pojo.Point;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SimpleGeographicalPolygons {
+	private static final Logger logger = LoggerFactory.getLogger(SimpleGeographicalPolygons.class);
 	private File geoJSON;
 	private DataStore dataStore;
 	private FilterFactory2 filerFactory2;
@@ -67,8 +70,10 @@ public class SimpleGeographicalPolygons {
 			Point pointLonLat = null;
 			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_TARGET)) {
 				pointLonLat = point;
-			} else {
+			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)) {
 				pointLonLat = crsCoordinateTransformer.xyToLonLatPoint(point.getX(), point.getY());
+			} else {
+				return null;
 			}
 			Contains contains = filerFactory2.contains(
 					filerFactory2.property(simpleFeatureSource.getSchema().getGeometryDescriptor().getLocalName()),
@@ -93,8 +98,11 @@ public class SimpleGeographicalPolygons {
 			Point pointLonLat = null;
 			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_TARGET)) {
 				pointLonLat = point;
-			} else {
+			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)) {
 				pointLonLat = crsCoordinateTransformer.xyToLonLatPoint(point.getX(), point.getY());
+			} else {
+				logger.error("CRS Coordinate Reference System not defined!");
+				return Tuple3.of(null, null, "");
 			}
 			Contains contains = filerFactory2.contains(
 					filerFactory2.property(simpleFeatureSource.getSchema().getGeometryDescriptor().getLocalName()),
@@ -114,7 +122,7 @@ public class SimpleGeographicalPolygons {
 		} catch (IOException | TransformException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return Tuple3.of(null, null, "");
 	}
 
 	public Long getAdminLevelId(Point point) {
@@ -122,8 +130,10 @@ public class SimpleGeographicalPolygons {
 			Point pointLonLat = null;
 			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_TARGET)) {
 				pointLonLat = point;
-			} else {
+			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)) {
 				pointLonLat = crsCoordinateTransformer.xyToLonLatPoint(point.getX(), point.getY());
+			} else {
+				return null;
 			}
 			Contains contains = filerFactory2.contains(
 					filerFactory2.property(simpleFeatureSource.getSchema().getGeometryDescriptor().getLocalName()),
@@ -157,8 +167,10 @@ public class SimpleGeographicalPolygons {
 				Point pointLonLat = null;
 				if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_TARGET)) {
 					pointLonLat = point;
-				} else {
+				} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)) {
 					pointLonLat = crsCoordinateTransformer.xyToLonLatPoint(point.getX(), point.getY());
+				} else {
+					return;
 				}
 				Contains contains = filerFactory2.contains(
 						filerFactory2.property(simpleFeatureSource.getSchema().getGeometryDescriptor().getLocalName()),
@@ -186,13 +198,22 @@ public class SimpleGeographicalPolygons {
 	}
 
 	public static void main(String[] args) {
+		// @formatter:off
 		SimpleGeographicalPolygons sgp = new SimpleGeographicalPolygons();
 		List<Point> points = new ArrayList<Point>();
-		points.add(new Point(-0.3630, 39.4477, CRSCoordinateTransformer.DEFAULT_CRS_TARGET));
-		points.add(new Point(-0.3774, 39.4698, CRSCoordinateTransformer.DEFAULT_CRS_TARGET));
+		// points.add(new Point(-0.3630, 39.4477, CRSCoordinateTransformer.DEFAULT_CRS_TARGET));
+		// points.add(new Point(-0.3774, 39.4698, CRSCoordinateTransformer.DEFAULT_CRS_TARGET));
 
-		points.add(new Point(727883.536, 4373590.846, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		points.add(new Point(727914.834, 4373625.414, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		// points.add(new Point(727883.536, 4373590.846, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		// points.add(new Point(727914.834, 4373625.414, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		// points.add(new Point(725685.2117, 4372281.7883, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		// points.add(new Point(724034.3761, 4369995.1312, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		// points.add(new Point(726272.352, 4372853.588, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		// Converting coordinates: 725140.37, 4371855.492 > -0.3828691121670698, 39.466853209056104 > 3,9,Extramurs
+		// points.add(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		points.add(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+
 		sgp.printProperties(points);
+		// @formatter:on
 	}
 }

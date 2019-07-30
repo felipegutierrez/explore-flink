@@ -22,8 +22,8 @@ public class ValenciaTrafficJamSocket {
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
 		// @formatter:off
-		env.addSource(new ValenciaTrafficJamConsumer())
-			.map(new ValenciaTrafficAdminLevelMap())
+		env.addSource(new ValenciaTrafficJamConsumer()).name(ValenciaTrafficJamConsumer.class.getName())
+			.map(new ValenciaTrafficAdminLevelMap()).name(ValenciaTrafficAdminLevelMap.class.getName())
 			.print();
 
 		env.execute(ValenciaTrafficJamSocket.class.getName());

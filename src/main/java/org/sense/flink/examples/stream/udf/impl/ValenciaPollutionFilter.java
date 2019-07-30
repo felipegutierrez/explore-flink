@@ -45,7 +45,8 @@ public class ValenciaPollutionFilter implements FilterFunction<ValenciaPollution
 				|| (currentParameters.getPm10() != null && currentParameters.getPm10().doubleValue() >= this.threshold.getPm10().doubleValue())
 				|| (currentParameters.getPm2_5() != null && currentParameters.getPm2_5().doubleValue() >= this.threshold.getPm2_5().doubleValue())
 				|| (currentParameters.getSpl() != null && currentParameters.getSpl().doubleValue() >= this.threshold.getSpl().doubleValue())) {
-			currentParameters.compareAirPollution(this.threshold);
+			// System.out.println(value);
+			// currentParameters.compareAirPollution(this.threshold);
 			return true;
 		}
 		return false;

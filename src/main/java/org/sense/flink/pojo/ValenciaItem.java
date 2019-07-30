@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public abstract class ValenciaItem implements Serializable {
+public abstract class ValenciaItem implements Cloneable, Serializable {
 	private static final long serialVersionUID = -107439991877659718L;
 	protected Long id;
 	protected Long adminLevel;
@@ -45,6 +45,10 @@ public abstract class ValenciaItem implements Serializable {
 		this.coordinates = coordinates;
 	}
 
+	public void clearCoordinates() {
+		this.coordinates = new ArrayList<Point>();
+	}
+
 	public void addCoordinates(Point point) {
 		if (this.coordinates == null) {
 			this.coordinates = new ArrayList<Point>();
@@ -58,6 +62,11 @@ public abstract class ValenciaItem implements Serializable {
 
 	public void setDistrict(String district) {
 		this.district = district;
+	}
+
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return super.clone();
 	}
 
 	@Override
