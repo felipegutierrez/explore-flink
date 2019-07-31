@@ -31,9 +31,9 @@ public class ValenciaPollutionSyntheticData implements FlatMapFunction<ValenciaP
 		this(new Point(725737.858, 4370806.847), 100.0);
 	}
 
-	public ValenciaPollutionSyntheticData(Long districtId) {
-		this.point = new Point(725737.858, 4370806.847);
-		this.distance = 100.0;
+	public ValenciaPollutionSyntheticData(Point point, double distance, Long districtId) {
+		this.point = point;
+		this.distance = distance;
 		this.districtId = districtId;
 	}
 

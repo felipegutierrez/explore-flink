@@ -25,13 +25,13 @@ import org.sense.flink.source.ValenciaTrafficJamConsumer;
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class ValenciaDataSkewedExampleSocket {
+public class ValenciaDataSkewedJoinExample {
 
 	public static void main(String[] args) throws Exception {
-		new ValenciaDataSkewedExampleSocket();
+		new ValenciaDataSkewedJoinExample();
 	}
 
-	public ValenciaDataSkewedExampleSocket() throws Exception {
+	public ValenciaDataSkewedJoinExample() throws Exception {
 		disclaimer();
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -55,7 +55,7 @@ public class ValenciaDataSkewedExampleSocket {
 		DataStream<ValenciaPollution> streamAirPollution = env
 				.addSource(new ValenciaPollutionConsumer()).name(ValenciaPollutionConsumer.class.getName())
 				.map(new ValenciaPollutionAdminLevelMap()).name(ValenciaPollutionAdminLevelMap.class.getName())
-				.flatMap(new ValenciaPollutionSyntheticData(districtId)).name(ValenciaPollutionSyntheticData.class.getName())
+				.flatMap(new ValenciaPollutionSyntheticData(point, distance, districtId)).name(ValenciaPollutionSyntheticData.class.getName())
 				.filter(new ValenciaPollutionFilter()).name(ValenciaPollutionFilter.class.getName())
 				;
 		// DataStream<ValenciaNoise> streamNoise = env
@@ -72,7 +72,7 @@ public class ValenciaDataSkewedExampleSocket {
 		// streamTrafficJam.print();
 		// streamAirPollution.print();
 
-		env.execute(ValenciaDataSkewedExampleSocket.class.getName());
+		env.execute(ValenciaDataSkewedJoinExample.class.getName());
 		// @formatter:on
 	}
 

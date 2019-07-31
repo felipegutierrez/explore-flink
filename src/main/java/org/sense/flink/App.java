@@ -22,7 +22,8 @@ import org.sense.flink.examples.stream.SensorsReadingMqttEdgentQEP;
 import org.sense.flink.examples.stream.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.TemperatureAverageExample;
 import org.sense.flink.examples.stream.TwitterExample;
-import org.sense.flink.examples.stream.ValenciaDataSkewedExampleSocket;
+import org.sense.flink.examples.stream.ValenciaDataSkewedCombinerExample;
+import org.sense.flink.examples.stream.ValenciaDataSkewedJoinExample;
 import org.sense.flink.examples.stream.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.WordCountSocketFilterQEP;
 import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
@@ -66,7 +67,8 @@ public class App {
 				System.out.println("22 - Estimate cardinality with HyperLogLogPlus");
 				System.out.println("23 - Estimate cardinality with Bloom Filter");
 				System.out.println("24 - Executin join over MQTT data using Flink Table API");
-				System.out.println("25 - Reading values from Valencia Open-data Web Portal and processing using Flink Data Stream");
+				System.out.println("25 - Reading values from Valencia Open-data Web Portal and processing a JOIN using Flink Data Stream");
+				System.out.println("26 - Reading values from Valencia Open-data Web Portal and processing a COMBINER using Flink Data Stream");
 				// @formatter:on
 
 				String msg = "0";
@@ -253,7 +255,11 @@ public class App {
 					app = 0;
 					break;
 				case 25:
-					new ValenciaDataSkewedExampleSocket();
+					new ValenciaDataSkewedJoinExample();
+					app = 0;
+					break;
+				case 26:
+					new ValenciaDataSkewedCombinerExample();
 					app = 0;
 					break;
 				default:

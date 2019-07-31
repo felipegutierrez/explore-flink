@@ -37,15 +37,16 @@ public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraff
 
 	private static final long serialVersionUID = 8320419468972434516L;
 	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";
+	private static final long DEFAULT_FREQUENCY_DELAY = 10000;
 	private String json;
 	private long delayTime;
 
 	public ValenciaTrafficJamConsumer() {
-		this(VALENCIA_TRAFFIC_JAM_URL, 10000);
+		this(VALENCIA_TRAFFIC_JAM_URL, DEFAULT_FREQUENCY_DELAY);
 	}
 
 	public ValenciaTrafficJamConsumer(String json) {
-		this(json, 10000);
+		this(json, DEFAULT_FREQUENCY_DELAY);
 	}
 
 	public ValenciaTrafficJamConsumer(String json, long delayTime) {
