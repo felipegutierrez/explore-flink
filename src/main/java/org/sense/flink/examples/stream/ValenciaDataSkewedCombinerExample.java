@@ -4,17 +4,13 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.sense.flink.examples.stream.udf.impl.ValenciaPollutionAdminLevelMap;
-import org.sense.flink.examples.stream.udf.impl.ValenciaPollutionAssignDistrictAsKeyMap;
-import org.sense.flink.examples.stream.udf.impl.ValenciaPollutionSyntheticData;
-import org.sense.flink.examples.stream.udf.impl.ValenciaTrafficAdminLevelMap;
-import org.sense.flink.examples.stream.udf.impl.ValenciaTrafficAssignDistrictAsKeyMap;
-import org.sense.flink.examples.stream.udf.impl.ValenciaTrafficJamSyntheticData;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictAsKeyMap;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
 import org.sense.flink.pojo.Point;
-import org.sense.flink.pojo.ValenciaPollution;
-import org.sense.flink.pojo.ValenciaTraffic;
-import org.sense.flink.source.ValenciaPollutionConsumer;
-import org.sense.flink.source.ValenciaTrafficJamConsumer;
+import org.sense.flink.pojo.ValenciaItem;
+import org.sense.flink.source.ValenciaItemConsumer;
+import org.sense.flink.util.ValenciaItemType;
 
 /**
  * 
@@ -41,22 +37,18 @@ public class ValenciaDataSkewedCombinerExample {
 		long districtId = 10;
 
 		// Sources -> add synthetic data -> filter
-		DataStream<Tuple2<Long, ValenciaTraffic>> streamTrafficJam = env
-				.addSource(new ValenciaTrafficJamConsumer()).name(ValenciaTrafficJamConsumer.class.getName())
-				.map(new ValenciaTrafficAdminLevelMap()).name(ValenciaTrafficAdminLevelMap.class.getName())
-				.flatMap(new ValenciaTrafficJamSyntheticData(point, distance)).name(ValenciaTrafficJamSyntheticData.class.getName())
-				// .filter(new ValenciaTrafficFilter()).name(ValenciaTrafficFilter.class.getName())
-				.map(new ValenciaTrafficAssignDistrictAsKeyMap()).name(ValenciaTrafficAssignDistrictAsKeyMap.class.getName())
+		DataStream<Tuple2<Long , ValenciaItem>> streamTrafficJam = env
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC)).name(ValenciaItemConsumer.class.getName())
+				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
+				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC, point, distance)).name(ValenciaItemSyntheticData.class.getName())
+				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
 				;
-		DataStream<Tuple2<Long, ValenciaPollution>> streamAirPollution = env
-				.addSource(new ValenciaPollutionConsumer()).name(ValenciaPollutionConsumer.class.getName())
-				.map(new ValenciaPollutionAdminLevelMap()).name(ValenciaPollutionAdminLevelMap.class.getName())
-				.flatMap(new ValenciaPollutionSyntheticData(point, distance, districtId)).name(ValenciaPollutionSyntheticData.class.getName())
-				// .filter(new ValenciaPollutionFilter()).name(ValenciaPollutionFilter.class.getName())
-				.map(new ValenciaPollutionAssignDistrictAsKeyMap()).name(ValenciaPollutionAssignDistrictAsKeyMap.class.getName())
+		DataStream<Tuple2<Long , ValenciaItem>> streamAirPollution = env
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION)).name(ValenciaItemConsumer.class.getName())
+				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
+				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, districtId)).name(ValenciaItemSyntheticData.class.getName())
+				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
 				;
-		// DataStream<ValenciaItem> streamNoise = env
-		// .addSource(new ValenciaNoiseConsumer()).name(ValenciaNoiseConsumer.class.getName());
 
 		// Combine -> Print
 		// streamTrafficJam.union(streamAirPollution).print();

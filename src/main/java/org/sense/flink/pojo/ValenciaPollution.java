@@ -1,26 +1,43 @@
 package org.sense.flink.pojo;
 
-import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-public class ValenciaPollution extends ValenciaItem implements Serializable {
-	private static final long serialVersionUID = -469085368038671321L;
+/**
+ * 
+ * http://gobiernoabierto.valencia.es/en/dataset/?id=estaciones-automaticas-atmosfericas
+ * 
+ * @author felipe
+ *
+ */
+public class ValenciaPollution extends ValenciaItem {
+	private static final long serialVersionUID = 7482849147265587770L;
+	// additional attributes
 	private String street;
-	private AirPollution parameters;
 	private String uri;
 
-	public ValenciaPollution() {
+	public ValenciaPollution(Long id, Long adminLevel, String district, Date update, List<Point> coordinates,
+			Object value) {
+		super(id, adminLevel, district, update, coordinates, AirPollution.extract((String) value));
 	}
 
-	public ValenciaPollution(String street, String parameters, String uri, String coordinates, String csr) {
-		this.adminLevel = 0L;
-		this.street = street;
-		this.parameters = AirPollution.extract(uri);
-		this.update = new Date();
-		this.uri = uri;
-		this.coordinates = Point.extract(coordinates, csr);
+	public ValenciaPollution(Long id, Long adminLevel, String district, String update, String coordinates, String csr,
+			Object value) {
+		super(id, adminLevel, district, update, coordinates, csr, AirPollution.extract((String) value));
 	}
 
+	/** overriding default methods */
+	@Override
+	public Object getValue() {
+		return (AirPollution) this.value;
+	}
+
+	@Override
+	public void setValue(Object value) {
+		this.value = (AirPollution) value;
+	}
+
+	/** specific methods */
 	public String getStreet() {
 		return street;
 	}
@@ -29,25 +46,11 @@ public class ValenciaPollution extends ValenciaItem implements Serializable {
 		this.street = street;
 	}
 
-	public AirPollution getParameters() {
-		return parameters;
-	}
-
-	public void setParameters(AirPollution parameters) {
-		this.parameters = parameters;
-	}
-
 	public String getUri() {
 		return uri;
 	}
 
 	public void setUri(String uri) {
 		this.uri = uri;
-	}
-
-	@Override
-	public String toString() {
-		return "ValenciaItem [id=" + id + ", adminLevel=" + adminLevel + ", district=" + district + ", update=" + update
-				+ ", parameters=" + parameters + ", coordinates=" + coordinates + "]";
 	}
 }

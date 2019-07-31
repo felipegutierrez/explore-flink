@@ -2,7 +2,8 @@ package org.sense.flink.examples.stream;
 
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.sense.flink.source.ValenciaNoiseConsumer;
+import org.sense.flink.source.ValenciaItemConsumer;
+import org.sense.flink.util.ValenciaItemType;
 
 /**
  * use zone 30 and the coordinates of the open-data portal
@@ -27,11 +28,9 @@ public class ValenciaNoiseSocket {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		// @formatter:off
-		env.addSource(new ValenciaNoiseConsumer())
-			.print();
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.NOISE)).name(ValenciaItemConsumer.class.getName())
+				.print();
 
 		env.execute(ValenciaNoiseSocket.class.getName());
-		// @formatter:on
 	}
 }

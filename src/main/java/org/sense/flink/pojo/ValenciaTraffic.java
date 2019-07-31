@@ -1,8 +1,5 @@
 package org.sense.flink.pojo;
 
-import java.io.Serializable;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -13,54 +10,40 @@ import java.util.List;
  * @author felipe
  *
  */
-public class ValenciaTraffic extends ValenciaItem implements Serializable {
-	private static final long serialVersionUID = -3147914413052930222L;
+public class ValenciaTraffic extends ValenciaItem {
+	private static final long serialVersionUID = -3555130785188765225L;
+	// additional attributes
 	private String street;
-	private Integer status;
 	private String uri;
 
-	// 2019-07-22T12:51:04.681+02:00
-	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-
-	public ValenciaTraffic() {
+	public ValenciaTraffic(Long id, Long adminLevel, String district, Date update, List<Point> coordinates,
+			Object value) {
+		super(id, adminLevel, district, update, coordinates, value);
 	}
 
-	public ValenciaTraffic(Long adminLevel, String street, String update, Integer status, String coordinates,
-			String csr, String uri) {
-		this.adminLevel = adminLevel;
-		this.street = street;
-		this.status = status;
-		this.coordinates = Point.extract(coordinates, csr);
-		this.uri = uri;
-		try {
-			this.update = formatter.parse(update);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+	public ValenciaTraffic(Long id, Long adminLevel, String district, String update, String coordinates, String csr,
+			Object value) {
+		super(id, adminLevel, district, update, coordinates, csr, value);
 	}
 
-	public ValenciaTraffic(Long adminLevel, String street, Date update, Integer status, List<Point> coordinates) {
-		this.adminLevel = adminLevel;
-		this.street = street;
-		this.update = update;
-		this.status = status;
-		this.coordinates = coordinates;
+	/** overriding default methods */
+	@Override
+	public Object getValue() {
+		return (Integer) this.value;
 	}
 
+	@Override
+	public void setValue(Object value) {
+		this.value = (Integer) value;
+	}
+
+	/** specific methods */
 	public String getStreet() {
 		return street;
 	}
 
 	public void setStreet(String street) {
 		this.street = street;
-	}
-
-	public Integer getStatus() {
-		return status;
-	}
-
-	public void setStatus(Integer status) {
-		this.status = status;
 	}
 
 	public String getUri() {

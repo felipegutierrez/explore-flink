@@ -15,7 +15,10 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Arra
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.sense.flink.pojo.Point;
+import org.sense.flink.pojo.ValenciaItem;
+import org.sense.flink.pojo.ValenciaPollution;
 import org.sense.flink.pojo.ValenciaTraffic;
+import org.sense.flink.util.ValenciaItemType;
 
 /**
  * <pre>
@@ -33,29 +36,45 @@ import org.sense.flink.pojo.ValenciaTraffic;
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraffic> {
+public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	private static final long serialVersionUID = 8320419468972434516L;
 	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";
+	private static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
 	private static final long DEFAULT_FREQUENCY_DELAY = 10000;
 	private String json;
 	private long delayTime;
+	private ValenciaItemType valenciaItemType;
 
-	public ValenciaTrafficJamConsumer() {
-		this(VALENCIA_TRAFFIC_JAM_URL, DEFAULT_FREQUENCY_DELAY);
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType) throws Exception {
+		if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+			this.json = VALENCIA_TRAFFIC_JAM_URL;
+		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
+			this.json = VALENCIA_POLLUTION_URL;
+		} else if (valenciaItemType == ValenciaItemType.NOISE) {
+			this.json = "";
+		} else {
+			throw new Exception("ValenciaItemType is NULL!");
+		}
+		this.valenciaItemType = valenciaItemType;
+		this.delayTime = DEFAULT_FREQUENCY_DELAY;
 	}
 
-	public ValenciaTrafficJamConsumer(String json) {
-		this(json, DEFAULT_FREQUENCY_DELAY);
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json) throws Exception {
+		this(valenciaItemType, json, DEFAULT_FREQUENCY_DELAY);
 	}
 
-	public ValenciaTrafficJamConsumer(String json, long delayTime) {
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, long delayTime) throws Exception {
+		if (valenciaItemType == null) {
+			throw new Exception("ValenciaItemType is NULL!");
+		}
+		this.valenciaItemType = valenciaItemType;
 		this.json = json;
 		this.delayTime = delayTime;
 	}
 
 	@Override
-	public void run(SourceContext<ValenciaTraffic> ctx) throws Exception {
+	public void run(SourceContext<ValenciaItem> ctx) throws Exception {
 		URL url = new URL(this.json);
 
 		while (true) {
@@ -89,19 +108,31 @@ public class ValenciaTrafficJamConsumer extends RichSourceFunction<ValenciaTraff
 
 				if (isFeatures) {
 					ArrayNode arrayNodeFeatures = (ArrayNode) actualObj.get("features");
-					ValenciaTraffic valenciaTraffic = null;
 					for (JsonNode jsonNode : arrayNodeFeatures) {
 						JsonNode nodeProperties = jsonNode.get("properties");
 						JsonNode nodeGeometry = jsonNode.get("geometry");
 						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
 
-						for (JsonNode coordinates : arrayNodeCoordinates) {
-							ArrayNode xy = (ArrayNode) coordinates;
-							points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));
+						ValenciaItem valenciaItem;
+						if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+							for (JsonNode coordinates : arrayNodeCoordinates) {
+								ArrayNode xy = (ArrayNode) coordinates;
+								points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));
+							}
+							valenciaItem = new ValenciaTraffic(null, null, "", new Date(), points,
+									nodeProperties.get("estado").asInt());
+						} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
+							String p = arrayNodeCoordinates.get(0).asText() + ","
+									+ arrayNodeCoordinates.get(1).asText();
+							points = Point.extract(p, typeCSR);
+							valenciaItem = new ValenciaPollution(null, null, "", new Date(), points,
+									nodeProperties.get("mediciones").asText());
+						} else if (valenciaItemType == ValenciaItemType.NOISE) {
+							throw new Exception("ValenciaItemType NOISE is not implemented!");
+						} else {
+							throw new Exception("ValenciaItemType is NULL!");
 						}
-						valenciaTraffic = new ValenciaTraffic(null, nodeProperties.get("denominacion").asText(),
-								new Date(), nodeProperties.get("estado").asInt(), points);
-						ctx.collect(valenciaTraffic);
+						ctx.collect(valenciaItem);
 					}
 				}
 			} catch (IOException ioe) {

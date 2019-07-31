@@ -6,11 +6,11 @@ import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.sense.flink.pojo.Point;
-import org.sense.flink.pojo.ValenciaTraffic;
+import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.util.SimpleGeographicalPolygons;
 
-public class ValenciaTrafficAdminLevelMap extends RichMapFunction<ValenciaTraffic, ValenciaTraffic> {
-	private static final long serialVersionUID = 4766259632616291841L;
+public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, ValenciaItem> {
+	private static final long serialVersionUID = 624354384779615610L;
 	private SimpleGeographicalPolygons sgp;
 
 	@Override
@@ -20,7 +20,7 @@ public class ValenciaTrafficAdminLevelMap extends RichMapFunction<ValenciaTraffi
 	}
 
 	@Override
-	public ValenciaTraffic map(ValenciaTraffic value) throws Exception {
+	public ValenciaItem map(ValenciaItem value) throws Exception {
 		List<Point> coordinates = value.getCoordinates();
 
 		Tuple3<Long, Long, String> adminLevel = sgp.getAdminLevel(coordinates.get(0));

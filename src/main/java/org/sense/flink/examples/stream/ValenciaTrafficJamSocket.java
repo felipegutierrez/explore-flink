@@ -2,8 +2,9 @@ package org.sense.flink.examples.stream;
 
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.sense.flink.examples.stream.udf.impl.ValenciaTrafficAdminLevelMap;
-import org.sense.flink.source.ValenciaTrafficJamConsumer;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
+import org.sense.flink.source.ValenciaItemConsumer;
+import org.sense.flink.util.ValenciaItemType;
 
 /**
  * 
@@ -21,12 +22,9 @@ public class ValenciaTrafficJamSocket {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		// @formatter:off
-		env.addSource(new ValenciaTrafficJamConsumer()).name(ValenciaTrafficJamConsumer.class.getName())
-			.map(new ValenciaTrafficAdminLevelMap()).name(ValenciaTrafficAdminLevelMap.class.getName())
-			.print();
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC)).name(ValenciaItemConsumer.class.getName())
+				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName()).print();
 
 		env.execute(ValenciaTrafficJamSocket.class.getName());
-		// @formatter:on
 	}
 }

@@ -2,8 +2,9 @@ package org.sense.flink.examples.stream;
 
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.sense.flink.examples.stream.udf.impl.ValenciaPollutionAdminLevelMap;
-import org.sense.flink.source.ValenciaPollutionConsumer;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
+import org.sense.flink.source.ValenciaItemConsumer;
+import org.sense.flink.util.ValenciaItemType;
 
 /**
  * use zone 30 and the coordinates of the open-data portal
@@ -28,12 +29,10 @@ public class ValenciaPollutionSocket {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		// @formatter:off
-		env.addSource(new ValenciaPollutionConsumer())
-			.map(new ValenciaPollutionAdminLevelMap())
-			.print();
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION))
+				.name(ValenciaItemConsumer.class.getName()).map(new ValenciaItemDistrictMap())
+				.name(ValenciaItemDistrictMap.class.getName()).print();
 
 		env.execute(ValenciaPollutionSocket.class.getName());
-		// @formatter:on
 	}
 }
