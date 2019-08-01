@@ -1,19 +1,24 @@
 package org.sense.flink.source;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.pojo.ValenciaPollution;
@@ -41,36 +46,44 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private static final long serialVersionUID = 8320419468972434516L;
 	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";
 	private static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
+	private static final String VALENCIA_NOISE_URL = "";
+	private static final String VALENCIA_TRAFFIC_JAM_FILE = "resources/valencia/traffic-jam-state.json";
+	private static final String VALENCIA_POLLUTION_FILE = "resources/valencia/air-pollution.json";
+	private static final String VALENCIA_NOISE_FILE = "resources/valencia/noise.json";
 	private static final long DEFAULT_FREQUENCY_DELAY = 10000;
 	private String json;
-	private long delayTime;
+	private long frequency;
+	private Time timeout;
 	private ValenciaItemType valenciaItemType;
 
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType) throws Exception {
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, Time timeout) throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC) {
 			this.json = VALENCIA_TRAFFIC_JAM_URL;
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 			this.json = VALENCIA_POLLUTION_URL;
 		} else if (valenciaItemType == ValenciaItemType.NOISE) {
-			this.json = "";
+			this.json = VALENCIA_NOISE_URL;
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
 		this.valenciaItemType = valenciaItemType;
-		this.delayTime = DEFAULT_FREQUENCY_DELAY;
+		this.frequency = DEFAULT_FREQUENCY_DELAY;
+		this.timeout = timeout;
 	}
 
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json) throws Exception {
-		this(valenciaItemType, json, DEFAULT_FREQUENCY_DELAY);
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, Time timeout) throws Exception {
+		this(valenciaItemType, json, DEFAULT_FREQUENCY_DELAY, Time.seconds(1));
 	}
 
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, long delayTime) throws Exception {
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, long frequency, Time timeout)
+			throws Exception {
 		if (valenciaItemType == null) {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
 		this.valenciaItemType = valenciaItemType;
 		this.json = json;
-		this.delayTime = delayTime;
+		this.frequency = frequency;
+		this.timeout = timeout;
 	}
 
 	@Override
@@ -78,11 +91,28 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		URL url = new URL(this.json);
 
 		while (true) {
-			InputStream is = url.openStream();
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+			File realTimeData = null;
+			if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+				realTimeData = new File(VALENCIA_TRAFFIC_JAM_FILE);
+			} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
+				realTimeData = new File(VALENCIA_POLLUTION_FILE);
+			} else if (valenciaItemType == ValenciaItemType.NOISE) {
+				realTimeData = new File(VALENCIA_NOISE_FILE);
+			} else {
+				throw new Exception("ValenciaItemType is NULL!");
+			}
+
+			// check if the file is older than 5 minutes
+			boolean isNew = FileUtils.isFileNewer(realTimeData,
+					Calendar.getInstance().getTimeInMillis() - timeout.toMilliseconds());
+			if (!isNew) {
+				InputStream is = url.openStream();
+				Files.copy(is, realTimeData.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			}
+
+			BufferedReader bufferedReader = Files.newBufferedReader(realTimeData.toPath());
 			StringBuilder builder = new StringBuilder();
 			String line;
-
 			try {
 				while ((line = bufferedReader.readLine()) != null) {
 					builder.append(line + "\n");
@@ -140,12 +170,17 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				Thread.sleep(this.delayTime);
+				Thread.sleep(this.frequency);
 			}
 		}
 	}
 
 	@Override
 	public void cancel() {
+	}
+
+	public static void main(String[] args) {
+		System.out.println(Time.minutes(20).toMilliseconds());
+		System.out.println((1000 * 60 * 20));
 	}
 }
