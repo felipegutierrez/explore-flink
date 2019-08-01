@@ -3,12 +3,12 @@ package org.sense.flink.examples.stream;
 import java.util.List;
 
 import org.apache.flink.api.common.functions.JoinFunction;
-import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.sense.flink.examples.stream.udf.impl.ValenciaDistrictKeySelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemFilter;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
@@ -45,14 +45,14 @@ public class ValenciaDataSkewedJoinExample {
 
 		// Sources -> add synthetic data -> filter
 		DataStream<ValenciaItem> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC, Time.minutes(5))).name(ValenciaItemConsumer.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC, Time.minutes(5).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
 				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC, point, distance)).name(ValenciaItemSyntheticData.class.getName())
 				.filter(new ValenciaItemFilter(ValenciaItemType.TRAFFIC)).name(ValenciaItemFilter.class.getName())
 				;
 
 		DataStream<ValenciaItem> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30))).name(ValenciaItemConsumer.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
 				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, districtId)).name(ValenciaItemSyntheticData.class.getName())
 				.filter(new ValenciaItemFilter(ValenciaItemType.AIR_POLLUTION)).name(ValenciaItemFilter.class.getName())
@@ -75,15 +75,6 @@ public class ValenciaDataSkewedJoinExample {
 
 	private void disclaimer() {
 		System.out.println("Disclaimer...");
-	}
-
-	private static class ValenciaDistrictKeySelector implements KeySelector<ValenciaItem, Long> {
-		private static final long serialVersionUID = 621217734722120687L;
-
-		@Override
-		public Long getKey(ValenciaItem value) throws Exception {
-			return value.getId();
-		}
 	}
 
 	private static class TrafficPollutionByDistrictJoinFunction

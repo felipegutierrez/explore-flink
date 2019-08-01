@@ -30,7 +30,7 @@ public class ValenciaPollutionSocket {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		env.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(5)))
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(5).toMilliseconds()))
 				.name(ValenciaItemConsumer.class.getName()).map(new ValenciaItemDistrictMap())
 				.name(ValenciaItemDistrictMap.class.getName()).print();
 

@@ -52,11 +52,11 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private static final String VALENCIA_NOISE_FILE = "resources/valencia/noise.json";
 	private static final long DEFAULT_FREQUENCY_DELAY = 10000;
 	private String json;
-	private long frequency;
-	private Time timeout;
+	private long frequencyMilliSeconds;
+	private long timeoutMillSeconds;
 	private ValenciaItemType valenciaItemType;
 
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, Time timeout) throws Exception {
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds) throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC) {
 			this.json = VALENCIA_TRAFFIC_JAM_URL;
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
@@ -67,23 +67,24 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
 		this.valenciaItemType = valenciaItemType;
-		this.frequency = DEFAULT_FREQUENCY_DELAY;
-		this.timeout = timeout;
+		this.frequencyMilliSeconds = DEFAULT_FREQUENCY_DELAY;
+		this.timeoutMillSeconds = timeoutMillSeconds;
 	}
 
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, Time timeout) throws Exception {
-		this(valenciaItemType, json, DEFAULT_FREQUENCY_DELAY, Time.seconds(1));
-	}
-
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, long frequency, Time timeout)
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, Time timeoutMillSeconds)
 			throws Exception {
+		this(valenciaItemType, json, DEFAULT_FREQUENCY_DELAY, Time.seconds(1).toMilliseconds());
+	}
+
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, long frequencyMilliSeconds,
+			long timeoutMillSeconds) throws Exception {
 		if (valenciaItemType == null) {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
 		this.valenciaItemType = valenciaItemType;
 		this.json = json;
-		this.frequency = frequency;
-		this.timeout = timeout;
+		this.frequencyMilliSeconds = frequencyMilliSeconds;
+		this.timeoutMillSeconds = timeoutMillSeconds;
 	}
 
 	@Override
@@ -104,7 +105,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 			// check if the file is older than 5 minutes
 			boolean isNew = FileUtils.isFileNewer(realTimeData,
-					Calendar.getInstance().getTimeInMillis() - timeout.toMilliseconds());
+					Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
 			if (!isNew) {
 				InputStream is = url.openStream();
 				Files.copy(is, realTimeData.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -170,7 +171,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				Thread.sleep(this.frequency);
+				Thread.sleep(this.frequencyMilliSeconds);
 			}
 		}
 	}

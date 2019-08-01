@@ -4,10 +4,13 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemAggWindow;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictAsKeyMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
+import org.sense.flink.examples.stream.udf.impl.ValenciaTupleKeySelector;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
@@ -39,24 +42,27 @@ public class ValenciaDataSkewedCombinerExample {
 
 		// Sources -> add synthetic data -> filter
 		DataStream<Tuple2<Long , ValenciaItem>> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC, Time.minutes(5))).name(ValenciaItemConsumer.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC, Time.minutes(5).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
 				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC, point, distance)).name(ValenciaItemSyntheticData.class.getName())
 				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
 				;
 		DataStream<Tuple2<Long , ValenciaItem>> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30))).name(ValenciaItemConsumer.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
 				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, districtId)).name(ValenciaItemSyntheticData.class.getName())
 				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
 				;
 
 		// Combine -> Print
-		// streamTrafficJam.union(streamAirPollution)
-				// .print()
-		;
-		streamTrafficJam.print();
-		streamAirPollution.print();
+		streamTrafficJam.union(streamAirPollution)
+				.keyBy(new ValenciaTupleKeySelector())
+				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
+				.apply(new ValenciaItemAggWindow()).name(ValenciaItemAggWindow.class.getName())
+				.print()
+				;
+		// streamTrafficJam.print();
+		// streamAirPollution.print();
 
 		env.execute(ValenciaDataSkewedCombinerExample.class.getName());
 		// @formatter:on
