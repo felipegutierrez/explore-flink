@@ -1,6 +1,8 @@
 package org.sense.flink.examples.stream.trigger.impl;
 
 import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.flink.util.Preconditions;
 import org.sense.flink.examples.stream.trigger.BundleTrigger;
@@ -11,6 +13,8 @@ import org.slf4j.LoggerFactory;
 
 import com.clearspring.analytics.stream.cardinality.HyperLogLog;
 import com.clearspring.analytics.stream.cardinality.ICardinality;
+import com.clearspring.analytics.stream.frequency.CountMinSketch;
+import com.clearspring.analytics.stream.frequency.IFrequency;
 
 /**
  * A {@link BundleTrigger} that fires once the count of elements in a bundle
@@ -29,6 +33,8 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 	private transient long count = 0;
 	private transient BundleTriggerCallback callback;
 	private transient ICardinality cardinality;
+	private transient IFrequency frequency;
+	private transient Set<K> items;
 
 	public CountBundleTriggerDynamic() throws Exception {
 		initCardinalitySketch();
@@ -46,6 +52,8 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 	public void onElement(K key, T element) throws Exception {
 		// add key element on the HyperLogLog to infer the data-stream cardinality
 		this.cardinality.offer(key);
+		this.frequency.add((Long) key, 1);
+		this.items.add(key);
 		// System.out.println(key);
 		count++;
 		if (count >= maxCount) {
@@ -57,15 +65,43 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 	@Override
 	public void reset() {
 		if (count != 0) {
-			long cardinalityHLL = this.cardinality.cardinality();
+			long cardinalityHLL = cardinality.cardinality();
 			double selectivity = Double.parseDouble(String.valueOf(cardinalityHLL))
 					/ Double.parseDouble(String.valueOf(count));
 			double itemsPercentToShuffle = (selectivity / cardinalityHLL);
+
+			long frequencyCMS = 0;
+			for (K key : this.items) {
+				long frequencyKey = frequency.estimateCount((Long) key);
+				if (frequencyKey > frequencyCMS) {
+					frequencyCMS = frequencyKey;
+				}
+			}
+			String msg = "cardinalityHLL[" + cardinalityHLL + "] frequencyCMS[" + frequencyCMS + "] count[" + count
+					+ "] selectivity[" + dec.format(selectivity) + "]";
+			logger.info(msg);
+			System.out.println(msg);
+			if (frequencyCMS > 20) {
+				// necessary to apply combiner
+				if (maxCount + INCREMENT < LIMIT_MAX_COUNT) {
+					maxCount = maxCount + INCREMENT;
+				}
+			} else {
+				// reduce the combiner degree
+				if (maxCount - INCREMENT > LIMIT_MIN_COUNT) {
+					maxCount = maxCount - INCREMENT;
+				}
+			}
+
+			// @formatter:off
+			/**
+			
 
 			String msg = "cardinalityHLL[" + cardinalityHLL + "] count[" + count + "] selectivity["
 					+ dec.format(selectivity) + "]";
 			logger.info(msg);
 			System.out.println(msg);
+			*/
 
 			/**
 			 * <pre>
@@ -74,6 +110,7 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 			 * If (errorDegree * 100) < 0.5 it means less then 50% of the items are going to the shuffle phase.
 			 * </pre>
 			 */
+			/**
 			if (itemsPercentToShuffle == 1.0 || (itemsPercentToShuffle * 100) > 0.9) {
 				// necessary to apply combiner
 				if (maxCount + INCREMENT < LIMIT_MAX_COUNT) {
@@ -85,14 +122,23 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 					maxCount = maxCount - INCREMENT;
 				}
 			}
+			*/
+			// @formatter:on
 		}
 		count = 0;
 		cardinality = new HyperLogLog(16);
+		frequency = new CountMinSketch(3, 32000, 1);
 	}
 
 	private void initCardinalitySketch() {
 		if (this.cardinality == null) {
 			this.cardinality = new HyperLogLog(16);
+		}
+		if (this.frequency == null) {
+			this.frequency = new CountMinSketch(3, 32000, 1);
+		}
+		if (this.items == null) {
+			this.items = new HashSet<K>();
 		}
 	}
 

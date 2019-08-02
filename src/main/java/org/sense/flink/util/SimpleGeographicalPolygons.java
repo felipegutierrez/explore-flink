@@ -221,7 +221,8 @@ public class SimpleGeographicalPolygons {
 		// points.add(new Point(726272.352, 4372853.588, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
 		// Converting coordinates: 725140.37, 4371855.492 > -0.3828691121670698, 39.466853209056104 > 3,9,Extramurs
 		// points.add(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		points.add(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		// points.add(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		points.add(new Point(726236.403599999845028, 4373308.101, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
 
 		sgp.printProperties(points);
 		// @formatter:on
