@@ -1,11 +1,11 @@
 package org.sense.flink.examples.stream;
 
-import static org.sense.flink.util.MetricLabels.METRIC_COMBINER;
-import static org.sense.flink.util.MetricLabels.METRIC_MAPPER;
+import static org.sense.flink.util.MetricLabels.METRIC_SENSOR_COMBINER;
+import static org.sense.flink.util.MetricLabels.METRIC_SENSOR_STATION_PLATFORM_MAPPER;
 import static org.sense.flink.util.MetricLabels.METRIC_SENSOR_MAPPER;
-import static org.sense.flink.util.MetricLabels.METRIC_SINK_FUNCTION;
-import static org.sense.flink.util.MetricLabels.METRIC_SKEWED_MAPPER;
-import static org.sense.flink.util.MetricLabels.METRIC_WINDOW_FUNCTION;
+import static org.sense.flink.util.MetricLabels.METRIC_SENSOR_SINK;
+import static org.sense.flink.util.MetricLabels.METRIC_SENSOR_STATION_PLATFORM_SKEWED_MAPPER;
+import static org.sense.flink.util.MetricLabels.METRIC_SENSOR_STATION_PLATFORM_WINDOW;
 import static org.sense.flink.util.SensorTopics.TOPIC_STATION_01_TICKETS;
 import static org.sense.flink.util.SensorTopics.TOPIC_STATION_01_TRAINS;
 import static org.sense.flink.util.SensorTopics.TOPIC_STATION_02_TICKETS;
@@ -81,13 +81,13 @@ public class MqttSensorDataSkewedCombinerByKeySkewedDAG {
 
 		streamTrainsStation01.union(streamTrainsStation02).union(streamTicketsStation01).union(streamTicketsStation02)
 				.map(new SensorTypePlatformStationMapper(METRIC_SENSOR_MAPPER)).name(METRIC_SENSOR_MAPPER)
-				.transform(METRIC_COMBINER, info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(METRIC_COMBINER)
-				.map(new StationPlatformMapper(METRIC_MAPPER)).name(METRIC_MAPPER)
+				.transform(METRIC_SENSOR_COMBINER, info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(METRIC_SENSOR_COMBINER)
+				.map(new StationPlatformMapper(METRIC_SENSOR_STATION_PLATFORM_MAPPER)).name(METRIC_SENSOR_STATION_PLATFORM_MAPPER)
 				.keyBy(new StationPlatformKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
-				.apply(new StationPlatformRichWindowFunction(METRIC_WINDOW_FUNCTION)).name(METRIC_WINDOW_FUNCTION)
-				.map(new StationPlatformMapper(METRIC_SKEWED_MAPPER)).name(METRIC_SKEWED_MAPPER)
-				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(METRIC_SINK_FUNCTION)
+				.apply(new StationPlatformRichWindowFunction(METRIC_SENSOR_STATION_PLATFORM_WINDOW)).name(METRIC_SENSOR_STATION_PLATFORM_WINDOW)
+				.map(new StationPlatformMapper(METRIC_SENSOR_STATION_PLATFORM_SKEWED_MAPPER)).name(METRIC_SENSOR_STATION_PLATFORM_SKEWED_MAPPER)
+				.addSink(new MqttStationPlatformPublisher(ipAddressSink, topic)).name(METRIC_SENSOR_SINK)
 				;
 
 		System.out.println("........................ ");

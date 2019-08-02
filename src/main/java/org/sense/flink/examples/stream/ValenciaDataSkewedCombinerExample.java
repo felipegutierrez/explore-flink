@@ -1,11 +1,19 @@
 package org.sense.flink.examples.stream;
 
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_COMBINER;
+
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.sense.flink.examples.stream.operator.impl.MapStreamBundleOperator;
+import org.sense.flink.examples.stream.trigger.impl.CountBundleTrigger;
+import org.sense.flink.examples.stream.udf.MapBundleFunction;
+import org.sense.flink.examples.stream.udf.impl.MapBundleValenciaImpl;
 import org.sense.flink.examples.stream.udf.impl.ValenciaDistrictItemTypeAggWindow;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictAsKeyMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
@@ -58,8 +66,20 @@ public class ValenciaDataSkewedCombinerExample {
 				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
 				;
 
-		// Combine -> Print
+		// Combiner
+		// MapBundleFunction<Long, ValenciaItem, Tuple2<Long, ValenciaItem>, ValenciaItem> myMapBundleFunction = new MapBundleValenciaImpl();
+		// CountBundleTriggerDynamic<Long, Tuple2<Long, ValenciaItem>> bundleTrigger = new CountBundleTriggerDynamic<Long, Tuple2<Long, ValenciaItem>>();
+		// KeySelector<Tuple2<Long, ValenciaItem>, Long> keyBundleSelector = (KeySelector<Tuple2<Long, ValenciaItem>, Long>) value -> value.f0;
+		MapBundleFunction<Long, ValenciaItem, Tuple2<Long, ValenciaItem>, ValenciaItem> myMapBundleFunction = new MapBundleValenciaImpl();
+		CountBundleTrigger<Tuple2<Long, ValenciaItem>> bundleTrigger = new CountBundleTrigger<Tuple2<Long, ValenciaItem>>(100);
+		KeySelector<Tuple2<Long, ValenciaItem>, Long> keyBundleSelector = (KeySelector<Tuple2<Long, ValenciaItem>, Long>) value -> value.f0;
+		TypeInformation<ValenciaItem> info = TypeInformation.of(ValenciaItem.class);
+
+		// Union -> Combiner -> Average -> Print
 		streamTrafficJam.union(streamAirPollution)
+				// .transform(METRIC_VALENCIA_COMBINER, info, new MapStreamBundleOperatorDynamic<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(METRIC_VALENCIA_COMBINER)
+		.transform(METRIC_VALENCIA_COMBINER, info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(METRIC_VALENCIA_COMBINER)
+				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
 				.keyBy(new ValenciaItemKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new ValenciaDistrictItemTypeAggWindow()).name(ValenciaDistrictItemTypeAggWindow.class.getName())

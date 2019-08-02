@@ -82,6 +82,7 @@ public class ValenciaItemSyntheticData implements FlatMapFunction<ValenciaItem, 
 						anotherValue.setValue(veryBadAir);
 						anotherValue.setDistrict("Quatre Carreres");
 						out.collect(anotherValue);
+						// System.out.println("CHANGED value ValenciaPollution");
 					}
 				} else if (valenciaItemType == ValenciaItemType.NOISE) {
 				} else {
