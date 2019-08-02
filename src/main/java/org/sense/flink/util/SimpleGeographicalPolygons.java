@@ -2,6 +2,7 @@ package org.sense.flink.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,6 +29,10 @@ import org.slf4j.LoggerFactory;
 
 public class SimpleGeographicalPolygons {
 	private static final Logger logger = LoggerFactory.getLogger(SimpleGeographicalPolygons.class);
+	private static final String CURRENT_PATH = Paths.get("").toAbsolutePath().toString() + "/";
+	private static final String RESOURCE_DIR = "resources/valencia/";
+	private static final String DEFAULT_VALENCIA_DISTRICTS_POLYGONS = "admin_level_9_Valencia_polygons.geojson";
+
 	private File geoJSON;
 	private DataStore dataStore;
 	private FilterFactory2 filerFactory2;
@@ -37,12 +42,17 @@ public class SimpleGeographicalPolygons {
 	/**
 	 * The Valencia GeoJSON file comes on the format urn:ogc:def:crs:OGC:1.3:CRS84,
 	 * which is equivalent to the format EPSG:4326 on GeoTools
+	 * 
+	 * @throws Exception
 	 */
-	public SimpleGeographicalPolygons() {
-		this(new File("resources/valencia/admin_level_9_Valencia_polygons.geojson"));
+	public SimpleGeographicalPolygons() throws Exception {
+		this(new File(CURRENT_PATH + RESOURCE_DIR + DEFAULT_VALENCIA_DISTRICTS_POLYGONS));
 	}
 
-	public SimpleGeographicalPolygons(File geoJSON) {
+	public SimpleGeographicalPolygons(File geoJSON) throws Exception {
+		if (!geoJSON.exists()) {
+			throw new Exception("GeoJSON file [" + geoJSON + "] which contains the polygons does not exist!");
+		}
 		this.geoJSON = geoJSON;
 		this.createDataStore();
 		this.crsCoordinateTransformer = new CRSCoordinateTransformer();
@@ -197,7 +207,7 @@ public class SimpleGeographicalPolygons {
 		}
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		// @formatter:off
 		SimpleGeographicalPolygons sgp = new SimpleGeographicalPolygons();
 		List<Point> points = new ArrayList<Point>();

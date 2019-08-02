@@ -27,7 +27,7 @@ public class ValenciaItemFilter implements FilterFunction<ValenciaItem> {
 	@Override
 	public boolean filter(ValenciaItem value) throws Exception {
 		boolean flag = false;
-		if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			for (int i = 0; i < status.length; i++) {
 				if (((Integer) value.getValue()).intValue() == this.status[i].intValue()) {
 					// System.out.println(value);

@@ -111,15 +111,19 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.5.3</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.geotools/ -->
 		<dependency>
 			<groupId>org.geotools</groupId>
 			<artifactId>gt-referencing</artifactId>
 			<version>${geotools.version}</version>
 		</dependency>
+		<!-- <dependency> <groupId>org.geotools</groupId> <artifactId>gt-epsg-hsql</artifactId> 
+			<version>${geotools.version}</version> </dependency> -->
 		<dependency>
 			<groupId>org.geotools</groupId>
-			<artifactId>gt-epsg-hsql</artifactId>
+			<artifactId>gt-epsg-wkt</artifactId>
 			<version>${geotools.version}</version>
+			<!-- <scope>test</scope> -->
 		</dependency>
 		<dependency>
 			<groupId>org.geotools</groupId>
@@ -264,6 +268,9 @@
 									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
 									<mainClass>org.sense.flink.App</mainClass>
 								</transformer>
+								<!-- This bit merges the various GeoTools META-INF/services files -->
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
 							</transformers>
 							<createDependencyReducedPom>false</createDependencyReducedPom>
 						</configuration>

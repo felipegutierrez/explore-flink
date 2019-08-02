@@ -193,6 +193,50 @@ public class AirPollution implements Serializable {
 		// @formatter:on
 	}
 
+	public void addAirPollution(AirPollution value) {
+		// @formatter:off
+		if (value == null) {
+			return;
+		}
+		if (this.so2 != null && value.so2 != null && this.so2.doubleValue() > 0 && value.so2.doubleValue() > 0 ) {
+			this.so2 = (this.so2 + value.so2) / 2;
+		}
+		if (this.co != null && value.co != null && this.co.doubleValue() > 0 && value.co.doubleValue() > 0 ) {
+			this.co = (this.co + value.co) / 2;
+		}
+		if (this.ozono != null && value.ozono != null && this.ozono.doubleValue() > 0 && value.ozono.doubleValue() > 0 ) {
+			this.ozono = (this.ozono + value.ozono) / 2;
+		}
+		if (this.nox != null && value.nox != null && this.nox.doubleValue() > 0 && value.nox.doubleValue() > 0 ) {
+			this.nox = (this.nox + value.nox) / 2;
+		}
+		if (this.no != null && value.no != null && this.no.doubleValue() > 0 && value.no.doubleValue() > 0 ) {
+			this.no = (this.no + value.no) / 2;
+		}
+		if (this.no2 != null && value.no2 != null && this.no2.doubleValue() > 0 && value.no2.doubleValue() > 0 ) {
+			this.no2 = (this.no2 + value.no2) / 2;
+		}
+		if (this.benc != null && value.benc != null && this.benc.doubleValue() > 0 && value.benc.doubleValue() > 0 ) {
+			this.benc = (this.benc + value.benc) / 2;
+		}
+		if (this.tolue != null && value.tolue != null && this.tolue.doubleValue() > 0 && value.tolue.doubleValue() > 0 ) {
+			this.tolue = (this.tolue + value.tolue) / 2;
+		}
+		if (this.xilen != null && value.xilen != null && this.xilen.doubleValue() > 0 && value.xilen.doubleValue() > 0 ) {
+			this.xilen = (this.xilen + value.xilen) / 2;
+		}
+		if (this.pm10 != null && value.pm10 != null && this.pm10.doubleValue() > 0 && value.pm10.doubleValue() > 0 ) {
+			this.pm10 = (this.pm10 + value.pm10) / 2;
+		}
+		if (this.pm2_5 != null && value.pm2_5 != null && this.pm2_5.doubleValue() > 0 && value.pm2_5.doubleValue() > 0 ) {
+			this.pm2_5 = (this.pm2_5 + value.pm2_5) / 2;
+		}
+		if (this.spl != null && value.spl != null && this.spl.doubleValue() > 0 && value.spl.doubleValue() > 0 ) {
+			this.spl = (this.spl + value.spl) / 2;
+		}
+		// @formatter:on
+	}
+
 	@Override
 	public String toString() {
 		return "AirPollution [SO2(µg/m³)=" + so2 + ", CO(mg/m³)=" + co + ", Ozono(µg/m³)=" + ozono + ", NOx(µg/m³)="

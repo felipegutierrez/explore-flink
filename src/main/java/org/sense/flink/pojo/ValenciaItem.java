@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.sense.flink.util.ValenciaItemType;
+
 /**
  * This class is a generic class for all items from Valencia open-data web
  * portal.
@@ -25,21 +27,24 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 	protected Date update;
 	protected List<Point> coordinates;
 	protected Object value;
+	protected ValenciaItemType type;
 
 	// 2019-07-22T12:51:04.681+02:00
 	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
-	public ValenciaItem(Long id, Long adminLevel, String district, Date update, List<Point> coordinates, Object value) {
+	public ValenciaItem(Long id, Long adminLevel, String district, Date update, ValenciaItemType type,
+			List<Point> coordinates, Object value) {
 		this.id = id;
 		this.adminLevel = adminLevel;
 		this.district = district;
 		this.update = update;
+		this.type = type;
 		this.coordinates = coordinates;
 		this.value = value;
 	}
 
-	public ValenciaItem(Long id, Long adminLevel, String district, String update, String coordinates, String csr,
-			Object value) {
+	public ValenciaItem(Long id, Long adminLevel, String district, String update, ValenciaItemType type,
+			String coordinates, String csr, Object value) {
 		this.id = id;
 		this.adminLevel = adminLevel;
 		this.district = district;
@@ -49,6 +54,7 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
+		this.type = type;
 		this.value = value;
 	}
 
@@ -95,6 +101,13 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 		this.coordinates.add(point);
 	}
 
+	public void addCoordinates(List<Point> points) {
+		if (this.coordinates == null) {
+			this.coordinates = new ArrayList<Point>();
+		}
+		this.coordinates.addAll(points);
+	}
+
 	public String getDistrict() {
 		return district;
 	}
@@ -111,6 +124,16 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 		this.value = value;
 	}
 
+	public abstract void addValue(Object value);
+
+	public ValenciaItemType getType() {
+		return type;
+	}
+
+	public void setType(ValenciaItemType type) {
+		this.type = type;
+	}
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
@@ -119,6 +142,6 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "ValenciaItemA [id=" + id + ", adminLevel=" + adminLevel + ", district=" + district + ", update="
-				+ update + ", value=" + value + ", coordinates=" + coordinates + "]";
+				+ update + ", type=" + type + ", value=" + value + ", coordinates=" + coordinates + "]";
 	}
 }

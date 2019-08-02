@@ -14,10 +14,10 @@ import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
+import org.sense.flink.pojo.ValenciaItem;
 
-public class MqttStationPlatformPublisher extends RichSinkFunction<Tuple2<CompositeKeyStationPlatform, MqttSensor>> {
-	private static final long serialVersionUID = 2574156289932514868L;
-
+public class MqttValenciaItemPublisher extends RichSinkFunction<Tuple2<Long, ValenciaItem>> {
+	private static final long serialVersionUID = 1L;
 	String user = env("ACTIVEMQ_USER", "admin");
 	String password = env("ACTIVEMQ_PASSWORD", "password");
 	String host = env("ACTIVEMQ_HOST", "localhost");
@@ -30,19 +30,19 @@ public class MqttStationPlatformPublisher extends RichSinkFunction<Tuple2<Compos
 	private String topic;
 	private QoS qos;
 
-	public MqttStationPlatformPublisher(String topic) {
+	public MqttValenciaItemPublisher(String topic) {
 		this(DEFAUL_HOST, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttStationPlatformPublisher(String host, String topic) {
+	public MqttValenciaItemPublisher(String host, String topic) {
 		this(host, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttStationPlatformPublisher(String host, int port, String topic) {
+	public MqttValenciaItemPublisher(String host, int port, String topic) {
 		this(host, port, topic, QoS.AT_LEAST_ONCE);
 	}
 
-	public MqttStationPlatformPublisher(String host, int port, String topic, QoS qos) {
+	public MqttValenciaItemPublisher(String host, int port, String topic, QoS qos) {
 		this.host = host;
 		this.port = port;
 		this.topic = topic;
@@ -75,8 +75,8 @@ public class MqttStationPlatformPublisher extends RichSinkFunction<Tuple2<Compos
 	}
 
 	@Override
-	public void invoke(Tuple2<CompositeKeyStationPlatform, MqttSensor> value) throws Exception {
-		System.out.println(MqttStationPlatformPublisher.class.getSimpleName() + ": " + value);
+	public void invoke(Tuple2<Long, ValenciaItem> value) throws Exception {
+		// System.out.println(MqttValenciaItemPublisher.class.getSimpleName() + ": " + value);
 		System.out.flush();
 
 		int size = value.toString().length();

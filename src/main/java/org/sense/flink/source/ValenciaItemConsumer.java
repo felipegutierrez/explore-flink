@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,12 +45,14 @@ import org.sense.flink.util.ValenciaItemType;
 public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	private static final long serialVersionUID = 8320419468972434516L;
+	private static final String CURRENT_PATH = Paths.get("").toAbsolutePath().toString() + "/";
+	private static final String RESOURCE_DIR = "resources/valencia/";
 	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";
 	private static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
 	private static final String VALENCIA_NOISE_URL = "";
-	private static final String VALENCIA_TRAFFIC_JAM_FILE = "resources/valencia/traffic-jam-state.json";
-	private static final String VALENCIA_POLLUTION_FILE = "resources/valencia/air-pollution.json";
-	private static final String VALENCIA_NOISE_FILE = "resources/valencia/noise.json";
+	private static final String VALENCIA_TRAFFIC_JAM_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state.json";
+	private static final String VALENCIA_POLLUTION_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution.json";
+	private static final String VALENCIA_NOISE_FILE = CURRENT_PATH + RESOURCE_DIR + "noise.json";
 	private static final long DEFAULT_FREQUENCY_DELAY = 10000;
 	private String json;
 	private long frequencyMilliSeconds;
@@ -57,7 +60,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private ValenciaItemType valenciaItemType;
 
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds) throws Exception {
-		if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			this.json = VALENCIA_TRAFFIC_JAM_URL;
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 			this.json = VALENCIA_POLLUTION_URL;
@@ -69,6 +72,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.valenciaItemType = valenciaItemType;
 		this.frequencyMilliSeconds = DEFAULT_FREQUENCY_DELAY;
 		this.timeoutMillSeconds = timeoutMillSeconds;
+		createResourceDir();
 	}
 
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, Time timeoutMillSeconds)
@@ -85,6 +89,14 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.json = json;
 		this.frequencyMilliSeconds = frequencyMilliSeconds;
 		this.timeoutMillSeconds = timeoutMillSeconds;
+		createResourceDir();
+	}
+
+	private void createResourceDir() {
+		File directory = new File(CURRENT_PATH + RESOURCE_DIR);
+		if (!directory.exists()) {
+			directory.mkdir();
+		}
 	}
 
 	@Override
@@ -92,8 +104,9 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		URL url = new URL(this.json);
 
 		while (true) {
+
 			File realTimeData = null;
-			if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+			if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 				realTimeData = new File(VALENCIA_TRAFFIC_JAM_FILE);
 			} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 				realTimeData = new File(VALENCIA_POLLUTION_FILE);
@@ -103,15 +116,23 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 				throw new Exception("ValenciaItemType is NULL!");
 			}
 
-			// check if the file is older than 5 minutes
-			boolean isNew = FileUtils.isFileNewer(realTimeData,
-					Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
+			boolean isNew = false;
+			if (realTimeData.exists()) {
+				// check if the file is older than 5 minutes
+				isNew = FileUtils.isFileNewer(realTimeData.getAbsoluteFile(),
+						Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
+			} else {
+				createResourceDir();
+				System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not exist!");
+			}
 			if (!isNew) {
+				System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not exist or it is old!");
+				System.out.println(realTimeData.getAbsoluteFile().toPath().toString());
 				InputStream is = url.openStream();
-				Files.copy(is, realTimeData.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(is, realTimeData.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 			}
 
-			BufferedReader bufferedReader = Files.newBufferedReader(realTimeData.toPath());
+			BufferedReader bufferedReader = Files.newBufferedReader(realTimeData.getAbsoluteFile().toPath());
 			StringBuilder builder = new StringBuilder();
 			String line;
 			try {
@@ -145,7 +166,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
 
 						ValenciaItem valenciaItem;
-						if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+						if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 							for (JsonNode coordinates : arrayNodeCoordinates) {
 								ArrayNode xy = (ArrayNode) coordinates;
 								points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));

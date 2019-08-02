@@ -13,7 +13,6 @@ import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
-import org.sense.flink.examples.stream.udf.impl.PrinterSink;
 
 public class MqttStringPublisher extends RichSinkFunction<String> {
 	private static final long serialVersionUID = 1736047291991894958L;
@@ -51,6 +50,11 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 		this.port = port;
 		this.topic = topic;
 		this.qos = qos;
+		disclaimer();
+	}
+
+	private void disclaimer() {
+		System.out.println("mosquitto_sub -h " + host + " -t " + topic);
 	}
 
 	@Override
@@ -81,7 +85,7 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 	public void invoke(String value) throws Exception {
 		this.meter.markEvent();
 		// this.counter.inc();
-		System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
+		// System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
 		System.out.flush();
 
 		int size = value.toString().length();

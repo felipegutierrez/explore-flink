@@ -10,6 +10,10 @@ This project is based on [Apache Flink](https://flink.apache.org/) and it is con
 cd explore-flink/
 mvn clean package
 ```
+or skiping the tests
+```
+mvn clean package -DskipTests
+```
 
 ### Flink cluster
 

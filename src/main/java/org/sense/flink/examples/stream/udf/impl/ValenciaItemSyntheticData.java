@@ -53,7 +53,7 @@ public class ValenciaItemSyntheticData implements FlatMapFunction<ValenciaItem, 
 		for (Point p : coordinates) {
 			double d = p.euclideanDistance(this.point);
 			if (d <= distance) {
-				if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+				if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 					// min = 1 , max = 3, range = (max - min)
 					int min = 1, max = 3;
 					value.setValue(new Random().nextInt((max - min) + 1) + min);
@@ -71,7 +71,7 @@ public class ValenciaItemSyntheticData implements FlatMapFunction<ValenciaItem, 
 					throw new Exception("ValenciaItemType is NULL!");
 				}
 			} else {
-				if (valenciaItemType == ValenciaItemType.TRAFFIC) {
+				if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 				} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 					if (this.districtId != null && value.getId().longValue() <= 5) {
 						ValenciaItem anotherValue = (ValenciaItem) value.clone();

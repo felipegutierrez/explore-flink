@@ -3,6 +3,8 @@ package org.sense.flink.pojo;
 import java.util.Date;
 import java.util.List;
 
+import org.sense.flink.util.ValenciaItemType;
+
 /**
  * This class was developed based on the metadata available at
  * http://gobiernoabierto.valencia.es/en/dataset/?id=estado-trafico-tiempo-real
@@ -18,12 +20,12 @@ public class ValenciaTraffic extends ValenciaItem {
 
 	public ValenciaTraffic(Long id, Long adminLevel, String district, Date update, List<Point> coordinates,
 			Object value) {
-		super(id, adminLevel, district, update, coordinates, value);
+		super(id, adminLevel, district, update, ValenciaItemType.TRAFFIC_JAM, coordinates, value);
 	}
 
 	public ValenciaTraffic(Long id, Long adminLevel, String district, String update, String coordinates, String csr,
 			Object value) {
-		super(id, adminLevel, district, update, coordinates, csr, value);
+		super(id, adminLevel, district, update, ValenciaItemType.TRAFFIC_JAM, coordinates, csr, value);
 	}
 
 	/** overriding default methods */
@@ -35,6 +37,16 @@ public class ValenciaTraffic extends ValenciaItem {
 	@Override
 	public void setValue(Object value) {
 		this.value = (Integer) value;
+	}
+
+	@Override
+	public void addValue(Object value) {
+		if (this.value == null && value != null) {
+			this.value = (Integer) value;
+		} else {
+			Integer tmp = (Integer) value;
+			this.value = ((Integer) this.value + tmp) / 2;
+		}
 	}
 
 	/** specific methods */

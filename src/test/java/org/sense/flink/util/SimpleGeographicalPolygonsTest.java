@@ -18,7 +18,7 @@ public class SimpleGeographicalPolygonsTest extends TestCase {
 		return new TestSuite(SimpleGeographicalPolygonsTest.class);
 	}
 
-	public void testOsmId() {
+	public void testOsmId() throws Exception {
 		SimpleGeographicalPolygons sgp = new SimpleGeographicalPolygons(
 				new File("resources/valencia/admin_level_9_Valencia_polygons.geojson"));
 		Long osmId = sgp.getOsmId(new Point(-0.3630, 39.4477, CRSCoordinateTransformer.DEFAULT_CRS_TARGET));
@@ -28,7 +28,7 @@ public class SimpleGeographicalPolygonsTest extends TestCase {
 		assertEquals(Long.valueOf(4231802), osmId);
 	}
 
-	public void testAdminLevel() {
+	public void testAdminLevel() throws Exception {
 		SimpleGeographicalPolygons sgp = new SimpleGeographicalPolygons(
 				new File("resources/valencia/admin_level_9_Valencia_polygons.geojson"));
 		Tuple3<Long, Long, String> adminLevel = sgp
@@ -39,7 +39,7 @@ public class SimpleGeographicalPolygonsTest extends TestCase {
 		assertEquals(Long.valueOf(9), adminLevel.f1);
 	}
 
-	public void testContains() {
+	public void testContains() throws Exception {
 		SimpleGeographicalPolygons sgp = new SimpleGeographicalPolygons(
 				new File("resources/valencia/admin_level_9_Valencia_polygons.geojson"));
 		Boolean contains = sgp.contains(new Point(-0.3630, 39.4477, CRSCoordinateTransformer.DEFAULT_CRS_TARGET));

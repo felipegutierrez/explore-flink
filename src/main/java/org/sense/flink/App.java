@@ -259,7 +259,7 @@ public class App {
 					app = 0;
 					break;
 				case 26:
-					new ValenciaDataSkewedCombinerExample();
+					new ValenciaDataSkewedCombinerExample(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				default:

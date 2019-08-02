@@ -6,11 +6,13 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.udf.impl.ValenciaItemAggWindow;
+import org.sense.flink.examples.stream.udf.impl.ValenciaDistrictAndItemTypeKeySelector;
+import org.sense.flink.examples.stream.udf.impl.ValenciaDistrictItemTypeAggWindow;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictAsKeyMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
-import org.sense.flink.examples.stream.udf.impl.ValenciaTupleKeySelector;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemToStringMap;
+import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
@@ -23,11 +25,13 @@ import org.sense.flink.util.ValenciaItemType;
  */
 public class ValenciaDataSkewedCombinerExample {
 
+	private final String topic = "topic-valencia-data-skewed";
+
 	public static void main(String[] args) throws Exception {
-		new ValenciaDataSkewedCombinerExample();
+		new ValenciaDataSkewedCombinerExample("127.0.0.1", "127.0.0.1");
 	}
 
-	public ValenciaDataSkewedCombinerExample() throws Exception {
+	public ValenciaDataSkewedCombinerExample(String ipAddressSource01, String ipAddressSink) throws Exception {
 		disclaimer();
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -42,9 +46,9 @@ public class ValenciaDataSkewedCombinerExample {
 
 		// Sources -> add synthetic data -> filter
 		DataStream<Tuple2<Long , ValenciaItem>> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC, Time.minutes(5).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
 				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
-				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC, point, distance)).name(ValenciaItemSyntheticData.class.getName())
+				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance)).name(ValenciaItemSyntheticData.class.getName())
 				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
 				;
 		DataStream<Tuple2<Long , ValenciaItem>> streamAirPollution = env
@@ -56,13 +60,13 @@ public class ValenciaDataSkewedCombinerExample {
 
 		// Combine -> Print
 		streamTrafficJam.union(streamAirPollution)
-				.keyBy(new ValenciaTupleKeySelector())
+				.keyBy(new ValenciaDistrictAndItemTypeKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
-				.apply(new ValenciaItemAggWindow()).name(ValenciaItemAggWindow.class.getName())
-				.print()
+				.apply(new ValenciaDistrictItemTypeAggWindow()).name(ValenciaDistrictItemTypeAggWindow.class.getName())
+				.map(new ValenciaItemToStringMap()).name(ValenciaItemToStringMap.class.getName())
+				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(MqttStringPublisher.class.getName())
+				// .print()
 				;
-		// streamTrafficJam.print();
-		// streamAirPollution.print();
 
 		env.execute(ValenciaDataSkewedCombinerExample.class.getName());
 		// @formatter:on
