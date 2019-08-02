@@ -23,16 +23,16 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 	private DecimalFormat dec = new DecimalFormat("#0.0000000000");
 	private final long LIMIT_MAX_COUNT = 1000;
 	private final long LIMIT_MIN_COUNT = 1;
+	private final long INCREMENT = 5;
 
 	private long maxCount;
-	private long increment = 100;
 	private transient long count = 0;
 	private transient BundleTriggerCallback callback;
 	private transient ICardinality cardinality;
 
 	public CountBundleTriggerDynamic() throws Exception {
 		initCardinalitySketch();
-		this.maxCount = increment;
+		this.maxCount = LIMIT_MIN_COUNT;
 		Preconditions.checkArgument(this.maxCount > 0, "maxCount must be greater than 0");
 	}
 
@@ -56,45 +56,34 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 
 	@Override
 	public void reset() {
-		// long estimative = currentHLLState.cardinality();
-		// int real = currentHLLState.getValues().size();
-		// // error (= [estimated cardinality - true cardinality] / true cardinality)
-		// double error = (double) (((double) (estimative - real)) / real);
-
 		if (count != 0) {
-			long estimative = this.cardinality.cardinality();
-			double selectivity = Double.parseDouble(String.valueOf(estimative))
+			long cardinalityHLL = this.cardinality.cardinality();
+			double selectivity = Double.parseDouble(String.valueOf(cardinalityHLL))
 					/ Double.parseDouble(String.valueOf(count));
-			double selectivityInc = Double.parseDouble(String.valueOf(estimative))
-					/ Double.parseDouble(String.valueOf(count - (maxCount - increment)));
-			System.out.println(
-					"cardinality[" + estimative + "] count[" + count + "] selectivity[" + dec.format(selectivity)
-							+ "] selectivity inc[" + dec.format(selectivityInc) + "] maxCount[" + maxCount + "]");
-			// logger.info("count[" + count + "] cardinality[" + estimative + "]
-			// selectivity[" + dec.format(selectivityInc) + "] + maxCount[" + maxCount +
-			// "]");
+			double itemsPercentToShuffle = (selectivity / cardinalityHLL);
+
+			String msg = "cardinalityHLL[" + cardinalityHLL + "] count[" + count + "] selectivity["
+					+ dec.format(selectivity) + "]";
+			logger.info(msg);
+			System.out.println(msg);
 
 			/**
 			 * <pre>
-			 * If selectivity is too short it is a good idea to increase the combiner.
-			 * If selectivity is between 0.5 and 0.8 we don't change the combiner.
-			 * If selectivity is higher than 0.8 we decrease the level of the combiner.
-			 * If selectivity is equal 1 it means that all items are distinct on the 
-			 * list and there is no reason to execute the combiner at all.
+			 * If errorDegree is 1 it means we don't have the COmbiner working.
+			 * If (errorDegree * 100) > 0.9 it means more than 90% of the items are useless during the shuffle process
+			 * If (errorDegree * 100) < 0.5 it means less then 50% of the items are going to the shuffle phase.
 			 * </pre>
 			 */
-			if (selectivityInc <= 0.5) {
-				if (maxCount + increment < LIMIT_MAX_COUNT) {
-					maxCount = maxCount + increment;
+			if (itemsPercentToShuffle == 1.0 || (itemsPercentToShuffle * 100) > 0.9) {
+				// necessary to apply combiner
+				if (maxCount + INCREMENT < LIMIT_MAX_COUNT) {
+					maxCount = maxCount + INCREMENT;
 				}
-			} else if (selectivityInc > 0.5 && selectivityInc < 0.8) {
-				// does nothing
-			} else if (selectivityInc >= 0.8 && selectivityInc < 1) {
-				if (maxCount - increment > LIMIT_MIN_COUNT) {
-					maxCount = maxCount - increment;
+			} else if ((itemsPercentToShuffle * 100) < 0.5) {
+				// reduce the combiner degree
+				if (maxCount - INCREMENT > LIMIT_MIN_COUNT) {
+					maxCount = maxCount - INCREMENT;
 				}
-			} else if (selectivityInc == 1.0) {
-				maxCount = 1;
 			}
 		}
 		count = 0;

@@ -22,8 +22,8 @@ public class MapBundleValenciaImpl
 			// "+input.f1.getTrip());
 			return input.f1;
 		} else {
-			System.out
-					.println("addInput: value: " + value.getId() + " | " + value.getType() + " | " + value.getValue());
+			// System.out.println("addInput: " + value.getId() + " | " + value.getType() + "
+			// | " + value.getValue());
 			// pre-aggregate values
 			ValenciaItem newValue = input.f1;
 
