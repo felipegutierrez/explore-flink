@@ -123,11 +123,13 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 						Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
 			} else {
 				createResourceDir();
-				System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not exist!");
+				// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
+				// exist!");
 			}
 			if (!isNew) {
-				System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not exist or it is old!");
-				System.out.println(realTimeData.getAbsoluteFile().toPath().toString());
+				// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
+				// exist or it is old!");
+				// System.out.println(realTimeData.getAbsoluteFile().toPath().toString());
 				InputStream is = url.openStream();
 				Files.copy(is, realTimeData.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
 			}

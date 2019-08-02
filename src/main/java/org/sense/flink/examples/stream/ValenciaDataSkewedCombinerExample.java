@@ -6,10 +6,10 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.udf.impl.ValenciaDistrictAndItemTypeKeySelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaDistrictItemTypeAggWindow;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictAsKeyMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemKeySelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemToStringMap;
 import org.sense.flink.mqtt.MqttStringPublisher;
@@ -60,7 +60,7 @@ public class ValenciaDataSkewedCombinerExample {
 
 		// Combine -> Print
 		streamTrafficJam.union(streamAirPollution)
-				.keyBy(new ValenciaDistrictAndItemTypeKeySelector())
+				.keyBy(new ValenciaItemKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(20)))
 				.apply(new ValenciaDistrictItemTypeAggWindow()).name(ValenciaDistrictItemTypeAggWindow.class.getName())
 				.map(new ValenciaItemToStringMap()).name(ValenciaItemToStringMap.class.getName())

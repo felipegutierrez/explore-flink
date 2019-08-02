@@ -8,7 +8,7 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.udf.impl.ValenciaDistrictKeySelector;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemFilter;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
@@ -60,8 +60,8 @@ public class ValenciaDataSkewedJoinExample {
 
 		// Join -> Print
 		streamTrafficJam.join(streamAirPollution)
-				.where(new ValenciaDistrictKeySelector())
- 				.equalTo(new ValenciaDistrictKeySelector())
+				.where(new ValenciaItemDistrictSelector())
+ 				.equalTo(new ValenciaItemDistrictSelector())
 		 		.window(TumblingEventTimeWindows.of(Time.seconds(20)))
 		 		.apply(new TrafficPollutionByDistrictJoinFunction())
 		 		.print()
