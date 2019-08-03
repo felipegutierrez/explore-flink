@@ -28,9 +28,11 @@ public class MapBundleValenciaImpl
 			ValenciaItem newValue = input.f1;
 
 			// check if keys are equal
-			if (!newValue.getId().equals(value.getId()) || newValue.getType() != value.getType()) {
-				logger.error("Keys are not equal [" + newValue + "] - [" + value + "]");
-			} else if (newValue.getId().equals(value.getId()) && newValue.getType() == value.getType()) {
+			// if (!newValue.getId().equals(value.getId()) || newValue.getType() !=
+			// value.getType()) {
+			// logger.info("Keys are not equal [" + newValue + "] - [" + value + "]");
+			// } else
+			if (newValue.getId().equals(value.getId()) && newValue.getType() == value.getType()) {
 				if (newValue.getType() == ValenciaItemType.TRAFFIC_JAM) {
 					newValue.addValue(value.getValue());
 				} else if (newValue.getType() == ValenciaItemType.AIR_POLLUTION) {
