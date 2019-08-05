@@ -21,9 +21,8 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 	private static final Logger logger = LoggerFactory.getLogger(CountBundleTriggerDynamic.class);
 	private static final long serialVersionUID = 8806579977649767427L;
 
-	private final long LIMIT_MAX_COUNT = 1000;
 	private final long LIMIT_MIN_COUNT = 1;
-	private final long INCREMENT = 5;
+	private final long INCREMENT = 10;
 
 	private long maxCount;
 	private transient long count = 0;
@@ -46,6 +45,9 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 		initFrequencySketch();
 	}
 
+	/**
+	 * The Combiner is triggered when the count reaches the maxCount or by a timeout
+	 */
 	@Override
 	public void onElement(K key, T element) throws Exception {
 		// add key element on the HyperLogLog to infer the data-stream cardinality
@@ -55,36 +57,34 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 			this.maxFrequencyCMS = itemCMS;
 		}
 		count++;
-		long before = Calendar.getInstance().getTimeInMillis() - Time.minutes(2).toMilliseconds();
-		if (count >= maxCount || before >= startTime) {
-			if (before >= startTime) {
-				System.out.println("Thread[" + Thread.currentThread().getId() + "] before >= startTime");
-			}
+		long beforeTime = Calendar.getInstance().getTimeInMillis() - Time.seconds(30).toMilliseconds();
+		if (count >= maxCount || beforeTime >= startTime) {
 			callback.finishBundle();
-			reset();
 		}
 	}
 
 	@Override
 	public void reset() throws Exception {
 		if (count != 0) {
-			System.out.println("Thread[" + Thread.currentThread().getId() + "] frequencyCMS[" + maxFrequencyCMS
-					+ "] maxCount[" + maxCount + "]");
-			// if (this.maxFrequencyCMS > maxCount + (10% of the maxCount))
-			if (this.maxFrequencyCMS > maxCount + (INCREMENT * 4)) {
-				// necessary to apply combiner
-				if (maxCount + INCREMENT < LIMIT_MAX_COUNT) {
-					maxCount = maxCount + INCREMENT;
-					resetFrequencySketch();
-				}
-			} else if (this.maxFrequencyCMS < (maxCount - (INCREMENT * 4))) {
-				// this option will trigger only by timeout
-				// reduce the combiner degree
-				if (maxCount - INCREMENT > LIMIT_MIN_COUNT) {
-					maxCount = maxCount - INCREMENT;
-					resetFrequencySketch();
-				}
+			String msg = "Thread[" + Thread.currentThread().getId() + "] frequencyCMS[" + maxFrequencyCMS
+					+ "] maxCount[" + maxCount + "]";
+			if (maxFrequencyCMS > maxCount + INCREMENT) {
+				// It is necessary to increase the combiner
+				long diff = maxFrequencyCMS - maxCount;
+				maxCount = maxCount + diff;
+				msg = msg + " - INCREASING >>>";
+				resetFrequencySketch();
+			} else if (maxFrequencyCMS < maxCount - INCREMENT) {
+				// It is necessary to reduce the combiner
+				maxCount = maxFrequencyCMS + INCREMENT;
+				msg = msg + " - DECREASING <<<";
+				resetFrequencySketch();
+			} else {
+				msg = msg + " - HOLDING";
+				this.startTime = Calendar.getInstance().getTimeInMillis();
 			}
+			// System.out.println(msg);
+			logger.info(msg);
 		}
 		count = 0;
 	}
@@ -93,6 +93,8 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 		if (this.frequency == null) {
 			this.frequency = new CountMinSketch(10, 5, 0);
 		}
+		this.maxFrequencyCMS = 0;
+		this.startTime = Calendar.getInstance().getTimeInMillis();
 	}
 
 	private void resetFrequencySketch() {

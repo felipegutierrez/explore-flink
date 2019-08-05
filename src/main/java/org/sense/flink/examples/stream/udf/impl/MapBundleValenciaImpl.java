@@ -11,7 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MapBundleValenciaImpl
-		extends MapBundleFunction<Long, ValenciaItem, Tuple2<Long, ValenciaItem>, ValenciaItem> {
+		extends MapBundleFunction<Long, ValenciaItem, Tuple2<Long, ValenciaItem>, Tuple2<Long, ValenciaItem>> {
 	private static final long serialVersionUID = -4457463922328881937L;
 	private static final Logger logger = LoggerFactory.getLogger(MapBundleValenciaImpl.class);
 
@@ -48,11 +48,10 @@ public class MapBundleValenciaImpl
 	}
 
 	@Override
-	public void finishBundle(Map<Long, ValenciaItem> buffer, Collector<ValenciaItem> out) throws Exception {
+	public void finishBundle(Map<Long, ValenciaItem> buffer, Collector<Tuple2<Long, ValenciaItem>> out)
+			throws Exception {
 		for (Map.Entry<Long, ValenciaItem> entry : buffer.entrySet()) {
-			out.collect(entry.getValue());
-			// System.out.println("finishBundle: "+entry.getValue().getKey()+" |
-			// "+entry.getValue().getTrip());
+			out.collect(Tuple2.of(entry.getKey(), entry.getValue()));
 		}
 	}
 }

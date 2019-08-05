@@ -11,5 +11,11 @@ public class MetricLabels {
 
 	/** Metrics for real sensors form Valencia open-data web portal */
 	public final static String METRIC_VALENCIA_COMBINER = "ValenciaDistrictCombiner";
-
+	public final static String METRIC_VALENCIA_WINDOW = "ValenciaDistrictWindow";
+	public final static String METRIC_VALENCIA_DISTRICT_MAP = "ValenciaDistrictMap";
+	public final static String METRIC_VALENCIA_DISTRICT_KEY_MAP = "ValenciaDistricKeyMap";
+	public final static String METRIC_VALENCIA_STRING_MAP = "ValenciaStringMap";
+	public final static String METRIC_VALENCIA_SINK = "ValenciaSink";
+	public final static String METRIC_VALENCIA_SYNTHETIC_FLATMAP = "ValenciaSyntheticFlatMap";
+	public final static String METRIC_VALENCIA_SOURCE = "ValenciaSource";
 }

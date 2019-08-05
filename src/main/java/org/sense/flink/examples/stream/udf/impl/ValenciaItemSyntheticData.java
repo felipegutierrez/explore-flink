@@ -13,6 +13,8 @@ import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.util.CRSCoordinateTransformer;
 import org.sense.flink.util.ValenciaItemType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This function finds every coordinate which is close to the point given as
@@ -22,6 +24,7 @@ import org.sense.flink.util.ValenciaItemType;
  *
  */
 public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem, ValenciaItem> {
+	private static final Logger logger = LoggerFactory.getLogger(ValenciaItemSyntheticData.class);
 	private static final long serialVersionUID = 6715124569348951675L;
 	private final AirPollution veryBadAir = new AirPollution(20.0, 20.0, 60.0, 45.0, 40.0, 70.0, 70.0, 85.0, 70.0, 23.0,
 			13.0, 80.0);
@@ -60,6 +63,9 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 		if (before >= startTime) {
 			startTime = Calendar.getInstance().getTimeInMillis();
 			flag = (flag ? false : true);
+			String msg = "Changed synthetic data publisher";
+			System.out.println(msg);
+			logger.info(msg);
 		}
 		if (flag) {
 			for (ValenciaItem item : generateValenciaItem(value, 500)) {
@@ -82,10 +88,12 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 			int min = 1, max = 3;
 			while (count < countMax) {
 				ValenciaItem item = (ValenciaItem) value.clone();
-				item.setId(5L);
+				// item.setId(5L);
+				// item.addCoordinates(new Point(726236.403599999845028, 4373308.101,
+				// CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+				item.setId(districtId);
 				item.clearCoordinates();
-				item.addCoordinates(
-						new Point(726236.403599999845028, 4373308.101, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+				item.addCoordinates(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
 				item.setValue(new Random().nextInt((max - min) + 1) + min);
 				item.setDistrict("Saidia");
 				list.add(item);
@@ -120,15 +128,15 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 			int min = 1, max = 3;
 			if (districtId != null && anotherValue.getId().equals(districtId)) {
 				anotherValue.setValue(new Random().nextInt((max - min) + 1) + min);
-			}
-			List<Point> coordinates = anotherValue.getCoordinates();
-			for (Point p : coordinates) {
-				double d = p.euclideanDistance(this.point);
-				if (d <= distance) {
-					anotherValue.setValue(new Random().nextInt((max - min) + 1) + min);
+			} else {
+				List<Point> coordinates = anotherValue.getCoordinates();
+				for (Point p : coordinates) {
+					double d = p.euclideanDistance(this.point);
+					if (d <= distance) {
+						anotherValue.setValue(new Random().nextInt((max - min) + 1) + min);
+					}
 				}
 			}
-
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 			if (districtId != null && anotherValue.getId().longValue() <= 7) {
 				anotherValue.setId(districtId);

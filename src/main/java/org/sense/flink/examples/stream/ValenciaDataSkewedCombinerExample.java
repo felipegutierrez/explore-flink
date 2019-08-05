@@ -1,7 +1,15 @@
 package org.sense.flink.examples.stream;
 
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_COMBINER;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_DISTRICT_KEY_MAP;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_DISTRICT_MAP;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_STRING_MAP;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SYNTHETIC_FLATMAP;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WINDOW;
 
+import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -54,35 +62,34 @@ public class ValenciaDataSkewedCombinerExample {
 
 		// Sources -> add synthetic data -> filter
 		DataStream<Tuple2<Long , ValenciaItem>> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
-				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
-				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance)).name(ValenciaItemSyntheticData.class.getName())
-				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds())).name(METRIC_VALENCIA_SOURCE)
+				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
+				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance, districtId)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
+				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)
 				;
 		DataStream<Tuple2<Long , ValenciaItem>> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
-				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
-				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, districtId)).name(ValenciaItemSyntheticData.class.getName())
-				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds())).name(METRIC_VALENCIA_SOURCE)
+				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
+				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, districtId)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
+				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)
 				;
 
 		// Combiner
-		MapBundleFunction<Long, ValenciaItem, Tuple2<Long, ValenciaItem>, ValenciaItem> myMapBundleFunction = new MapBundleValenciaImpl();
+		MapBundleFunction<Long, ValenciaItem, Tuple2<Long, ValenciaItem>, Tuple2<Long, ValenciaItem>> myMapBundleFunction = new MapBundleValenciaImpl();
 		// CountBundleTrigger<Tuple2<Long, ValenciaItem>> bundleTrigger = new CountBundleTrigger<Tuple2<Long, ValenciaItem>>(100);
 		CountBundleTriggerDynamic<Long, Tuple2<Long, ValenciaItem>> bundleTrigger = new CountBundleTriggerDynamic<Long, Tuple2<Long, ValenciaItem>>();
 		KeySelector<Tuple2<Long, ValenciaItem>, Long> keyBundleSelector = (KeySelector<Tuple2<Long, ValenciaItem>, Long>) value -> value.f0;
-		TypeInformation<ValenciaItem> info = TypeInformation.of(ValenciaItem.class);
+		TypeInformation<Tuple2<Long, ValenciaItem>> info = TypeInformation.of(new TypeHint<Tuple2<Long, ValenciaItem>>(){});
 
 		// Union -> Combiner -> Average -> Print
 		streamTrafficJam.union(streamAirPollution)
 				// .transform(METRIC_VALENCIA_COMBINER, info, new MapStreamBundleOperator<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(METRIC_VALENCIA_COMBINER)
 				.transform(METRIC_VALENCIA_COMBINER, info, new MapStreamBundleOperatorDynamic<>(myMapBundleFunction, bundleTrigger, keyBundleSelector)).name(METRIC_VALENCIA_COMBINER)
-				.map(new ValenciaItemDistrictAsKeyMap()).name(ValenciaItemDistrictAsKeyMap.class.getName())
 				.keyBy(new ValenciaItemKeySelector())
 				.window(TumblingProcessingTimeWindows.of(Time.seconds(60)))
-				.apply(new ValenciaDistrictItemTypeAggWindow()).name(ValenciaDistrictItemTypeAggWindow.class.getName())
-				.map(new ValenciaItemToStringMap()).name(ValenciaItemToStringMap.class.getName())
-				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(MqttStringPublisher.class.getName())
+				.apply(new ValenciaDistrictItemTypeAggWindow()).name(METRIC_VALENCIA_WINDOW)
+				.map(new ValenciaItemToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
+				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				// .print()
 				;
 
