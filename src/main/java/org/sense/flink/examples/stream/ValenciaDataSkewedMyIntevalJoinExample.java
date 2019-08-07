@@ -1,11 +1,15 @@
 package org.sense.flink.examples.stream;
 
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.common.typeutils.TypeSerializer;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.functions.co.ProcessJoinFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.udf.impl.TrafficPollutionByDistrictJoinFunction;
+import org.apache.flink.util.Collector;
+import org.apache.flink.util.Preconditions;
+import org.sense.flink.examples.stream.operator.impl.MyIntervalJoinOperator;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemFilter;
@@ -20,13 +24,13 @@ import org.sense.flink.util.ValenciaItemType;
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class ValenciaDataSkewedJoinExample {
+public class ValenciaDataSkewedMyIntevalJoinExample {
 
 	public static void main(String[] args) throws Exception {
-		new ValenciaDataSkewedJoinExample();
+		new ValenciaDataSkewedMyIntevalJoinExample();
 	}
 
-	public ValenciaDataSkewedJoinExample() throws Exception {
+	public ValenciaDataSkewedMyIntevalJoinExample() throws Exception {
 		disclaimer();
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -54,22 +58,57 @@ public class ValenciaDataSkewedJoinExample {
 				.filter(new ValenciaItemFilter(ValenciaItemType.AIR_POLLUTION)).name(ValenciaItemFilter.class.getName())
 				;
 
+		// MyIntervalJoin
+		long lowerBound = 0;
+		long upperBound = 0;
+		boolean lowerBoundInclusive = true;
+		boolean upperBoundInclusive = true;
+		TypeSerializer<ValenciaItem> leftTypeSerializer = streamTrafficJam.getType().createSerializer(streamTrafficJam.getExecutionConfig());
+		TypeSerializer<ValenciaItem> rightTypeSerializer = streamAirPollution.getType().createSerializer(streamAirPollution.getExecutionConfig());
+		ProcessJoinFunction<ValenciaItem, ValenciaItem, ValenciaItem> processJoinFunction = new MyIntervalProcessJoinFunction();
+
+		TypeInformation<ValenciaItem> outputType = TypeInformation.of(ValenciaItem.class);
+
+		Preconditions.checkNotNull(processJoinFunction);
+        Preconditions.checkNotNull(outputType);
+        final ProcessJoinFunction<ValenciaItem, ValenciaItem, ValenciaItem> cleanedUdf = 
+        		streamTrafficJam.getExecutionEnvironment().clean(processJoinFunction);
+
+        MyIntervalJoinOperator<Long, ValenciaItem, ValenciaItem, ValenciaItem> intervalJoinOperator = 
+        		new MyIntervalJoinOperator<Long, ValenciaItem, ValenciaItem, ValenciaItem>(
+        				lowerBound, upperBound, 
+        				lowerBoundInclusive, upperBoundInclusive, 
+        				leftTypeSerializer, rightTypeSerializer, 
+        				cleanedUdf
+        		);
+
 		// Join -> Print
-		streamTrafficJam.join(streamAirPollution)
-				.where(new ValenciaItemDistrictSelector())
- 				.equalTo(new ValenciaItemDistrictSelector())
-		 		.window(TumblingEventTimeWindows.of(Time.seconds(20)))
-		 		.apply(new TrafficPollutionByDistrictJoinFunction())
+		streamTrafficJam.connect(streamAirPollution)
+				.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemDistrictSelector())
+				.transform("MyIntervalJoin", outputType, intervalJoinOperator)
+		 		// .window(TumblingEventTimeWindows.of(Time.seconds(20)))
+		 		// .apply(new TrafficPollutionByDistrictJoinFunction())
 		 		.print()
 		  		;
 		// streamTrafficJam.print();
 		// streamAirPollution.print();
 
-		env.execute(ValenciaDataSkewedJoinExample.class.getName());
+		env.execute(ValenciaDataSkewedMyIntevalJoinExample.class.getName());
 		// @formatter:on
 	}
 
 	private void disclaimer() {
 		System.out.println("Disclaimer...");
+	}
+
+	private static class MyIntervalProcessJoinFunction
+			extends ProcessJoinFunction<ValenciaItem, ValenciaItem, ValenciaItem> {
+		private static final long serialVersionUID = 6591723258972239410L;
+
+		@Override
+		public void processElement(ValenciaItem left, ValenciaItem right,
+				ProcessJoinFunction<ValenciaItem, ValenciaItem, ValenciaItem>.Context ctx, Collector<ValenciaItem> out)
+				throws Exception {
+		}
 	}
 }
