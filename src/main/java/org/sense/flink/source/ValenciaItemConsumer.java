@@ -19,6 +19,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMap
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
+import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
@@ -58,8 +59,10 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private long frequencyMilliSeconds;
 	private long timeoutMillSeconds;
 	private ValenciaItemType valenciaItemType;
+	private boolean collectWithTimestamp;
 
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds) throws Exception {
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds,
+			boolean collectWithTimestamp) throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			this.json = VALENCIA_TRAFFIC_JAM_URL;
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
@@ -72,16 +75,17 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.valenciaItemType = valenciaItemType;
 		this.frequencyMilliSeconds = DEFAULT_FREQUENCY_DELAY;
 		this.timeoutMillSeconds = timeoutMillSeconds;
+		this.collectWithTimestamp = collectWithTimestamp;
 		createResourceDir();
 	}
 
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, Time timeoutMillSeconds)
-			throws Exception {
-		this(valenciaItemType, json, DEFAULT_FREQUENCY_DELAY, Time.seconds(1).toMilliseconds());
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, Time timeoutMillSeconds,
+			boolean collectWithTimestamp) throws Exception {
+		this(valenciaItemType, json, DEFAULT_FREQUENCY_DELAY, Time.seconds(1).toMilliseconds(), collectWithTimestamp);
 	}
 
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, long frequencyMilliSeconds,
-			long timeoutMillSeconds) throws Exception {
+			long timeoutMillSeconds, boolean collectWithTimestamp) throws Exception {
 		if (valenciaItemType == null) {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
@@ -89,6 +93,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.json = json;
 		this.frequencyMilliSeconds = frequencyMilliSeconds;
 		this.timeoutMillSeconds = timeoutMillSeconds;
+		this.collectWithTimestamp = collectWithTimestamp;
 		createResourceDir();
 	}
 
@@ -143,6 +148,8 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 				}
 				bufferedReader.close();
 
+				Date eventTime = new Date();
+
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode actualObj = mapper.readTree(builder.toString());
 				List<Point> points = new ArrayList<Point>();
@@ -173,20 +180,25 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 								ArrayNode xy = (ArrayNode) coordinates;
 								points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));
 							}
-							valenciaItem = new ValenciaTraffic(null, null, "", new Date(), points,
+							valenciaItem = new ValenciaTraffic(null, null, "", eventTime, points,
 									nodeProperties.get("estado").asInt());
 						} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 							String p = arrayNodeCoordinates.get(0).asText() + ","
 									+ arrayNodeCoordinates.get(1).asText();
 							points = Point.extract(p, typeCSR);
-							valenciaItem = new ValenciaPollution(null, null, "", new Date(), points,
+							valenciaItem = new ValenciaPollution(null, null, "", eventTime, points,
 									nodeProperties.get("mediciones").asText());
 						} else if (valenciaItemType == ValenciaItemType.NOISE) {
 							throw new Exception("ValenciaItemType NOISE is not implemented!");
 						} else {
 							throw new Exception("ValenciaItemType is NULL!");
 						}
-						ctx.collect(valenciaItem);
+						if (collectWithTimestamp) {
+							ctx.collectWithTimestamp(valenciaItem, eventTime.getTime());
+							ctx.emitWatermark(new Watermark(eventTime.getTime()));
+						} else {
+							ctx.collect(valenciaItem);
+						}
 					}
 				}
 			} catch (IOException ioe) {

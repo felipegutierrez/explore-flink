@@ -62,13 +62,13 @@ public class ValenciaDataSkewedCombinerExample {
 
 		// Sources -> add synthetic data -> filter
 		DataStream<Tuple2<Long , ValenciaItem>> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds())).name(METRIC_VALENCIA_SOURCE)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance, districtId)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)
 				;
 		DataStream<Tuple2<Long , ValenciaItem>> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds())).name(METRIC_VALENCIA_SOURCE)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, districtId)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)

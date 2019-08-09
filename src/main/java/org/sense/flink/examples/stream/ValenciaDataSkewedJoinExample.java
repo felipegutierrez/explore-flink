@@ -41,14 +41,14 @@ public class ValenciaDataSkewedJoinExample {
 
 		// Sources -> add synthetic data -> filter
 		DataStream<ValenciaItem> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds(), false)).name(ValenciaItemConsumer.class.getName())
 				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance)).name(ValenciaItemSyntheticData.class.getName())
 				.filter(new ValenciaItemFilter(ValenciaItemType.TRAFFIC_JAM)).name(ValenciaItemFilter.class.getName())
 				;
 
 		DataStream<ValenciaItem> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds())).name(ValenciaItemConsumer.class.getName())
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds(), false)).name(ValenciaItemConsumer.class.getName())
 				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, districtId)).name(ValenciaItemSyntheticData.class.getName())
 				.filter(new ValenciaItemFilter(ValenciaItemType.AIR_POLLUTION)).name(ValenciaItemFilter.class.getName())

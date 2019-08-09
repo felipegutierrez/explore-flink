@@ -29,7 +29,7 @@ public class ValenciaNoiseSocket {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		env.addSource(new ValenciaItemConsumer(ValenciaItemType.NOISE, Time.minutes(5).toMilliseconds()))
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.NOISE, Time.minutes(5).toMilliseconds(), false))
 				.name(ValenciaItemConsumer.class.getName()).print();
 
 		env.execute(ValenciaNoiseSocket.class.getName());

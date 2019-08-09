@@ -1,5 +1,6 @@
 package org.sense.flink.pojo;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -21,11 +22,13 @@ public class ValenciaTraffic extends ValenciaItem {
 	public ValenciaTraffic(Long id, Long adminLevel, String district, Date update, List<Point> coordinates,
 			Object value) {
 		super(id, adminLevel, district, update, ValenciaItemType.TRAFFIC_JAM, coordinates, value);
+		this.timestamp = update.getTime();
 	}
 
 	public ValenciaTraffic(Long id, Long adminLevel, String district, String update, String coordinates, String csr,
-			Object value) {
+			Object value) throws ParseException {
 		super(id, adminLevel, district, update, ValenciaItemType.TRAFFIC_JAM, coordinates, csr, value);
+		this.timestamp = formatter.parse(update).getTime();
 	}
 
 	/** overriding default methods */

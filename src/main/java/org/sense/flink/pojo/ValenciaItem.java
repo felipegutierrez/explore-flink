@@ -28,9 +28,10 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 	protected List<Point> coordinates;
 	protected Object value;
 	protected ValenciaItemType type;
+	protected Long timestamp;
 
 	// 2019-07-22T12:51:04.681+02:00
-	private SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+	protected SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
 	public ValenciaItem(Long id, Long adminLevel, String district, Date update, ValenciaItemType type,
 			List<Point> coordinates, Object value) {
@@ -44,16 +45,12 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 	}
 
 	public ValenciaItem(Long id, Long adminLevel, String district, String update, ValenciaItemType type,
-			String coordinates, String csr, Object value) {
+			String coordinates, String csr, Object value) throws ParseException {
 		this.id = id;
 		this.adminLevel = adminLevel;
 		this.district = district;
 		this.coordinates = Point.extract(coordinates, csr);
-		try {
-			this.update = formatter.parse(update);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		this.update = formatter.parse(update);
 		this.type = type;
 		this.value = value;
 	}
@@ -134,6 +131,14 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 		this.type = type;
 	}
 
+	public Long getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+
 	@Override
 	public Object clone() throws CloneNotSupportedException {
 		return super.clone();
@@ -142,6 +147,7 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 	@Override
 	public String toString() {
 		return "ValenciaItemA [id=" + id + ", adminLevel=" + adminLevel + ", district=" + district + ", update="
-				+ update + ", type=" + type + ", value=" + value + ", coordinates=" + coordinates + "]";
+				+ update + ", timestamp=" + timestamp + ", type=" + type + ", value=" + value + ", coordinates="
+				+ coordinates + "]";
 	}
 }
