@@ -2,6 +2,7 @@ package org.sense.flink.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +28,8 @@ import org.sense.flink.pojo.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SimpleGeographicalPolygons {
+public class SimpleGeographicalPolygons implements Serializable {
+	private static final long serialVersionUID = 7331398841196874219L;
 	private static final Logger logger = LoggerFactory.getLogger(SimpleGeographicalPolygons.class);
 	private static final String CURRENT_PATH = Paths.get("").toAbsolutePath().toString() + "/";
 	private static final String RESOURCE_DIR = "resources/valencia/";
@@ -103,6 +105,13 @@ public class SimpleGeographicalPolygons {
 		return null;
 	}
 
+	/**
+	 * This method returns a Tuple3 object containing the districtID, administration
+	 * level, and the district name.
+	 * 
+	 * @param point
+	 * @return Tuple3<districtId, adminLevel, districtName>
+	 */
 	public Tuple3<Long, Long, String> getAdminLevel(Point point) {
 		try {
 			Point pointLonLat = null;

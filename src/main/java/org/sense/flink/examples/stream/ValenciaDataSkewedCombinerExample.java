@@ -13,6 +13,7 @@ import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -32,6 +33,7 @@ import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
+import org.sense.flink.util.CRSCoordinateTransformer;
 import org.sense.flink.util.ValenciaItemType;
 
 /**
@@ -55,22 +57,23 @@ public class ValenciaDataSkewedCombinerExample {
 
 		// @formatter:off
 		// Static coordinate to create synthetic data
-		// Point point = new Point(725140.37, 4371855.492); // id=3, district=Extramurs
-		Point point = new Point(726777.707, 4369824.436); // id=10, district=Quatre Carreres
+		// Point point = new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE); // id=3, district=Extramurs
+		// Tuple3<Long, Long, String> adminLevel = Tuple3.of(3L, 9L, "Extramurs");
+		Point point = new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE); // id=10, district=Quatre Carreres
+		Tuple3<Long, Long, String> adminLevel = Tuple3.of(10L, 9L, "Quatre Carreres");
 		double distance = 1000.0; // distance in meters
-		long districtId = 10;
 
 		// Sources -> add synthetic data -> filter
 		DataStream<Tuple2<Long , ValenciaItem>> streamTrafficJam = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance, districtId)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
+				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance, adminLevel)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)
 				;
 		DataStream<Tuple2<Long , ValenciaItem>> streamAirPollution = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, districtId)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
+				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, adminLevel)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)
 				;
 
@@ -90,7 +93,7 @@ public class ValenciaDataSkewedCombinerExample {
 				.apply(new ValenciaDistrictItemTypeAggWindow()).name(METRIC_VALENCIA_WINDOW)
 				.map(new ValenciaItemToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
-				// .print()
+				// .print().name(METRIC_VALENCIA_SINK)
 				;
 
 		env.execute(ValenciaDataSkewedCombinerExample.class.getName());

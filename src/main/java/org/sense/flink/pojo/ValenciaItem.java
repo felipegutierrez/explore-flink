@@ -146,8 +146,8 @@ public abstract class ValenciaItem implements Cloneable, Serializable {
 
 	@Override
 	public String toString() {
-		return "ValenciaItemA [id=" + id + ", adminLevel=" + adminLevel + ", district=" + district + ", update="
-				+ update + ", timestamp=" + timestamp + ", type=" + type + ", value=" + value + ", coordinates="
+		return "ValenciaItem [type=" + type + ", id=" + id + ", adminLevel=" + adminLevel + ", district=" + district
+				+ ", update=" + update + ", timestamp=" + timestamp + ", value=" + value + ", coordinates="
 				+ coordinates + "]";
 	}
 }
