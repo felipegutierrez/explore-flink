@@ -1,17 +1,10 @@
 package org.sense.flink.examples.stream.udf.impl;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 import org.apache.flink.api.common.state.BroadcastState;
-import org.apache.flink.api.common.state.ListState;
-import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.common.typeinfo.Types;
@@ -29,8 +22,8 @@ public class ValenciaItemProcessingTimeBroadcastJoinKeyedBroadcastProcess
 
 	// identical to our PollutionBroadcastState above
 	private MapStateDescriptor<Long, ValenciaItem> bcStateDescriptor;
-	private ListState<ValenciaItem> trafficListState = null;
-	private ValueState<Boolean> trigger = null;
+	// private ListState<ValenciaItem> trafficListState = null;
+	// private ValueState<Boolean> trigger = null;
 	// delay after which an alert flag is thrown
 	private final long timeOut;
 
@@ -41,13 +34,13 @@ public class ValenciaItemProcessingTimeBroadcastJoinKeyedBroadcastProcess
 	@Override
 	public void open(Configuration conf) {
 		// @formatter:off
-		ListStateDescriptor<ValenciaItem> trafficDescriptor = new ListStateDescriptor<ValenciaItem>("trafficBuffer", ValenciaItem.class);
-		trafficListState = getRuntimeContext().getListState(trafficDescriptor);
+		// ListStateDescriptor<ValenciaItem> trafficDescriptor = new ListStateDescriptor<ValenciaItem>("trafficBuffer", ValenciaItem.class);
+		// trafficListState = getRuntimeContext().getListState(trafficDescriptor);
 		
 		bcStateDescriptor = new MapStateDescriptor<Long, ValenciaItem>("PollutionBroadcastState", Types.LONG, TypeInformation.of(new TypeHint<ValenciaItem>() {}));
 		
-		ValueStateDescriptor<Boolean> triggerDescriptor = new ValueStateDescriptor<Boolean>("triggerState", Boolean.class);
-		trigger = getRuntimeContext().getState(triggerDescriptor);
+		// ValueStateDescriptor<Boolean> triggerDescriptor = new ValueStateDescriptor<Boolean>("triggerState", Boolean.class);
+		// trigger = getRuntimeContext().getState(triggerDescriptor);
 		// @formatter:on
 	}
 
@@ -71,38 +64,49 @@ public class ValenciaItemProcessingTimeBroadcastJoinKeyedBroadcastProcess
 	public void processElement(ValenciaItem traffic,
 			KeyedBroadcastProcessFunction<Long, ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.ReadOnlyContext ctx,
 			Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
+		ValenciaItem pollution = ctx.getBroadcastState(bcStateDescriptor).get(traffic.getId());
+		if (pollution != null) {
+			String msg = "Thread[" + Thread.currentThread().getId() + "] "
+					+ formatter.format(new Date(ctx.timerService().currentProcessingTime()));
+			msg += " - traffic[" + traffic.getId() + "]";
+			System.out.println(msg);
+			out.collect(Tuple2.of(traffic, pollution));
+		}
+		// @formatter:off
 		// get current time and compute timeout time
-		long currentTime = ctx.timerService().currentProcessingTime();
-		long timeoutTime = currentTime + timeOut;
-		if (trigger.value() == null) {
-			trigger.update(true);
-			ctx.timerService().registerProcessingTimeTimer(timeoutTime);
-		}
-		traffic.clearCoordinates();
-		trafficListState.add(traffic);
+		// long currentTime = ctx.timerService().currentProcessingTime();
+		// long timeoutTime = currentTime + timeOut;
+		// if (trigger.value() == null) {
+		// 	trigger.update(true);
+		// 	ctx.timerService().registerProcessingTimeTimer(timeoutTime);
+		// }
+		// traffic.clearCoordinates();
+		// trafficListState.add(traffic);
+		// @formatter:on
 	}
 
-	@Override
-	public void onTimer(long timestamp,
-			KeyedBroadcastProcessFunction<Long, ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.OnTimerContext ctx,
-			Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
-		List<ValenciaItem> trafficList = new ArrayList<ValenciaItem>();
-		synchronized (this) {
-			trafficListState.get().iterator().forEachRemaining(trafficList::add);
-			trafficListState.clear();
-			trigger.clear();
-		}
-
-		for (Map.Entry<Long, ValenciaItem> pollution : ctx.getBroadcastState(bcStateDescriptor).immutableEntries()) {
-			for (ValenciaItem traffic : trafficList) {
-				if (pollution.getKey().equals(traffic.getId())) {
-					out.collect(Tuple2.of(traffic, pollution.getValue()));
-					String msg = "Thread[" + Thread.currentThread().getId() + "] "
-							+ formatter.format(new Date(timestamp));
-					msg += " - traffic[" + traffic.getId() + "]";
-					System.out.println(msg);
-				}
-			}
-		}
-	}
+	// @formatter:off
+	// @Override
+	// public void onTimer(long timestamp,
+	// 		KeyedBroadcastProcessFunction<Long, ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.OnTimerContext ctx,
+	// 		Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
+	// 	List<ValenciaItem> trafficList = new ArrayList<ValenciaItem>();
+	// 	synchronized (this) {
+	// 		trafficListState.get().iterator().forEachRemaining(trafficList::add);
+	// 		trafficListState.clear();
+	// 		trigger.clear();
+	// 	}
+	// 	for (Map.Entry<Long, ValenciaItem> pollution : ctx.getBroadcastState(bcStateDescriptor).immutableEntries()) {
+	// 		for (ValenciaItem traffic : trafficList) {
+	// 			if (pollution.getKey().equals(traffic.getId())) {
+	// 				out.collect(Tuple2.of(traffic, pollution.getValue()));
+	// 				String msg = "Thread[" + Thread.currentThread().getId() + "] "
+	// 						+ formatter.format(new Date(timestamp));
+	// 				msg += " - traffic[" + traffic.getId() + "]";
+	// 				System.out.println(msg);
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// @formatter:on
 }

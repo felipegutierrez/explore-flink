@@ -74,11 +74,11 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 			for (ValenciaItem item : generateValenciaItem(value, 500)) {
 				out.collect(item);
 			}
-		} else {
-			ValenciaItem anotherValenciaItem = changeValenciaItem(value);
-			if (anotherValenciaItem != null) {
-				out.collect(anotherValenciaItem);
-			}
+			// } else {
+			// ValenciaItem anotherValenciaItem = changeValenciaItem(value);
+			// if (anotherValenciaItem != null) {
+			// out.collect(anotherValenciaItem);
+			// }
 		}
 		out.collect(value);
 	}
