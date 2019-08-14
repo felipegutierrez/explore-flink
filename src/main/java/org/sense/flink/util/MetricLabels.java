@@ -14,6 +14,8 @@ public class MetricLabels {
 	public final static String METRIC_VALENCIA_WINDOW = "ValenciaDistrictWindow";
 	public final static String METRIC_VALENCIA_FILTER = "ValenciaDistrictFilter";
 	public final static String METRIC_VALENCIA_DISTRICT_MAP = "ValenciaDistrictMap";
+	public final static String METRIC_VALENCIA_POLLUTION_MAP = "ValenciaPollutionMap";
+	public final static String METRIC_VALENCIA_TRAFFIC_MAP = "ValenciaTrafficMap";
 	public final static String METRIC_VALENCIA_DISTRICT_KEY_MAP = "ValenciaDistricKeyMap";
 	public final static String METRIC_VALENCIA_STRING_MAP = "ValenciaStringMap";
 	public final static String METRIC_VALENCIA_SINK = "ValenciaSink";

@@ -220,18 +220,25 @@ public class SimpleGeographicalPolygons implements Serializable {
 		// @formatter:off
 		SimpleGeographicalPolygons sgp = new SimpleGeographicalPolygons();
 		List<Point> points = new ArrayList<Point>();
-		// points.add(new Point(-0.3630, 39.4477, CRSCoordinateTransformer.DEFAULT_CRS_TARGET));
-		// points.add(new Point(-0.3774, 39.4698, CRSCoordinateTransformer.DEFAULT_CRS_TARGET));
+		// points.add(new Point(-0.3774, 39.4698, CRSCoordinateTransformer.DEFAULT_CRS_TARGET)); // 1,9,Ciutat Vella
+		// points.add(new Point(-0.3630, 39.4477, CRSCoordinateTransformer.DEFAULT_CRS_TARGET)); // 10,9,Quatre Carreres
 
-		// points.add(new Point(727883.536, 4373590.846, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		// points.add(new Point(727914.834, 4373625.414, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		// points.add(new Point(725685.2117, 4372281.7883, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		// points.add(new Point(724034.3761, 4369995.1312, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		// points.add(new Point(726272.352, 4372853.588, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		// Converting coordinates: 725140.37, 4371855.492 > -0.3828691121670698, 39.466853209056104 > 3,9,Extramurs
-		// points.add(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		// points.add(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
-		points.add(new Point(726236.403599999845028, 4373308.101, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+		// points.add(new Point(725685.2117, 4372281.7883, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 1,9,Ciutat Vella
+		// points.add(new Point(725704.3880000003, 4370895.1142, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 2,9,l'Eixample
+		// points.add(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 3,9,Extramurs
+		// points.add(new Point(722864.4094000002, 4373373.1132, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 4,9,Campanar
+		// points.add(new Point(726236.4035999998, 4373308.101, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 5,9,la Saïdia
+		// points.add(new Point(726423.431815, 4373034.130474, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 6,9,Pla del Real
+		// points.add(new Point(723969.784325, 4372420.897437, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 7,9,Olivereta
+		// points.add(new Point(723623.655515, 4370778.759536, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 8,9,Patraix
+		// points.add(new Point(724034.3761, 4369995.1312, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 9,9,Jesús
+		// points.add(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 10,9,Quatre Carreres
+		// points.add(new Point(730007.679276, 4369416.885897, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 11,9,Poblats Maritims
+		// points.add(new Point(728630.3849999998, 4370921.0409, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 12,9,Camins al Grau
+		// points.add(new Point(729010.3865999999, 4373390.0215, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 13,9,Algirós
+		// points.add(new Point(727338.396370, 4374107.624796, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 14,9,Benimaclet 
+		// points.add(new Point(726240.844004, 4375087.354217, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 15,9,Rascanya
+		points.add(new Point(724328.279007, 4374887.874634, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 16,9,Benicalap
 
 		sgp.printProperties(points);
 		// @formatter:on

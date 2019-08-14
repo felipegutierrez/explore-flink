@@ -44,7 +44,7 @@ import org.sense.flink.util.ValenciaItemType;
  *
  */
 public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
-
+	// @formatter:off
 	private static final long serialVersionUID = 8320419468972434516L;
 	private static final String CURRENT_PATH = Paths.get("").toAbsolutePath().toString() + "/";
 	private static final String RESOURCE_DIR = "resources/valencia/";
@@ -52,17 +52,50 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
 	private static final String VALENCIA_NOISE_URL = "";
 	private static final String VALENCIA_TRAFFIC_JAM_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state.json";
+	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state-offline.json";
 	private static final String VALENCIA_POLLUTION_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution.json";
+	private static final String VALENCIA_POLLUTION_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution-offline.json";
 	private static final String VALENCIA_NOISE_FILE = CURRENT_PATH + RESOURCE_DIR + "noise.json";
+	private static final String VALENCIA_NOISE_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "noise-offline.json";
 	private static final long DEFAULT_FREQUENCY_DELAY = 10000;
 	private String json;
 	private long frequencyMilliSeconds;
 	private long timeoutMillSeconds;
 	private ValenciaItemType valenciaItemType;
 	private boolean collectWithTimestamp;
+	private boolean offlineData;
+	// @formatter:on
 
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds,
+	/**
+	 * This is the constructor default for offline data. timeoutMillSeconds = 0,
+	 * offlineData = true
+	 * 
+	 * @param valenciaItemType
+	 * @param frequencyMilliSeconds
+	 * @param collectWithTimestamp
+	 * @throws Exception
+	 */
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
 			boolean collectWithTimestamp) throws Exception {
+		this(valenciaItemType, 0, frequencyMilliSeconds, collectWithTimestamp, true);
+	}
+
+	/**
+	 * This is the default constructor for online data. offlineData = false.
+	 * 
+	 * @param valenciaItemType
+	 * @param timeoutMillSeconds
+	 * @param frequencyMilliSeconds
+	 * @param collectWithTimestamp
+	 * @throws Exception
+	 */
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds, long frequencyMilliSeconds,
+			boolean collectWithTimestamp) throws Exception {
+		this(valenciaItemType, timeoutMillSeconds, frequencyMilliSeconds, collectWithTimestamp, false);
+	}
+
+	private ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds, long frequencyMilliSeconds,
+			boolean collectWithTimestamp, boolean offlineData) throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			this.json = VALENCIA_TRAFFIC_JAM_URL;
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
@@ -72,25 +105,8 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
+		this.offlineData = offlineData;
 		this.valenciaItemType = valenciaItemType;
-		this.frequencyMilliSeconds = DEFAULT_FREQUENCY_DELAY;
-		this.timeoutMillSeconds = timeoutMillSeconds;
-		this.collectWithTimestamp = collectWithTimestamp;
-		createResourceDir();
-	}
-
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, Time timeoutMillSeconds,
-			boolean collectWithTimestamp) throws Exception {
-		this(valenciaItemType, json, DEFAULT_FREQUENCY_DELAY, Time.seconds(1).toMilliseconds(), collectWithTimestamp);
-	}
-
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, String json, long frequencyMilliSeconds,
-			long timeoutMillSeconds, boolean collectWithTimestamp) throws Exception {
-		if (valenciaItemType == null) {
-			throw new Exception("ValenciaItemType is NULL!");
-		}
-		this.valenciaItemType = valenciaItemType;
-		this.json = json;
 		this.frequencyMilliSeconds = frequencyMilliSeconds;
 		this.timeoutMillSeconds = timeoutMillSeconds;
 		this.collectWithTimestamp = collectWithTimestamp;
@@ -112,31 +128,33 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 			File realTimeData = null;
 			if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
-				realTimeData = new File(VALENCIA_TRAFFIC_JAM_FILE);
+				realTimeData = new File((offlineData ? VALENCIA_TRAFFIC_JAM_OFFLINE_FILE : VALENCIA_TRAFFIC_JAM_FILE));
 			} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-				realTimeData = new File(VALENCIA_POLLUTION_FILE);
+				realTimeData = new File((offlineData ? VALENCIA_POLLUTION_OFFLINE_FILE : VALENCIA_POLLUTION_FILE));
 			} else if (valenciaItemType == ValenciaItemType.NOISE) {
-				realTimeData = new File(VALENCIA_NOISE_FILE);
+				realTimeData = new File((offlineData ? VALENCIA_NOISE_OFFLINE_FILE : VALENCIA_NOISE_FILE));
 			} else {
 				throw new Exception("ValenciaItemType is NULL!");
 			}
 
 			boolean isNew = false;
-			if (realTimeData.exists()) {
-				// check if the file is older than 5 minutes
-				isNew = FileUtils.isFileNewer(realTimeData.getAbsoluteFile(),
-						Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
-			} else {
-				createResourceDir();
-				// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
-				// exist!");
-			}
-			if (!isNew) {
-				// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
-				// exist or it is old!");
-				// System.out.println(realTimeData.getAbsoluteFile().toPath().toString());
-				InputStream is = url.openStream();
-				Files.copy(is, realTimeData.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+			if (!offlineData) {
+				if (realTimeData.exists()) {
+					// check if the file is older than 5 minutes
+					isNew = FileUtils.isFileNewer(realTimeData.getAbsoluteFile(),
+							Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
+				} else {
+					createResourceDir();
+					// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
+					// exist!");
+				}
+				if (!isNew) {
+					// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
+					// exist or it is old!");
+					// System.out.println(realTimeData.getAbsoluteFile().toPath().toString());
+					InputStream is = url.openStream();
+					Files.copy(is, realTimeData.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+				}
 			}
 
 			BufferedReader bufferedReader = Files.newBufferedReader(realTimeData.getAbsoluteFile().toPath());
@@ -147,9 +165,11 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 					builder.append(line + "\n");
 				}
 				bufferedReader.close();
+				if (builder.length() == 0) {
+					continue;
+				}
 
 				Date eventTime = new Date();
-
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode actualObj = mapper.readTree(builder.toString());
 				List<Point> points = new ArrayList<Point>();

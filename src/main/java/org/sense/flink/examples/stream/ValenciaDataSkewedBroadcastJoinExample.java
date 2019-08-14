@@ -8,9 +8,9 @@ import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_STRING_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SYNTHETIC_FLATMAP;
 
 import org.apache.flink.api.common.state.MapStateDescriptor;
-import org.apache.flink.api.common.typeinfo.BasicTypeInfo;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.common.typeinfo.Types;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.BroadcastStream;
@@ -33,6 +33,7 @@ import org.sense.flink.util.ValenciaItemType;
  * 
  * based on
  * https://ci.apache.org/projects/flink/flink-docs-stable/dev/stream/state/broadcast_state.html
+ * https://flink.apache.org/2019/06/26/broadcast-state.html
  * 
  * @author Felipe Oliveira Gutierrez
  *
@@ -62,31 +63,27 @@ public class ValenciaDataSkewedBroadcastJoinExample {
 
 		// Sources -> add synthetic data -> filter
 		DataStream<ValenciaItem> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds(), true)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(10).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM) // offline data
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance, adminLevel)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
-				// .filter(new ValenciaItemFilter(ValenciaItemType.TRAFFIC_JAM)).name(METRIC_VALENCIA_FILTER)
 				;
 
 		DataStream<ValenciaItem> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds(), true)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(1).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION) // offline data
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, point, distance, adminLevel)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
-				// .filter(new ValenciaItemFilter(ValenciaItemType.AIR_POLLUTION)).name(METRIC_VALENCIA_FILTER)
 				;
 
-		// Broadcast stream
-		MapStateDescriptor<Long, ValenciaItem> pollutionStateDescriptor = new MapStateDescriptor<Long, ValenciaItem>(
-				"PollutionBroadcastState", BasicTypeInfo.LONG_TYPE_INFO, TypeInformation.of(new TypeHint<ValenciaItem>() {}));
-		BroadcastStream<ValenciaItem> broadcastStreamPollution = streamAirPollution.broadcast(pollutionStateDescriptor);
+		// Broadcast pollution stream
+		MapStateDescriptor<Long, ValenciaItem> bcStateDescriptor = new MapStateDescriptor<Long, ValenciaItem>("PollutionBroadcastState",
+				Types.LONG, TypeInformation.of(new TypeHint<ValenciaItem>() {}));
+		BroadcastStream<ValenciaItem> bcStreamPollution = streamAirPollution.broadcast(bcStateDescriptor);
 
 		streamTrafficJam
 				.keyBy(new ValenciaItemDistrictSelector())
-				.connect(broadcastStreamPollution)
+				.connect(bcStreamPollution)
 				.process(new ValenciaItemProcessingTimeBroadcastJoinKeyedBroadcastProcess(Time.seconds(10).toMilliseconds())).name(METRIC_VALENCIA_JOIN)
 				.map(new Valencia2ItemToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
-				// .print().name(METRIC_VALENCIA_SINK)
 				;
 
 		// streamTrafficJam.print();
