@@ -172,7 +172,6 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 				Date eventTime = new Date();
 				ObjectMapper mapper = new ObjectMapper();
 				JsonNode actualObj = mapper.readTree(builder.toString());
-				List<Point> points = new ArrayList<Point>();
 
 				boolean isCRS = actualObj.has("crs");
 				boolean isFeatures = actualObj.has("features");
@@ -195,6 +194,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
 
 						ValenciaItem valenciaItem;
+						List<Point> points = new ArrayList<Point>();
 						if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 							for (JsonNode coordinates : arrayNodeCoordinates) {
 								ArrayNode xy = (ArrayNode) coordinates;

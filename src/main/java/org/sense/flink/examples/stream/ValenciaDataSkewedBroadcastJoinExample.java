@@ -5,7 +5,6 @@ import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_JOIN;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_STRING_MAP;
-import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SYNTHETIC_FLATMAP;
 
 import org.apache.flink.api.common.state.MapStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -21,7 +20,6 @@ import org.sense.flink.examples.stream.udf.impl.Valencia2ItemToStringMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessingTimeBroadcastJoinKeyedBroadcastProcess;
-import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
 import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
@@ -65,7 +63,7 @@ public class ValenciaDataSkewedBroadcastJoinExample {
 		DataStream<ValenciaItem> streamTrafficJam = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(10).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM) // offline data
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance, adminLevel)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
+				// .flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, point, distance, adminLevel)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				;
 
 		DataStream<ValenciaItem> streamAirPollution = env

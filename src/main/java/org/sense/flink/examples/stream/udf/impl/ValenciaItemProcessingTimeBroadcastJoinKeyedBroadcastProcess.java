@@ -85,11 +85,11 @@ public class ValenciaItemProcessingTimeBroadcastJoinKeyedBroadcastProcess
 		msg += " - traffic[" + traffic.getId() + "]";
 
 		if (pollutionItem != null) {
-			// System.out.println(msg);
+			System.out.println(msg);
 			out.collect(Tuple2.of(traffic, pollutionItem));
 		} else {
 			msg += " NOT FOUND.";
-			// System.out.println(msg);
+			System.out.println(msg);
 		}
 	}
 
