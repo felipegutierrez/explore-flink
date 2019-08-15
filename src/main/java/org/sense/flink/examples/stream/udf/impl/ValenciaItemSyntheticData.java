@@ -1,12 +1,14 @@
 package org.sense.flink.examples.stream.udf.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.Collector;
 import org.sense.flink.pojo.AirPollution;
@@ -31,10 +33,7 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 			13.0, 80.0);
 
 	private ValenciaItemType valenciaItemType;
-	private Point point;
-	private double distance;
-	private Long districtId;
-	private String districtName;
+	private List<Tuple4<Point, Long, Long, String>> coordinates;
 	private long startTime;
 	private boolean flag;
 
@@ -44,17 +43,20 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 	 * @throws Exception
 	 */
 	public ValenciaItemSyntheticData(ValenciaItemType valenciaItemType) throws Exception {
-		this(valenciaItemType, new Point(725737.858, 4370806.847, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE), 100.0,
-				Tuple3.of(3L, 9L, "Extramurs"));
+		// @formatter:off
+		this(valenciaItemType,
+			new ArrayList<Tuple4<Point, Long, Long, String>>(Arrays.asList(
+						Tuple4.of(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE), 3L, 9L, "Extramurs"), 
+						Tuple4.of(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE), 10L, 9L, "Quatre Carreres")
+						))
+			);
+		// @formatter:on
 	}
 
-	public ValenciaItemSyntheticData(ValenciaItemType valenciaItemType, Point point, double distance,
-			Tuple3<Long, Long, String> adminLevel) throws Exception {
+	public ValenciaItemSyntheticData(ValenciaItemType valenciaItemType,
+			List<Tuple4<Point, Long, Long, String>> coordinates) throws Exception {
 		this.valenciaItemType = valenciaItemType;
-		this.point = point;
-		this.distance = distance;
-		this.districtId = adminLevel.f0;
-		this.districtName = adminLevel.f2;
+		this.coordinates = coordinates;
 		this.flag = false;
 		this.startTime = Calendar.getInstance().getTimeInMillis();
 	}
@@ -74,11 +76,6 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 			for (ValenciaItem item : generateValenciaItem(value, 500)) {
 				out.collect(item);
 			}
-			// } else {
-			// ValenciaItem anotherValenciaItem = changeValenciaItem(value);
-			// if (anotherValenciaItem != null) {
-			// out.collect(anotherValenciaItem);
-			// }
 		}
 		out.collect(value);
 	}
@@ -92,25 +89,33 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 			while (count < countMax) {
 				ValenciaItem item = (ValenciaItem) value.clone();
 				item.clearCoordinates();
-				item.addCoordinates(point);
-				item.setId(districtId);
-				item.setDistrict(districtName);
+
+				// get a random point from coordinates
+				Tuple4<Point, Long, Long, String> point = getRandomPointFromList(coordinates);
+				item.addCoordinates(point.f0);
+				item.setId(point.f1);
+				item.setDistrict(point.f3);
+
 				item.setValue(new Random().nextInt((max - min) + 1) + min);
+
 				list.add(item);
 				count++;
 			}
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-			if (this.districtId != null && value.getId().longValue() <= 7) {
-				while (count < countMax) {
-					ValenciaItem item = (ValenciaItem) value.clone();
-					item.clearCoordinates();
-					item.addCoordinates(point);
-					item.setId(districtId);
-					item.setDistrict(districtName);
-					item.setValue(veryBadAir);
-					list.add(item);
-					count++;
-				}
+			while (count < countMax) {
+				ValenciaItem item = (ValenciaItem) value.clone();
+				item.clearCoordinates();
+
+				// get a random point from coordinates
+				Tuple4<Point, Long, Long, String> point = getRandomPointFromList(coordinates);
+				item.addCoordinates(point.f0);
+				item.setId(point.f1);
+				item.setDistrict(point.f3);
+
+				item.setValue(veryBadAir);
+
+				list.add(item);
+				count++;
 			}
 		} else if (valenciaItemType == ValenciaItemType.NOISE) {
 			// throw new Exception("ValenciaItemType NOISE is not implemented!");
@@ -120,36 +125,9 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 		return list;
 	}
 
-	private ValenciaItem changeValenciaItem(ValenciaItem value) throws Exception {
-		ValenciaItem anotherValue = (ValenciaItem) value.clone();
-		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
-			// min = 1 , max = 3, range = (max - min)
-			int min = 1, max = 3;
-			List<Point> coordinates = anotherValue.getCoordinates();
-			for (Point p : coordinates) {
-				double d = p.euclideanDistance(point);
-				if (d <= distance) {
-					anotherValue.clearCoordinates();
-					anotherValue.addCoordinates(point);
-					anotherValue.setId(districtId);
-					anotherValue.setDistrict(districtName);
-					anotherValue.setValue(new Random().nextInt((max - min) + 1) + min);
-					break;
-				}
-			}
-		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-			if (districtId != null && anotherValue.getId().longValue() <= 7) {
-				anotherValue.clearCoordinates();
-				anotherValue.addCoordinates(point);
-				anotherValue.setId(districtId);
-				anotherValue.setDistrict(districtName);
-				anotherValue.setValue(veryBadAir);
-			}
-		} else if (valenciaItemType == ValenciaItemType.NOISE) {
-			// throw new Exception("ValenciaItemType NOISE is not implemented!");
-		} else {
-			throw new Exception("ValenciaItemType is NULL!");
-		}
-		return anotherValue;
+	private Tuple4<Point, Long, Long, String> getRandomPointFromList(List<Tuple4<Point, Long, Long, String>> list) {
+		int index = ThreadLocalRandom.current().nextInt(list.size());
+		System.out.println("\nIndex :" + index);
+		return list.get(index);
 	}
 }
