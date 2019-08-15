@@ -83,8 +83,8 @@ public class CountBundleTriggerDynamic<K, T> implements BundleTriggerDynamic<K, 
 				msg = msg + " - HOLDING";
 				this.startTime = Calendar.getInstance().getTimeInMillis();
 			}
-			// System.out.println(msg);
-			logger.info(msg);
+			System.out.println(msg);
+			// logger.info(msg);
 		}
 		count = 0;
 	}

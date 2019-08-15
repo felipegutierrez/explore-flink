@@ -67,48 +67,30 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	// @formatter:on
 
 	/**
-	 * This is the constructor default for offline data. timeoutMillSeconds = 0,
-	 * offlineData = true
 	 * 
 	 * @param valenciaItemType
 	 * @param frequencyMilliSeconds
 	 * @param collectWithTimestamp
+	 * @param offlineData
 	 * @throws Exception
 	 */
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
-			boolean collectWithTimestamp) throws Exception {
-		this(valenciaItemType, 0, frequencyMilliSeconds, collectWithTimestamp, true);
-	}
-
-	/**
-	 * This is the default constructor for online data. offlineData = false.
-	 * 
-	 * @param valenciaItemType
-	 * @param timeoutMillSeconds
-	 * @param frequencyMilliSeconds
-	 * @param collectWithTimestamp
-	 * @throws Exception
-	 */
-	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds, long frequencyMilliSeconds,
-			boolean collectWithTimestamp) throws Exception {
-		this(valenciaItemType, timeoutMillSeconds, frequencyMilliSeconds, collectWithTimestamp, false);
-	}
-
-	private ValenciaItemConsumer(ValenciaItemType valenciaItemType, long timeoutMillSeconds, long frequencyMilliSeconds,
 			boolean collectWithTimestamp, boolean offlineData) throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			this.json = VALENCIA_TRAFFIC_JAM_URL;
+			this.timeoutMillSeconds = Time.minutes(5).toMilliseconds();
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 			this.json = VALENCIA_POLLUTION_URL;
+			this.timeoutMillSeconds = Time.minutes(30).toMilliseconds();
 		} else if (valenciaItemType == ValenciaItemType.NOISE) {
 			this.json = VALENCIA_NOISE_URL;
+			this.timeoutMillSeconds = Time.minutes(5).toMilliseconds();
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
 		this.offlineData = offlineData;
 		this.valenciaItemType = valenciaItemType;
 		this.frequencyMilliSeconds = frequencyMilliSeconds;
-		this.timeoutMillSeconds = timeoutMillSeconds;
 		this.collectWithTimestamp = collectWithTimestamp;
 		createResourceDir();
 	}
@@ -200,24 +182,26 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 								ArrayNode xy = (ArrayNode) coordinates;
 								points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));
 							}
-							valenciaItem = new ValenciaTraffic(null, null, "", eventTime, points,
+							valenciaItem = new ValenciaTraffic(0L, 0L, "", eventTime, points,
 									nodeProperties.get("estado").asInt());
 						} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 							String p = arrayNodeCoordinates.get(0).asText() + ","
 									+ arrayNodeCoordinates.get(1).asText();
 							points = Point.extract(p, typeCSR);
-							valenciaItem = new ValenciaPollution(null, null, "", eventTime, points,
+							valenciaItem = new ValenciaPollution(0L, 0L, "", eventTime, points,
 									nodeProperties.get("mediciones").asText());
 						} else if (valenciaItemType == ValenciaItemType.NOISE) {
 							throw new Exception("ValenciaItemType NOISE is not implemented!");
 						} else {
 							throw new Exception("ValenciaItemType is NULL!");
 						}
-						if (collectWithTimestamp) {
-							ctx.collectWithTimestamp(valenciaItem, eventTime.getTime());
-							ctx.emitWatermark(new Watermark(eventTime.getTime()));
-						} else {
-							ctx.collect(valenciaItem);
+						if (valenciaItem != null) {
+							if (collectWithTimestamp) {
+								ctx.collectWithTimestamp(valenciaItem, eventTime.getTime());
+								ctx.emitWatermark(new Watermark(eventTime.getTime()));
+							} else {
+								ctx.collect(valenciaItem);
+							}
 						}
 					}
 				}

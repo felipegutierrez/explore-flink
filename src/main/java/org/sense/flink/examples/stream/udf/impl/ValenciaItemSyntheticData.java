@@ -63,7 +63,6 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 
 	@Override
 	public void flatMap(ValenciaItem value, Collector<ValenciaItem> out) throws Exception {
-
 		long before = Calendar.getInstance().getTimeInMillis() - Time.minutes(5).toMilliseconds();
 		if (before >= startTime) {
 			startTime = Calendar.getInstance().getTimeInMillis();
@@ -127,7 +126,6 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 
 	private Tuple4<Point, Long, Long, String> getRandomPointFromList(List<Tuple4<Point, Long, Long, String>> list) {
 		int index = ThreadLocalRandom.current().nextInt(list.size());
-		System.out.println("\nIndex :" + index);
 		return list.get(index);
 	}
 }

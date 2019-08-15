@@ -238,7 +238,7 @@ public class SimpleGeographicalPolygons implements Serializable {
 		// points.add(new Point(729010.3865999999, 4373390.0215, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 13,9,Algirós
 		// points.add(new Point(727338.396370, 4374107.624796, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 14,9,Benimaclet 
 		// points.add(new Point(726240.844004, 4375087.354217, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 15,9,Rascanya
-		points.add(new Point(724328.279007, 4374887.874634, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 16,9,Benicalap
+		// points.add(new Point(724328.279007, 4374887.874634, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)); // 16,9,Benicalap
 
 		sgp.printProperties(points);
 		// @formatter:on

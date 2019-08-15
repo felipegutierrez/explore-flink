@@ -49,6 +49,8 @@ public class ValenciaDataSkewedRepartitionJoinExample {
 	public ValenciaDataSkewedRepartitionJoinExample(String ipAddressSource01, String ipAddressSink) throws Exception {
 		disclaimer();
 		List<Tuple4<Point, Long, Long, String>> coordinates = syntheticCoordinates();
+		boolean offlineData = true;
+		boolean collectWithTimestamp = true;
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		// env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
@@ -57,14 +59,14 @@ public class ValenciaDataSkewedRepartitionJoinExample {
 		// @formatter:off
 		// Sources -> add synthetic data -> filter
 		DataStream<ValenciaItem> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(10).toMilliseconds(), Time.seconds(10).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM) // online data
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(20).toMilliseconds(), collectWithTimestamp, !offlineData)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, coordinates)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				// .filter(new ValenciaItemFilter(ValenciaItemType.TRAFFIC_JAM)).name(METRIC_VALENCIA_FILTER)
 				;
 
 		DataStream<ValenciaItem> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.minutes(30).toMilliseconds(), Time.seconds(60).toMilliseconds(), false)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION) // online data
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(60).toMilliseconds(), collectWithTimestamp, !offlineData)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, coordinates)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				// .filter(new ValenciaItemFilter(ValenciaItemType.AIR_POLLUTION)).name(METRIC_VALENCIA_FILTER)

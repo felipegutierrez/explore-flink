@@ -19,13 +19,14 @@ public class ValenciaTrafficJamSocket {
 	}
 
 	public ValenciaTrafficJamSocket() throws Exception {
-
+		boolean offlineData = true;
+		boolean collectWithTimestamp = true;
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		env.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.minutes(5).toMilliseconds(), false))
-				.name(ValenciaItemConsumer.class.getName()).map(new ValenciaItemDistrictMap())
-				.name(ValenciaItemDistrictMap.class.getName()).print();
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(20).toMilliseconds(),
+				collectWithTimestamp, !offlineData)).name(ValenciaItemConsumer.class.getName())
+				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName()).print();
 
 		env.execute(ValenciaTrafficJamSocket.class.getName());
 	}
