@@ -9,6 +9,8 @@ public class ValenciaItemToStringMap extends RichMapFunction<Tuple2<Long, Valenc
 
 	@Override
 	public String map(Tuple2<Long, ValenciaItem> value) throws Exception {
-		return value.f1.getType() + "         qtd[" + value.f0 + "] " + value.f1.toString();
+		ValenciaItem valenciaItem = value.f1;
+		return value.f1.getType() + "     qtd[" + value.f0 + "] " + valenciaItem.getId() + " - "
+				+ valenciaItem.getDistrict() + " - " + valenciaItem.getValue();
 	}
 }

@@ -209,7 +209,11 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				Thread.sleep(this.frequencyMilliSeconds);
+				if (useDataSkewedFile) {
+					Thread.sleep(this.frequencyMilliSeconds / 1000);
+				} else {
+					Thread.sleep(this.frequencyMilliSeconds);
+				}
 			}
 		}
 	}
@@ -261,7 +265,10 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 			if (before >= startTime) {
 				startTime = Calendar.getInstance().getTimeInMillis();
 				useDataSkewedFile = (useDataSkewedFile ? false : true);
-				System.out.println("Changed source file. useDataSkewedFile[" + useDataSkewedFile + "]");
+
+				String msg = "Changed source file. useDataSkewedFile[" + useDataSkewedFile + "] "
+						+ valenciaItemType.toString();
+				System.out.println(msg);
 			}
 		}
 		return useDataSkewedFile;
