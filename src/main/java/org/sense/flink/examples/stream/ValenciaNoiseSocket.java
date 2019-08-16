@@ -27,11 +27,14 @@ public class ValenciaNoiseSocket {
 	public ValenciaNoiseSocket() throws Exception {
 		boolean offlineData = true;
 		boolean collectWithTimestamp = true;
+		boolean skewedDataInjection = true;
+
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
 		env.addSource(new ValenciaItemConsumer(ValenciaItemType.NOISE, Time.seconds(20).toMilliseconds(),
-				collectWithTimestamp, !offlineData)).name(ValenciaItemConsumer.class.getName()).print();
+				collectWithTimestamp, !offlineData, skewedDataInjection)).name(ValenciaItemConsumer.class.getName())
+				.print();
 
 		env.execute(ValenciaNoiseSocket.class.getName());
 	}

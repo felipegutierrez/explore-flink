@@ -6,7 +6,6 @@ import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_DISTRICT_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_STRING_MAP;
-import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SYNTHETIC_FLATMAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WINDOW;
 
 import java.util.ArrayList;
@@ -30,7 +29,6 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaDistrictItemTypeAggWindo
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictAsKeyMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemKeySelector;
-import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemToStringMap;
 import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.Point;
@@ -57,6 +55,7 @@ public class ValenciaDataSkewedCombinerExample {
 		List<Tuple4<Point, Long, Long, String>> coordinates = syntheticCoordinates();
 		boolean offlineData = true;
 		boolean collectWithTimestamp = true;
+		boolean skewedDataInjection = true;
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
@@ -64,13 +63,13 @@ public class ValenciaDataSkewedCombinerExample {
 		// @formatter:off
 		// Sources -> add synthetic data -> filter
 		DataStream<Tuple2<Long , ValenciaItem>> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(20).toMilliseconds(), collectWithTimestamp, offlineData)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(20).toMilliseconds(), collectWithTimestamp, offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, coordinates)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
+				// .flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, coordinates)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)
 				;
 		DataStream<Tuple2<Long , ValenciaItem>> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(50).toMilliseconds(), collectWithTimestamp, offlineData)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(50).toMilliseconds(), collectWithTimestamp, offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				// .flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, coordinates)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
 				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)

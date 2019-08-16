@@ -28,11 +28,13 @@ public class ValenciaPollutionSocket {
 	public ValenciaPollutionSocket() throws Exception {
 		boolean offlineData = true;
 		boolean collectWithTimestamp = true;
+		boolean skewedDataInjection = true;
+
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
 		env.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(60).toMilliseconds(),
-				collectWithTimestamp, !offlineData)).name(ValenciaItemConsumer.class.getName())
+				collectWithTimestamp, !offlineData, skewedDataInjection)).name(ValenciaItemConsumer.class.getName())
 				.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName()).print();
 
 		env.execute(ValenciaPollutionSocket.class.getName());

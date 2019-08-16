@@ -50,20 +50,27 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private static final String RESOURCE_DIR = "resources/valencia/";
 	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";
 	private static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
-	private static final String VALENCIA_NOISE_URL = "";
-	private static final String VALENCIA_TRAFFIC_JAM_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state.json";
+	private static final String VALENCIA_NOISE_URL = "http://???.??";
+	private static final String VALENCIA_TRAFFIC_JAM_ONLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state-online.json";
 	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state-offline.json";
-	private static final String VALENCIA_POLLUTION_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution.json";
+	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_SKEWED_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state-offline-skewed.json";
+	private static final String VALENCIA_POLLUTION_ONLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution-online.json";
 	private static final String VALENCIA_POLLUTION_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution-offline.json";
+	private static final String VALENCIA_POLLUTION_OFFLINE_SKEWED_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution-offline-skewed.json";
 	private static final String VALENCIA_NOISE_FILE = CURRENT_PATH + RESOURCE_DIR + "noise.json";
 	private static final String VALENCIA_NOISE_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "noise-offline.json";
-	private static final long DEFAULT_FREQUENCY_DELAY = 10000;
-	private String json;
+	private static final String VALENCIA_NOISE_OFFLINE_SKEWED_FILE = CURRENT_PATH + RESOURCE_DIR + "noise-offline-skewed.json";
+	private static final long DEFAULT_INTERVAL_CHANGE_DATA_SOURCE = Time.minutes(5).toMilliseconds();
+
+	private URL url;
 	private long frequencyMilliSeconds;
 	private long timeoutMillSeconds;
+	private long startTime;
 	private ValenciaItemType valenciaItemType;
 	private boolean collectWithTimestamp;
 	private boolean offlineData;
+	private boolean dataSkewedSyntheticInjection;
+	private boolean useDataSkewedFile;
 	// @formatter:on
 
 	/**
@@ -75,15 +82,15 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	 * @throws Exception
 	 */
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
-			boolean collectWithTimestamp, boolean offlineData) throws Exception {
+			boolean collectWithTimestamp, boolean offlineData, boolean dataSkewedSyntheticInjection) throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
-			this.json = VALENCIA_TRAFFIC_JAM_URL;
+			this.url = new URL(VALENCIA_TRAFFIC_JAM_URL);
 			this.timeoutMillSeconds = Time.minutes(5).toMilliseconds();
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-			this.json = VALENCIA_POLLUTION_URL;
+			this.url = new URL(VALENCIA_POLLUTION_URL);
 			this.timeoutMillSeconds = Time.minutes(30).toMilliseconds();
 		} else if (valenciaItemType == ValenciaItemType.NOISE) {
-			this.json = VALENCIA_NOISE_URL;
+			this.url = new URL(VALENCIA_NOISE_URL);
 			this.timeoutMillSeconds = Time.minutes(5).toMilliseconds();
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
@@ -92,6 +99,9 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.valenciaItemType = valenciaItemType;
 		this.frequencyMilliSeconds = frequencyMilliSeconds;
 		this.collectWithTimestamp = collectWithTimestamp;
+		this.dataSkewedSyntheticInjection = dataSkewedSyntheticInjection;
+		this.useDataSkewedFile = false;
+		this.startTime = Calendar.getInstance().getTimeInMillis();
 		createResourceDir();
 	}
 
@@ -104,20 +114,9 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	@Override
 	public void run(SourceContext<ValenciaItem> ctx) throws Exception {
-		URL url = new URL(this.json);
-
 		while (true) {
-
-			File realTimeData = null;
-			if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
-				realTimeData = new File((offlineData ? VALENCIA_TRAFFIC_JAM_OFFLINE_FILE : VALENCIA_TRAFFIC_JAM_FILE));
-			} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-				realTimeData = new File((offlineData ? VALENCIA_POLLUTION_OFFLINE_FILE : VALENCIA_POLLUTION_FILE));
-			} else if (valenciaItemType == ValenciaItemType.NOISE) {
-				realTimeData = new File((offlineData ? VALENCIA_NOISE_OFFLINE_FILE : VALENCIA_NOISE_FILE));
-			} else {
-				throw new Exception("ValenciaItemType is NULL!");
-			}
+			// get the data source file to collect data
+			File realTimeData = getDataSourceFile();
 
 			boolean isNew = false;
 			if (!offlineData) {
@@ -213,6 +212,59 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 				Thread.sleep(this.frequencyMilliSeconds);
 			}
 		}
+	}
+
+	private File getDataSourceFile() throws Exception {
+		File realTimeData = null;
+		// decide if we will inject the skewed data from an offline
+		useDataSkewedFile = useDataSkewedFile();
+
+		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
+			if (useDataSkewedFile) {
+				realTimeData = new File(VALENCIA_TRAFFIC_JAM_OFFLINE_SKEWED_FILE);
+			} else {
+				if (offlineData) {
+					realTimeData = new File(VALENCIA_TRAFFIC_JAM_OFFLINE_FILE);
+				} else {
+					realTimeData = new File(VALENCIA_TRAFFIC_JAM_ONLINE_FILE);
+				}
+			}
+		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
+			if (useDataSkewedFile) {
+				realTimeData = new File(VALENCIA_POLLUTION_OFFLINE_SKEWED_FILE);
+			} else {
+				if (offlineData) {
+					realTimeData = new File(VALENCIA_POLLUTION_OFFLINE_FILE);
+				} else {
+					realTimeData = new File(VALENCIA_POLLUTION_ONLINE_FILE);
+				}
+			}
+		} else if (valenciaItemType == ValenciaItemType.NOISE) {
+			if (useDataSkewedFile) {
+				realTimeData = new File(VALENCIA_NOISE_OFFLINE_SKEWED_FILE);
+			} else {
+				if (offlineData) {
+					realTimeData = new File(VALENCIA_NOISE_OFFLINE_FILE);
+				} else {
+					realTimeData = new File(VALENCIA_NOISE_FILE);
+				}
+			}
+		} else {
+			throw new Exception("ValenciaItemType is NULL!");
+		}
+		return realTimeData;
+	}
+
+	private boolean useDataSkewedFile() {
+		if (dataSkewedSyntheticInjection) {
+			long before = Calendar.getInstance().getTimeInMillis() - DEFAULT_INTERVAL_CHANGE_DATA_SOURCE;
+			if (before >= startTime) {
+				startTime = Calendar.getInstance().getTimeInMillis();
+				useDataSkewedFile = (useDataSkewedFile ? false : true);
+				System.out.println("Changed source file. useDataSkewedFile[" + useDataSkewedFile + "]");
+			}
+		}
+		return useDataSkewedFile;
 	}
 
 	@Override
