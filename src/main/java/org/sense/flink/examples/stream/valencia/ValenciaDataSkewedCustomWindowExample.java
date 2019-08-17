@@ -1,6 +1,7 @@
 package org.sense.flink.examples.stream.valencia;
 
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_DISTRICT_MAP;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SIDE_OUTPUT;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SYNTHETIC_FLATMAP;
@@ -22,15 +23,17 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.TimeDomain;
-import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.triggers.EventTimeTrigger;
 import org.apache.flink.streaming.api.windowing.triggers.Trigger;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 import org.sense.flink.examples.stream.udf.CleanupState;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticData;
@@ -58,19 +61,29 @@ public class ValenciaDataSkewedCustomWindowExample {
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
 		// @formatter:off
+		// Side outputs
+		OutputTag<Long> outputTagTraffic = new MyOutputTag("side-output-traffic");
+		OutputTag<Long> outputTagPollution = new MyOutputTag("side-output-pollution");
+
 		// Sources -> add synthetic data -> filter
-		DataStream<ValenciaItem> streamTrafficJam = env
+		SingleOutputStreamOperator<ValenciaItem> streamTrafficJam = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(20).toMilliseconds(), collectWithTimestamp, !offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.TRAFFIC_JAM, coordinates)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
+				.process(new MyProcessSideOutput(outputTagTraffic)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 
-		DataStream<ValenciaItem> streamAirPollution = env
+		SingleOutputStreamOperator<ValenciaItem> streamAirPollution = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(60).toMilliseconds(), collectWithTimestamp, !offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.flatMap(new ValenciaItemSyntheticData(ValenciaItemType.AIR_POLLUTION, coordinates)).name(METRIC_VALENCIA_SYNTHETIC_FLATMAP)
+				.process(new MyProcessSideOutput(outputTagPollution)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 
+		// print side outputs
+		streamTrafficJam.getSideOutput(outputTagTraffic).print();
+		streamAirPollution.getSideOutput(outputTagPollution).print();
+		
 		// Join -> Print
 		streamTrafficJam
 			.union(streamAirPollution)
@@ -93,6 +106,30 @@ public class ValenciaDataSkewedCustomWindowExample {
 		System.out.println("........................ ");
 		env.execute(ValenciaDataSkewedCustomWindowExample.class.getName());
 		// @formatter:on
+	}
+
+	private static class MyOutputTag extends OutputTag<Long> {
+		private static final long serialVersionUID = 1024854737660323566L;
+
+		public MyOutputTag(String id) {
+			super(id);
+		}
+	}
+
+	private static class MyProcessSideOutput extends ProcessFunction<ValenciaItem, ValenciaItem> {
+		private static final long serialVersionUID = -8186522079661070009L;
+		private OutputTag<Long> outputTag;
+
+		public MyProcessSideOutput(OutputTag<Long> outputTag) {
+			this.outputTag = outputTag;
+		}
+
+		@Override
+		public void processElement(ValenciaItem valenciaItem, ProcessFunction<ValenciaItem, ValenciaItem>.Context ctx,
+				Collector<ValenciaItem> out) throws Exception {
+			out.collect(valenciaItem);
+			ctx.output(outputTag, valenciaItem.getId());
+		}
 	}
 
 	private static class ValenciaItemDistrictSelectorBloomFilter implements KeySelector<ValenciaItem, Long> {
@@ -203,8 +240,7 @@ public class ValenciaDataSkewedCustomWindowExample {
 		 * Creates a new {@code TumblingEventTimeWindows} {@link WindowAssigner} that
 		 * assigns elements to time windows based on the element timestamp.
 		 *
-		 * @param size
-		 *            The size of the generated windows.
+		 * @param size The size of the generated windows.
 		 * @return The time policy.
 		 */
 		public static MyTumblingEventTimeWindows of(Time size) {
@@ -228,10 +264,8 @@ public class ValenciaDataSkewedCustomWindowExample {
 		 * use {@code of(Time.days(1),Time.hours(-8))}. The parameter of offset is
 		 * {@code Time.hours(-8))} since UTC+08:00 is 8 hours earlier than UTC time.
 		 *
-		 * @param size
-		 *            The size of the generated windows.
-		 * @param offset
-		 *            The offset which window start would be shifted by.
+		 * @param size   The size of the generated windows.
+		 * @param offset The offset which window start would be shifted by.
 		 * @return The time policy.
 		 */
 		public static MyTumblingEventTimeWindows of(Time size, Time offset) {

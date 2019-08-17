@@ -20,6 +20,7 @@ public class MetricLabels {
 	public final static String METRIC_VALENCIA_STRING_MAP = "ValenciaStringMap";
 	public final static String METRIC_VALENCIA_SINK = "ValenciaSink";
 	public final static String METRIC_VALENCIA_SYNTHETIC_FLATMAP = "ValenciaSyntheticFlatMap";
+	public final static String METRIC_VALENCIA_SIDE_OUTPUT = "ValenciaSideOutput";
 	public final static String METRIC_VALENCIA_SOURCE = "ValenciaSource";
 	public final static String METRIC_VALENCIA_JOIN = "ValenciaDistrictJoin";
 }
