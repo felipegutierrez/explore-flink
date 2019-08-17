@@ -43,14 +43,14 @@ import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.CRSCoordinateTransformer;
 import org.sense.flink.util.ValenciaItemType;
 
-public class ValenciaDataSkewedCustomWindowExample {
+public class ValenciaDataSkewedBloomFilterJoinExample {
 	private final String topic = "topic-valencia-data-skewed";
 
 	public static void main(String[] args) throws Exception {
-		new ValenciaDataSkewedCustomWindowExample("127.0.0.1", "127.0.0.1");
+		new ValenciaDataSkewedBloomFilterJoinExample("127.0.0.1", "127.0.0.1");
 	}
 
-	public ValenciaDataSkewedCustomWindowExample(String ipAddressSource01, String ipAddressSink) throws Exception {
+	public ValenciaDataSkewedBloomFilterJoinExample(String ipAddressSource01, String ipAddressSink) throws Exception {
 		disclaimer();
 		List<Tuple4<Point, Long, Long, String>> coordinates = syntheticCoordinates();
 		boolean offlineData = true;
@@ -104,7 +104,7 @@ public class ValenciaDataSkewedCustomWindowExample {
 		System.out.println("ExecutionPlan ........................ ");
 		System.out.println(env.getExecutionPlan());
 		System.out.println("........................ ");
-		env.execute(ValenciaDataSkewedCustomWindowExample.class.getName());
+		env.execute(ValenciaDataSkewedBloomFilterJoinExample.class.getName());
 		// @formatter:on
 	}
 
