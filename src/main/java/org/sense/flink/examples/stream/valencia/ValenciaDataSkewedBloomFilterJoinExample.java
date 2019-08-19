@@ -21,6 +21,7 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaItemLookupKeySelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemOutputTag;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessSideOutput;
 import org.sense.flink.examples.stream.udf.impl.ValenciaLookupCoProcess;
+import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
@@ -37,6 +38,7 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 		boolean offlineData = true;
 		boolean collectWithTimestamp = true;
 		boolean skewedDataInjection = true;
+		boolean enableLookupKeys = true;
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
@@ -58,22 +60,28 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 				.process(new ValenciaItemProcessSideOutput(outputTagPollution)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 
-		// get Side outputs
-		DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamTraffic = streamTrafficJam.getSideOutput(outputTagTraffic);
-		DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamPollution = streamAirPollution.getSideOutput(outputTagPollution);
+		DataStream<ValenciaItem> streamTrafficJamFiltered;
+		DataStream<ValenciaItem> streamAirPollutionFiltered;
+		if (enableLookupKeys) {
+			// get Side outputs
+			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamTraffic = streamTrafficJam.getSideOutput(outputTagTraffic);
+			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamPollution = streamAirPollution.getSideOutput(outputTagPollution);
+	
+			// Lookup keys with Bloom Filter
+			streamTrafficJamFiltered = streamTrafficJam
+					.connect(sideOutputStreamPollution)
+					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
+					.process(new ValenciaLookupCoProcess(Time.seconds(30).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP)
+					;
+			streamAirPollutionFiltered = streamAirPollution.keyBy(new ValenciaItemDistrictSelector())
+					.connect(sideOutputStreamTraffic)
+					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
+					.process(new ValenciaLookupCoProcess(Time.seconds(30).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP);
+		} else {
+			streamTrafficJamFiltered = streamTrafficJam;
+			streamAirPollutionFiltered = streamAirPollution;
+		}
 
-		// This window time is used on the Lookup and Join operators
-		// Lookup keys with Bloom Filter
-		DataStream<ValenciaItem> streamTrafficJamFiltered = streamTrafficJam
-				.connect(sideOutputStreamPollution)
-				.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-				.process(new ValenciaLookupCoProcess(Time.seconds(30).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP);
-		DataStream<ValenciaItem> streamAirPollutionFiltered = streamAirPollution.keyBy(new ValenciaItemDistrictSelector())
-				.connect(sideOutputStreamTraffic)
-				.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-				.process(new ValenciaLookupCoProcess(Time.seconds(30).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP);
-
-		// WindowAssigner wa = TumblingEventTimeWindows.of(Time.seconds(20));
 		// Join -> Print
 		streamTrafficJamFiltered
 				.join(streamAirPollutionFiltered)
@@ -81,8 +89,8 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 				.equalTo(new ValenciaItemDistrictSelector())
 				.window(TumblingEventTimeWindows.of(Time.seconds(40)))
 		 		.apply(new TrafficPollutionByDistrictJoinFunction())
-		 		.print().name(METRIC_VALENCIA_SINK)
-				// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+		 		// .print().name(METRIC_VALENCIA_SINK)
+				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				;
 
 		System.out.println("ExecutionPlan ........................ ");
