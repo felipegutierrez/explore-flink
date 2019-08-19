@@ -25,6 +25,7 @@ import org.sense.flink.examples.stream.edgent.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.edgent.WordCountSocketFilterQEP;
 import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
 import org.sense.flink.examples.stream.twitter.TwitterExample;
+import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedBloomFilterJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedBroadcastJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedCombinerExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedJoinExample;
@@ -73,6 +74,7 @@ public class App {
 				System.out.println("26 - Reading values from Valencia Open-data Web Portal and processing a COMBINER using Flink Data Stream");
 				System.out.println("27 - Reading values from Valencia Open-data Web Portal and computing the Standard Repartition JOIN using Flink Data Stream");
 				System.out.println("28 - Reading values from Valencia Open-data Web Portal and computing the Broadcast JOIN using Flink Data Stream");
+				System.out.println("29 - Reading values from Valencia Open-data Web Portal and computing the Improved Repartition JOIN with Bloom Filter using Flink Data Stream");
 				// @formatter:on
 
 				String msg = "0";
@@ -272,6 +274,10 @@ public class App {
 					break;
 				case 28:
 					new ValenciaDataSkewedBroadcastJoinExample(ipAddressSource01, ipAddressSink);
+					app = 0;
+					break;
+				case 29:
+					new ValenciaDataSkewedBloomFilterJoinExample(ipAddressSource01, ipAddressSink);
 					app = 0;
 					break;
 				default:
