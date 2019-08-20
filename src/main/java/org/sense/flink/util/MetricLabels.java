@@ -25,4 +25,5 @@ public class MetricLabels {
 	public final static String METRIC_VALENCIA_LOOKUP = "ValenciaLookup";
 	public final static String METRIC_VALENCIA_SOURCE = "ValenciaSource";
 	public final static String METRIC_VALENCIA_JOIN = "ValenciaDistrictJoin";
+	public final static String METRIC_VALENCIA_WATERMARKER_ASSIGNER = "ValenciaWatermarkerAssigner";
 }

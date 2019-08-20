@@ -5,6 +5,7 @@ import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_LOOKUP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SIDE_OUTPUT;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WATERMARKER_ASSIGNER;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -21,6 +22,7 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaItemLookupKeySelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemOutputTag;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessSideOutput;
 import org.sense.flink.examples.stream.udf.impl.ValenciaLookupCoProcess;
+import org.sense.flink.examples.stream.udf.impl.ValenciaPeriodicWatermarks;
 import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
@@ -41,7 +43,8 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 		boolean enableLookupKeys = true;
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
+		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+		env.getConfig().setAutoWatermarkInterval(Time.seconds(60).toMilliseconds());
 
 		// @formatter:off
 		// Side outputs
@@ -52,11 +55,13 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 		SingleOutputStreamOperator<ValenciaItem> streamTrafficJam = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(10).toMilliseconds(), collectWithTimestamp, !offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
+				.assignTimestampsAndWatermarks(new ValenciaPeriodicWatermarks()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.process(new ValenciaItemProcessSideOutput(outputTagTraffic)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 		SingleOutputStreamOperator<ValenciaItem> streamAirPollution = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(20).toMilliseconds(), collectWithTimestamp, !offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
+				.assignTimestampsAndWatermarks(new ValenciaPeriodicWatermarks()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.process(new ValenciaItemProcessSideOutput(outputTagPollution)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 
@@ -76,7 +81,8 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 			streamAirPollutionFiltered = streamAirPollution.keyBy(new ValenciaItemDistrictSelector())
 					.connect(sideOutputStreamTraffic)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(30).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP);
+					.process(new ValenciaLookupCoProcess(Time.seconds(30).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP)
+					;
 		} else {
 			streamTrafficJamFiltered = streamTrafficJam;
 			streamAirPollutionFiltered = streamAirPollution;
