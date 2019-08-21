@@ -34,7 +34,6 @@ public class ValenciaLookupCoProcess
 	private Filter bloomFilterPollutionMatches;
 	private Filter bloomFilterTrafficRedundant;
 	private Filter bloomFilterPollutionRedundant;
-	// delay after which an alert flag is thrown
 	private final long dataSourceFrequency;
 	private final long watermarkFrequency;
 	private ValueState<String> state;
@@ -60,17 +59,15 @@ public class ValenciaLookupCoProcess
 	public void processElement1(ValenciaItem valenciaItem,
 			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.Context context,
 			Collector<ValenciaItem> out) throws Exception {
-		// long contextTimestamp = context.timestamp();
 		long valenciaTimestamp = valenciaItem.getTimestamp();
 		long watermark = context.timerService().currentWatermark();
 		boolean flag = watermark > 0 && (valenciaTimestamp - watermark - watermarkFrequency) < dataSourceFrequency;
 
 		String msg = "[" + Thread.currentThread().getId() + " " + valenciaItem.getType() + "] ";
-		// msg += "cts[" + sdf.format(new Date(contextTimestamp)) + "] ";
 		msg += "ts[" + sdf.format(new Date(valenciaTimestamp)) + "] ";
 		msg += "W[" + sdf.format(new Date(watermark)) + "] ";
 		msg += "[" + (valenciaTimestamp - watermark - watermarkFrequency) + " " + flag + "] ";
-		System.out.println(msg);
+		// System.out.println(msg);
 		if (flag) {
 			state.update(valenciaItem.getType().toString());
 			// schedule the next timer 60 seconds from the current event time
@@ -115,10 +112,8 @@ public class ValenciaLookupCoProcess
 	public void onTimer(long timestamp,
 			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.OnTimerContext context,
 			Collector<ValenciaItem> out) throws Exception {
-		// long contextTimestamp = context.timestamp();
 		long watermark = context.timerService().currentWatermark();
 		String msg = "[" + Thread.currentThread().getId() + "] onTimer(" + state.value() + ") ";
-		// msg += "cts[" + sdf.format(new Date(contextTimestamp)) + "] ";
 		msg += "ts[" + sdf.format(new Date(timestamp)) + "] ";
 		msg += "W[" + sdf.format(new Date(watermark)) + "] ";
 		msg += "ts[" + timestamp + "] ";

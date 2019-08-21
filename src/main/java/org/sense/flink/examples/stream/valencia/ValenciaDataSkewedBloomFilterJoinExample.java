@@ -3,16 +3,25 @@ package org.sense.flink.examples.stream.valencia;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_DISTRICT_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_LOOKUP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SIDE_OUTPUT;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WATERMARKER_ASSIGNER;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.co.CoProcessFunction;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
+import org.sense.flink.examples.stream.udf.impl.TrafficPollutionByDistrictJoinFunction;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemLookupKeySelector;
@@ -89,20 +98,86 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 
 		// Join -> Print
 		//streamTrafficJamFiltered
-		//		.join(streamAirPollutionFiltered)
-		//		.where(new ValenciaItemDistrictSelector())
-		//		.equalTo(new ValenciaItemDistrictSelector())
-		//		.window(TumblingEventTimeWindows.of(Time.seconds(70)))
-		// 		.apply(new TrafficPollutionByDistrictJoinFunction())
-		// 		.print().name(METRIC_VALENCIA_SINK)
+		//		.keyBy(new ValenciaItemDistrictSelector())
+		//		.connect(streamAirPollutionFiltered.keyBy(new ValenciaItemDistrictSelector()))
+		//		.process(new ValenciaItemJoinCoProcess(pollutionFrequency, defaultWaterMark)).name(METRIC_VALENCIA_JOIN)
+		//		.map(new Valencia2ItemToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
+		//		.print().name(METRIC_VALENCIA_SINK)
 		//		// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 		//		;
+		streamTrafficJamFiltered
+				.join(streamAirPollutionFiltered)
+				.where(new ValenciaItemDistrictSelector())
+				.equalTo(new ValenciaItemDistrictSelector())
+				.window(TumblingEventTimeWindows.of(Time.milliseconds(defaultWaterMark)))
+		 		.apply(new TrafficPollutionByDistrictJoinFunction())
+		 		.print().name(METRIC_VALENCIA_SINK)
+				// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+				;
 
 		System.out.println("ExecutionPlan ........................ ");
 		System.out.println(env.getExecutionPlan());
 		System.out.println("........................ ");
 		env.execute(ValenciaDataSkewedBloomFilterJoinExample.class.getName());
 		// @formatter:on
+	}
+
+	private static class ValenciaItemJoinCoProcess
+			extends CoProcessFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>> {
+		private static final long serialVersionUID = -7201692377513092833L;
+		private final SimpleDateFormat sdf;
+		private final long maxDataSourceFrequency;
+		private final long watermarkFrequency;
+		private ValueState<String> state;
+
+		public ValenciaItemJoinCoProcess(long maxDataSourceFrequency, long watermarkFrequency) {
+			this.sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+			this.maxDataSourceFrequency = maxDataSourceFrequency;
+			this.watermarkFrequency = watermarkFrequency;
+		}
+
+		@Override
+		public void processElement1(ValenciaItem traffic,
+				CoProcessFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.Context context,
+				Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
+			long valenciaTimestamp = traffic.getTimestamp();
+			long watermark = context.timerService().currentWatermark();
+			boolean flag = watermark > 0
+					&& (valenciaTimestamp - watermark - watermarkFrequency) < maxDataSourceFrequency;
+
+			String msg = "[" + Thread.currentThread().getId() + " " + traffic.getType() + "] ";
+			msg += "ts[" + sdf.format(new Date(valenciaTimestamp)) + "] ";
+			msg += "W[" + sdf.format(new Date(watermark)) + "] ";
+			msg += "[" + (valenciaTimestamp - watermark - watermarkFrequency) + " " + flag + "] ";
+			System.out.println(msg);
+			if (flag) {
+				state.update(traffic.getType().toString());
+				// schedule the next timer 60 seconds from the current event time
+				context.timerService().registerEventTimeTimer(watermark + watermarkFrequency);
+			}
+		}
+
+		@Override
+		public void processElement2(ValenciaItem pollution,
+				CoProcessFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.Context context,
+				Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
+		}
+
+		@Override
+		public void onTimer(long timestamp,
+				CoProcessFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.OnTimerContext context,
+				Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
+			long watermark = context.timerService().currentWatermark();
+			String msg = "[" + Thread.currentThread().getId() + "] onTimer(" + state.value() + ") ";
+			msg += "ts[" + sdf.format(new Date(timestamp)) + "] ";
+			msg += "W[" + sdf.format(new Date(watermark)) + "] ";
+			msg += "ts[" + timestamp + "] ";
+			msg += "W[" + watermark + "] ";
+			// System.out.println(msg);
+			if (watermark >= timestamp) {
+
+			}
+		}
 	}
 
 	private void disclaimer() {
