@@ -1,6 +1,7 @@
 package org.sense.flink.examples.stream.udf.impl;
 
-import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
@@ -19,40 +20,35 @@ import com.clearspring.analytics.stream.membership.Filter;
  * join operation on the following operator. We will send tuples only that
  * already match with items of the Side Output source.
  * 
+ * https://github.com/ververica/flink-training-exercises/blob/master/src/main/java/com/dataartisans/flinktraining/examples/datastream_java/process/CarEventSort.java#L79
+ * https://github.com/ververica/flink-training-exercises/blob/master/src/main/java/com/dataartisans/flinktraining/exercises/datastream_java/utils/ConnectedCarAssigner.java#L23
+ * 
+ * 
  * @author Felipe Oliveira Gutierrez
  */
 public class ValenciaLookupCoProcess
 		extends CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem> {
 	private static final long serialVersionUID = -5653918629637391518L;
+	private final SimpleDateFormat sdf;
 	private Filter bloomFilterTrafficMatches;
 	private Filter bloomFilterPollutionMatches;
 	private Filter bloomFilterTrafficRedundant;
 	private Filter bloomFilterPollutionRedundant;
 	// delay after which an alert flag is thrown
-	private final long timeOut;
-	private ValueState<Boolean> trigger = null;
+	private final long dataSourceFrequency;
+	private final long watermarkFrequency;
+	private ValueState<String> state;
 
-	public ValenciaLookupCoProcess(long timeOut) {
-		this.timeOut = timeOut;
+	public ValenciaLookupCoProcess(long dataSourceFrequency, long watermarkFrequency) {
+		this.sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
+		this.dataSourceFrequency = dataSourceFrequency;
+		this.watermarkFrequency = watermarkFrequency;
 	}
 
 	@Override
 	public void open(Configuration parameters) throws Exception {
+		state = getRuntimeContext().getState(new ValueStateDescriptor<>("myState", String.class));
 		initBloomFilters();
-
-		ValueStateDescriptor<Boolean> triggerDescriptor = new ValueStateDescriptor<Boolean>("triggerState",
-				Boolean.class);
-		trigger = getRuntimeContext().getState(triggerDescriptor);
-	}
-
-	@Override
-	public void onTimer(long timestamp,
-			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.OnTimerContext ctx,
-			Collector<ValenciaItem> out) throws Exception {
-		String msg = "Thread[" + Thread.currentThread().getId() + "] cleaning Bloom Filters";
-		System.out.println(msg);
-		initBloomFilters();
-		trigger.clear();
 	}
 
 	/**
@@ -64,7 +60,22 @@ public class ValenciaLookupCoProcess
 	public void processElement1(ValenciaItem valenciaItem,
 			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.Context context,
 			Collector<ValenciaItem> out) throws Exception {
-		registerTimeout(context);
+		// long contextTimestamp = context.timestamp();
+		long valenciaTimestamp = valenciaItem.getTimestamp();
+		long watermark = context.timerService().currentWatermark();
+		boolean flag = watermark > 0 && (valenciaTimestamp - watermark - watermarkFrequency) < dataSourceFrequency;
+
+		String msg = "[" + Thread.currentThread().getId() + " " + valenciaItem.getType() + "] ";
+		// msg += "cts[" + sdf.format(new Date(contextTimestamp)) + "] ";
+		msg += "ts[" + sdf.format(new Date(valenciaTimestamp)) + "] ";
+		msg += "W[" + sdf.format(new Date(watermark)) + "] ";
+		msg += "[" + (valenciaTimestamp - watermark - watermarkFrequency) + " " + flag + "] ";
+		System.out.println(msg);
+		if (flag) {
+			state.update(valenciaItem.getType().toString());
+			// schedule the next timer 60 seconds from the current event time
+			context.timerService().registerEventTimeTimer(watermark + watermarkFrequency);
+		}
 
 		String key = valenciaItem.getId().toString();
 		if (valenciaItem.getType() == ValenciaItemType.TRAFFIC_JAM) {
@@ -89,8 +100,6 @@ public class ValenciaLookupCoProcess
 	public void processElement2(Tuple2<ValenciaItemType, Long> lookupValue,
 			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.Context context,
 			Collector<ValenciaItem> out) throws Exception {
-		registerTimeout(context);
-
 		String key = lookupValue.f1.toString();
 		if (lookupValue.f0 == ValenciaItemType.TRAFFIC_JAM) {
 			bloomFilterTrafficMatches.add(key);
@@ -102,19 +111,21 @@ public class ValenciaLookupCoProcess
 		}
 	}
 
-	/**
-	 * Get current time and compute timeout time.
-	 * 
-	 * @param context
-	 * @throws IOException
-	 */
-	private void registerTimeout(
-			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.Context context)
-			throws IOException {
-		if (trigger.value() == null) {
-			trigger.update(true);
-			context.timerService()
-					.registerProcessingTimeTimer(context.timerService().currentProcessingTime() + timeOut);
+	@Override
+	public void onTimer(long timestamp,
+			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.OnTimerContext context,
+			Collector<ValenciaItem> out) throws Exception {
+		// long contextTimestamp = context.timestamp();
+		long watermark = context.timerService().currentWatermark();
+		String msg = "[" + Thread.currentThread().getId() + "] onTimer(" + state.value() + ") ";
+		// msg += "cts[" + sdf.format(new Date(contextTimestamp)) + "] ";
+		msg += "ts[" + sdf.format(new Date(timestamp)) + "] ";
+		msg += "W[" + sdf.format(new Date(watermark)) + "] ";
+		msg += "ts[" + timestamp + "] ";
+		msg += "W[" + watermark + "] ";
+		System.out.println(msg);
+		if (watermark >= timestamp) {
+			initBloomFilters();
 		}
 	}
 

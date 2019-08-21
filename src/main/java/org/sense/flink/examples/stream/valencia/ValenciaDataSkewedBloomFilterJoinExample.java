@@ -3,7 +3,6 @@ package org.sense.flink.examples.stream.valencia;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_DISTRICT_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_LOOKUP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SIDE_OUTPUT;
-import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WATERMARKER_ASSIGNER;
 
@@ -12,10 +11,8 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.util.OutputTag;
-import org.sense.flink.examples.stream.udf.impl.TrafficPollutionByDistrictJoinFunction;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemLookupKeySelector;
@@ -23,7 +20,6 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaItemOutputTag;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessSideOutput;
 import org.sense.flink.examples.stream.udf.impl.ValenciaLookupCoProcess;
 import org.sense.flink.examples.stream.udf.impl.ValenciaPeriodicWatermarks;
-import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
@@ -41,10 +37,13 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 		boolean collectWithTimestamp = true;
 		boolean skewedDataInjection = true;
 		boolean enableLookupKeys = true;
+		long defaultWaterMark = Time.seconds(60).toMilliseconds();
+		long trafficFrequency = Time.seconds(10).toMilliseconds();
+		long pollutionFrequency = Time.seconds(20).toMilliseconds();
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-		env.getConfig().setAutoWatermarkInterval(Time.seconds(60).toMilliseconds());
+		env.getConfig().setAutoWatermarkInterval(defaultWaterMark);
 
 		// @formatter:off
 		// Side outputs
@@ -53,15 +52,15 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 
 		// Sources -> add synthetic data -> filter
 		SingleOutputStreamOperator<ValenciaItem> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(10).toMilliseconds(), collectWithTimestamp, !offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, trafficFrequency, collectWithTimestamp, offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.assignTimestampsAndWatermarks(new ValenciaPeriodicWatermarks()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
+				.assignTimestampsAndWatermarks(new ValenciaPeriodicWatermarks(defaultWaterMark)).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.process(new ValenciaItemProcessSideOutput(outputTagTraffic)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 		SingleOutputStreamOperator<ValenciaItem> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(20).toMilliseconds(), collectWithTimestamp, !offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, pollutionFrequency, collectWithTimestamp, offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.assignTimestampsAndWatermarks(new ValenciaPeriodicWatermarks()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
+				.assignTimestampsAndWatermarks(new ValenciaPeriodicWatermarks(defaultWaterMark)).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.process(new ValenciaItemProcessSideOutput(outputTagPollution)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 
@@ -76,12 +75,12 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 			streamTrafficJamFiltered = streamTrafficJam
 					.connect(sideOutputStreamPollution)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(30).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP)
+					.process(new ValenciaLookupCoProcess(trafficFrequency, defaultWaterMark)).name(METRIC_VALENCIA_LOOKUP)
 					;
-			streamAirPollutionFiltered = streamAirPollution.keyBy(new ValenciaItemDistrictSelector())
+			streamAirPollutionFiltered = streamAirPollution
 					.connect(sideOutputStreamTraffic)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(30).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP)
+					.process(new ValenciaLookupCoProcess(pollutionFrequency, defaultWaterMark)).name(METRIC_VALENCIA_LOOKUP)
 					;
 		} else {
 			streamTrafficJamFiltered = streamTrafficJam;
@@ -89,15 +88,15 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 		}
 
 		// Join -> Print
-		streamTrafficJamFiltered
-				.join(streamAirPollutionFiltered)
-				.where(new ValenciaItemDistrictSelector())
-				.equalTo(new ValenciaItemDistrictSelector())
-				.window(TumblingEventTimeWindows.of(Time.seconds(40)))
-		 		.apply(new TrafficPollutionByDistrictJoinFunction())
-		 		// .print().name(METRIC_VALENCIA_SINK)
-				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
-				;
+		//streamTrafficJamFiltered
+		//		.join(streamAirPollutionFiltered)
+		//		.where(new ValenciaItemDistrictSelector())
+		//		.equalTo(new ValenciaItemDistrictSelector())
+		//		.window(TumblingEventTimeWindows.of(Time.seconds(70)))
+		// 		.apply(new TrafficPollutionByDistrictJoinFunction())
+		// 		.print().name(METRIC_VALENCIA_SINK)
+		//		// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+		//		;
 
 		System.out.println("ExecutionPlan ........................ ");
 		System.out.println(env.getExecutionPlan());
