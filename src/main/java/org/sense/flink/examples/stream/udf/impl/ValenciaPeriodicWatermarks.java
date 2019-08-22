@@ -26,6 +26,14 @@ public class ValenciaPeriodicWatermarks implements AssignerWithPeriodicWatermark
 	 * use
 	 * env.getConfig().setAutoWatermarkInterval(Time.seconds(60).toMilliseconds());
 	 * to emit watermarkers only each 60 seconds as well.
+	 * 
+	 * getCurrentWatermark() should NOT be implemented in terms of
+	 * System.currentTimeMillis -- you do not want your watermarking to depend on
+	 * the current processing time if you can possibly avoid it. Part of the beauty
+	 * of event time processing is being able to run your application on historic
+	 * data as well as live, real-time data, and this is only possible if your
+	 * watermarks depend on timestamps recorded in the events, rather than
+	 * System.currentTimeMillis.
 	 */
 	@Override
 	public Watermark getCurrentWatermark() {

@@ -10,10 +10,8 @@ import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.co.CoProcessFunction;
 import org.apache.flink.util.Collector;
 import org.sense.flink.pojo.ValenciaItem;
+import org.sense.flink.util.ValenciaBloomFilterState;
 import org.sense.flink.util.ValenciaItemType;
-
-import com.clearspring.analytics.stream.membership.BloomFilter;
-import com.clearspring.analytics.stream.membership.Filter;
 
 /**
  * The idea of this UDF is to send tuples that have a possibility to be in the
@@ -30,81 +28,108 @@ public class ValenciaLookupCoProcess
 		extends CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem> {
 	private static final long serialVersionUID = -5653918629637391518L;
 	private final SimpleDateFormat sdf;
-	private Filter bloomFilterTrafficMatches;
-	private Filter bloomFilterPollutionMatches;
-	private Filter bloomFilterTrafficRedundant;
-	private Filter bloomFilterPollutionRedundant;
-	private final long dataSourceFrequency;
-	private final long watermarkFrequency;
-	private ValueState<String> state;
+	private ValueState<ValenciaBloomFilterState> bloomFilter;
+	private final long timeOut;
 
-	public ValenciaLookupCoProcess(long dataSourceFrequency, long watermarkFrequency) {
-		this.sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-		this.dataSourceFrequency = dataSourceFrequency;
-		this.watermarkFrequency = watermarkFrequency;
+	public ValenciaLookupCoProcess(long timeOut) {
+		this.sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss.SSS");
+		this.timeOut = timeOut;
 	}
 
 	@Override
 	public void open(Configuration parameters) throws Exception {
-		state = getRuntimeContext().getState(new ValueStateDescriptor<>("myState", String.class));
-		initBloomFilters();
+		ValueStateDescriptor<ValenciaBloomFilterState> bloomFilterDesc = new ValueStateDescriptor<ValenciaBloomFilterState>(
+				"bloomFilter", ValenciaBloomFilterState.class);
+		bloomFilter = getRuntimeContext().getState(bloomFilterDesc);
 	}
 
 	/**
 	 * The key is it will give false positive result, but never false negative. If
 	 * the answer is TRUE it is not accurate. If the answer is FALSE it is within
-	 * 100% accuracy.
+	 * 100% accuracy. Hence, deduplication checks will be 100% accurate.
+	 * 
+	 * This side is considered the LEFT side of the JOIN. hence, the keys of this
+	 * side are added on the LEFT sub-state. However we check the RIGHT sub-state if
+	 * it ill match in the future.
 	 */
 	@Override
 	public void processElement1(ValenciaItem valenciaItem,
 			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.Context context,
 			Collector<ValenciaItem> out) throws Exception {
-		long valenciaTimestamp = valenciaItem.getTimestamp();
-		long watermark = context.timerService().currentWatermark();
-		boolean flag = watermark > 0 && (valenciaTimestamp - watermark - watermarkFrequency) < dataSourceFrequency;
+		ValenciaBloomFilterState state = bloomFilter.value();
+		boolean flagUpdateState = false;
 
-		String msg = "[" + Thread.currentThread().getId() + " " + valenciaItem.getType() + "] ";
-		msg += "ts[" + sdf.format(new Date(valenciaTimestamp)) + "] ";
-		msg += "W[" + sdf.format(new Date(watermark)) + "] ";
-		msg += "[" + (valenciaTimestamp - watermark - watermarkFrequency) + " " + flag + "] ";
-		// System.out.println(msg);
-		if (flag) {
-			state.update(valenciaItem.getType().toString());
-			// schedule the next timer 60 seconds from the current event time
-			context.timerService().registerEventTimeTimer(watermark + watermarkFrequency);
+		if (state == null) {
+			state = new ValenciaBloomFilterState();
+			state.setLastModified(context.timestamp());
+			// get current time and compute timeout time
+			context.timerService().registerEventTimeTimer(state.getLastModified() + timeOut);
+			flagUpdateState = true;
+
+			// debug
+			if (valenciaItem.getType() == ValenciaItemType.TRAFFIC_JAM) {
+				String msg = "[" + Thread.currentThread().getId() + " " + valenciaItem.getType() + "] ";
+				msg += "cts[" + sdf.format(new Date(state.getLastModified())) + "] ";
+				msg += "f[" + sdf.format(new Date(state.getLastModified() + timeOut)) + "] ";
+				System.out.println(msg);
+			}
 		}
 
 		String key = valenciaItem.getId().toString();
 		if (valenciaItem.getType() == ValenciaItemType.TRAFFIC_JAM) {
 			// If the key is not redundant and if it is likely to match
-			if (!bloomFilterTrafficRedundant.isPresent(key) && bloomFilterPollutionMatches.isPresent(key)) {
+			// if (!state.isPresentTrafficLeft(key)) {
+			if (!state.isPresentTrafficLeft(key) && state.isPresentPollutionRight(key)) {
 				out.collect(valenciaItem);
-				bloomFilterTrafficRedundant.add(key);
+				state.addTrafficLeft(key);
+				flagUpdateState = true;
 			}
 		} else if (valenciaItem.getType() == ValenciaItemType.AIR_POLLUTION) {
 			// If the key is not redundant and if it is likely to match
-			if (!bloomFilterPollutionRedundant.isPresent(key) && bloomFilterTrafficMatches.isPresent(key)) {
+			// if (!state.isPresentPollutionLeft(key)) {
+			if (!state.isPresentPollutionLeft(key) && state.isPresentTrafficRight(key)) {
 				out.collect(valenciaItem);
-				bloomFilterPollutionRedundant.add(key);
+				state.addPollutionLeft(key);
+				flagUpdateState = true;
 			}
 		} else if (valenciaItem.getType() == ValenciaItemType.NOISE) {
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
+		if (flagUpdateState) {
+			bloomFilter.update(state);
+		}
 	}
 
+	/**
+	 * This is considered the RIGHT side of the Join. Hence, the states on this side
+	 * add keys on the Right sub-state.
+	 */
 	@Override
 	public void processElement2(Tuple2<ValenciaItemType, Long> lookupValue,
 			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.Context context,
 			Collector<ValenciaItem> out) throws Exception {
+		boolean flagUpdateState = false;
+		ValenciaBloomFilterState state = bloomFilter.value();
+		if (state == null) {
+			state = new ValenciaBloomFilterState();
+			state.setLastModified(context.timestamp());
+			context.timerService().registerEventTimeTimer(state.getLastModified() + timeOut);
+			flagUpdateState = true;
+		}
 		String key = lookupValue.f1.toString();
 		if (lookupValue.f0 == ValenciaItemType.TRAFFIC_JAM) {
-			bloomFilterTrafficMatches.add(key);
+			state.addTrafficRight(key);
+			flagUpdateState = true;
 		} else if (lookupValue.f0 == ValenciaItemType.AIR_POLLUTION) {
-			bloomFilterPollutionMatches.add(key);
+			state.addPollutionRight(key);
+			flagUpdateState = true;
 		} else if (lookupValue.f0 == ValenciaItemType.NOISE) {
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
+		}
+		if (flagUpdateState) {
+			bloomFilter.update(state);
 		}
 	}
 
@@ -112,22 +137,16 @@ public class ValenciaLookupCoProcess
 	public void onTimer(long timestamp,
 			CoProcessFunction<ValenciaItem, Tuple2<ValenciaItemType, Long>, ValenciaItem>.OnTimerContext context,
 			Collector<ValenciaItem> out) throws Exception {
-		long watermark = context.timerService().currentWatermark();
-		String msg = "[" + Thread.currentThread().getId() + "] onTimer(" + state.value() + ") ";
+		ValenciaBloomFilterState state = bloomFilter.value();
+		String msg = "[" + Thread.currentThread().getId() + " onTimer()] ";
+		msg += "t[" + sdf.format(new Date(state.getLastModified() + timeOut)) + "] ";
 		msg += "ts[" + sdf.format(new Date(timestamp)) + "] ";
-		msg += "W[" + sdf.format(new Date(watermark)) + "] ";
-		msg += "ts[" + timestamp + "] ";
-		msg += "W[" + watermark + "] ";
-		System.out.println(msg);
-		if (watermark >= timestamp) {
-			initBloomFilters();
-		}
-	}
 
-	private void initBloomFilters() {
-		bloomFilterTrafficMatches = new BloomFilter(100, 0.01);
-		bloomFilterPollutionMatches = new BloomFilter(100, 0.01);
-		bloomFilterTrafficRedundant = new BloomFilter(100, 0.01);
-		bloomFilterPollutionRedundant = new BloomFilter(100, 0.01);
+		if (state != null && timestamp == state.getLastModified() + timeOut) {
+			msg += "TRUE";
+			bloomFilter.update(null);
+		}
+		// debug
+		System.out.println(msg);
 	}
 }
