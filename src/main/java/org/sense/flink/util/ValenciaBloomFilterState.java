@@ -7,17 +7,13 @@ import com.clearspring.analytics.stream.membership.Filter;
 
 public class ValenciaBloomFilterState implements Serializable {
 	private static final long serialVersionUID = 5997498632763082349L;
-	private Filter trafficLeft;
-	private Filter trafficRight;
-	private Filter pollutionLeft;
-	private Filter pollutionRight;
+	private Filter left;
+	private Filter right;
 	private long lastModified;
 
 	public ValenciaBloomFilterState() {
-		this.trafficRight = new BloomFilter(100, 0.01);
-		this.pollutionLeft = new BloomFilter(100, 0.01);
-		this.trafficLeft = new BloomFilter(100, 0.01);
-		this.pollutionRight = new BloomFilter(100, 0.01);
+		this.left = new BloomFilter(100, 0.01);
+		this.right = new BloomFilter(100, 0.01);
 		this.lastModified = 0L;
 	}
 
@@ -29,67 +25,35 @@ public class ValenciaBloomFilterState implements Serializable {
 		this.lastModified = lastModified;
 	}
 
-	public Filter getTrafficRight() {
-		return trafficRight;
+	public Filter getLeft() {
+		return left;
 	}
 
-	public void setTrafficRight(Filter traffic) {
-		this.trafficRight = traffic;
+	public void setLeft(Filter left) {
+		this.left = left;
 	}
 
-	public boolean isPresentTrafficRight(String key) {
-		return trafficRight.isPresent(key);
+	public boolean isPresentLeft(String key) {
+		return left.isPresent(key);
 	}
 
-	public void addTrafficRight(String key) {
-		this.trafficRight.add(key);
+	public void addLeft(String key) {
+		this.left.add(key);
 	}
 
-	public Filter getTrafficLeft() {
-		return trafficLeft;
+	public Filter getRight() {
+		return right;
 	}
 
-	public void setTrafficLeft(Filter traffic) {
-		this.trafficLeft = traffic;
+	public void setRight(Filter right) {
+		this.right = right;
 	}
 
-	public boolean isPresentTrafficLeft(String key) {
-		return trafficLeft.isPresent(key);
+	public boolean isPresentRight(String key) {
+		return right.isPresent(key);
 	}
 
-	public void addTrafficLeft(String key) {
-		this.trafficLeft.add(key);
-	}
-
-	public Filter getPollutionLeft() {
-		return pollutionLeft;
-	}
-
-	public void setPollutionLeft(Filter pollution) {
-		this.pollutionLeft = pollution;
-	}
-
-	public boolean isPresentPollutionLeft(String key) {
-		return pollutionLeft.isPresent(key);
-	}
-
-	public void addPollutionLeft(String key) {
-		this.pollutionLeft.add(key);
-	}
-
-	public Filter getPollutionRight() {
-		return pollutionRight;
-	}
-
-	public void setPollutionRight(Filter pollution) {
-		this.pollutionRight = pollution;
-	}
-
-	public boolean isPresentPollutionRight(String key) {
-		return pollutionRight.isPresent(key);
-	}
-
-	public void addPollutionRight(String key) {
-		this.pollutionRight.add(key);
+	public void addRight(String key) {
+		this.right.add(key);
 	}
 }

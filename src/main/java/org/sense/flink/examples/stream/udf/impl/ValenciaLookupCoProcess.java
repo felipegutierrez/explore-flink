@@ -79,17 +79,17 @@ public class ValenciaLookupCoProcess
 		if (valenciaItem.getType() == ValenciaItemType.TRAFFIC_JAM) {
 			// If the key is not redundant and if it is likely to match
 			// if (!state.isPresentTrafficLeft(key)) {
-			if (!state.isPresentTrafficLeft(key) && state.isPresentPollutionRight(key)) {
+			if (!state.isPresentLeft(key) && state.isPresentRight(key)) {
 				out.collect(valenciaItem);
-				state.addTrafficLeft(key);
+				state.addLeft(key);
 				flagUpdateState = true;
 			}
 		} else if (valenciaItem.getType() == ValenciaItemType.AIR_POLLUTION) {
 			// If the key is not redundant and if it is likely to match
 			// if (!state.isPresentPollutionLeft(key)) {
-			if (!state.isPresentPollutionLeft(key) && state.isPresentTrafficRight(key)) {
+			if (!state.isPresentLeft(key) && state.isPresentRight(key)) {
 				out.collect(valenciaItem);
-				state.addPollutionLeft(key);
+				state.addLeft(key);
 				flagUpdateState = true;
 			}
 		} else if (valenciaItem.getType() == ValenciaItemType.NOISE) {
@@ -119,10 +119,10 @@ public class ValenciaLookupCoProcess
 		}
 		String key = lookupValue.f1.toString();
 		if (lookupValue.f0 == ValenciaItemType.TRAFFIC_JAM) {
-			state.addTrafficRight(key);
+			state.addRight(key);
 			flagUpdateState = true;
 		} else if (lookupValue.f0 == ValenciaItemType.AIR_POLLUTION) {
-			state.addPollutionRight(key);
+			state.addRight(key);
 			flagUpdateState = true;
 		} else if (lookupValue.f0 == ValenciaItemType.NOISE) {
 		} else {
