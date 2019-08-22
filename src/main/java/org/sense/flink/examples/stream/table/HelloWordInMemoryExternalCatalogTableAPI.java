@@ -43,9 +43,9 @@ public class HelloWordInMemoryExternalCatalogTableAPI {
 		// Create Stream table environment
 		StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 		// obtain query configuration from TableEnvironment
-		StreamQueryConfig qConfig = tableEnv.queryConfig();
+		//StreamQueryConfig qConfig = tableEnv.queryConfig();
 		// set query parameters
-		qConfig.withIdleStateRetentionTime(Time.minutes(30), Time.hours(2));
+		//qConfig.withIdleStateRetentionTime(Time.minutes(30), Time.hours(2));
 		
 		// Register Data Source Stream tables in the table environment
 		// ExternalCatalogTable t = catalog.getTable("t1");

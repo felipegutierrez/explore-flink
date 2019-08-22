@@ -41,11 +41,11 @@ public class HelloWorldCalcitePlanTableAPI {
 			    // .replaceDecoRuleSet(RuleSets.ofList(DataStreamRetractionRules.DEFAULT_RETRACTION_INSTANCE))
 				.replaceDecoRuleSet(RuleSets.ofList(MyDataStreamRule.INSTANCE))
 				.build();
-		tableEnv.getConfig().setCalciteConfig(cc);
+		// tableEnv.getConfig().setCalciteConfig(cc);
 
 		// obtain query configuration from TableEnvironment
-		StreamQueryConfig qConfig = tableEnv.queryConfig();
-		qConfig.withIdleStateRetentionTime(Time.minutes(30), Time.hours(2));
+		//StreamQueryConfig qConfig = tableEnv.queryConfig();
+		//qConfig.withIdleStateRetentionTime(Time.minutes(30), Time.hours(2));
 
 		// Register Data Source Stream tables in the table environment
 		tableEnv.registerTableSource(TICKETS_STATION_01_PLATFORM_01,
@@ -63,10 +63,10 @@ public class HelloWorldCalcitePlanTableAPI {
 		System.out.println("Plan explaination ........................ ");
 		System.out.println(tableEnv.explain(result));
 		System.out.println("........................ ");
-		System.out.println("NormRuleSet: " + cc.getNormRuleSet().isDefined());
-		System.out.println("LogicalOptRuleSet: " + cc.getLogicalOptRuleSet().isDefined());
-		System.out.println("PhysicalOptRuleSet: " + cc.getPhysicalOptRuleSet().isDefined());
-		System.out.println("DecoRuleSet: " + cc.getDecoRuleSet().isDefined());
+		//System.out.println("NormRuleSet: " + cc.getNormRuleSet().isDefined());
+		//System.out.println("LogicalOptRuleSet: " + cc.getLogicalOptRuleSet().isDefined());
+		//System.out.println("PhysicalOptRuleSet: " + cc.getPhysicalOptRuleSet().isDefined());
+		//System.out.println("DecoRuleSet: " + cc.getDecoRuleSet().isDefined());
 		// @formatter:on
 
 		env.execute("HelloWorldCalcitePlanTableAPI");

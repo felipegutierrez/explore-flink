@@ -78,7 +78,7 @@ public class ValenciaLookupCoProcess
 		String key = valenciaItem.getId().toString();
 		if (valenciaItem.getType() == ValenciaItemType.TRAFFIC_JAM) {
 			// If the key is not redundant and if it is likely to match
-			// if (!state.isPresentTrafficLeft(key)) {
+			// if (!state.isPresentLeft(key)) {
 			if (!state.isPresentLeft(key) && state.isPresentRight(key)) {
 				out.collect(valenciaItem);
 				state.addLeft(key);
@@ -86,7 +86,7 @@ public class ValenciaLookupCoProcess
 			}
 		} else if (valenciaItem.getType() == ValenciaItemType.AIR_POLLUTION) {
 			// If the key is not redundant and if it is likely to match
-			// if (!state.isPresentPollutionLeft(key)) {
+			// if (!state.isPresentLeft(key)) {
 			if (!state.isPresentLeft(key) && state.isPresentRight(key)) {
 				out.collect(valenciaItem);
 				state.addLeft(key);

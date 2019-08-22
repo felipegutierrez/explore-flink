@@ -2,9 +2,10 @@ package org.sense.flink.examples.stream.table;
 
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.OverWindow;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
-import org.apache.flink.table.api.java.Tumble;
+// import org.apache.flink.table.api.java.Tumble;
 import org.apache.flink.table.functions.TableFunction;
 import org.apache.flink.types.Row;
 
@@ -37,8 +38,9 @@ public class WordDistinctCountTableAPISocket {
 		tableEnv.registerFunction("splitFunc", new SplitTableFunction());
 		Table result = tableEnv.scan("sourceTable")
 				.joinLateral("splitFunc(line) as word")
-				.window(Tumble.over("5.seconds").on("proctime").as("w"))
-				.groupBy("w")
+				// .window(Tumble.over("5.seconds").on("proctime").as("w"))
+				// .window([OverWindow w].as("w"))
+				// .groupBy("w")
 				.select("count.distinct(word)");
 		tableEnv.toAppendStream(result, Row.class).print();
 		// @formatter:on

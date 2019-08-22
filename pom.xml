@@ -14,7 +14,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 		<scala.binary.version>2.11</scala.binary.version>
-		<flink.version>1.8.1</flink.version>
+		<flink.version>1.9.0</flink.version>
 		<junit.version>4.12</junit.version>
 		<scala.version>2.11.12</scala.version>
 		<geotools.version>21.2</geotools.version>
