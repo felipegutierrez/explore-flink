@@ -1,6 +1,60 @@
 
 This project is based on [Apache Flink](https://flink.apache.org/) and it is consuming data from another project [https://github.com/felipegutierrez/explore-rpi](https://github.com/felipegutierrez/explore-rpi) which is based on [Apache Edgent](http://edgent.apache.org/).
 
+## Requirements
+
+ - Java 8
+ - Scala 2.11
+ - Mqtt broker
+ - Flink 1.9.0 standalone cluster
+
+### Mqtt broker
+
+```
+sudo apt install mosquitto mosquitto-clients
+```
+
+### Flink cluster
+
+Setup a [Flink standalone cluster](https://ci.apache.org/projects/flink/flink-docs-release-1.8/tutorials/local_setup.html). This project was tested with Flink version 1.9.0.
+
+Download the required libraries and copy them to the Flink cluster `lib` directory. Make sure that you download the librarie version corresponding to the same version of Flink libraries.
+
+ - [Flink Metrics Dropwizard](https://mvnrepository.com/artifact/org.apache.flink/flink-metrics-dropwizard)
+ - [Flink Metrics Prometheus](https://mvnrepository.com/artifact/org.apache.flink/flink-metrics-prometheus)
+ - [Metrics Core](https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-core)
+ - [MQTT Client](https://mvnrepository.com/artifact/org.fusesource.mqtt-client/mqtt-client)
+
+```
+$ ll flink-1.9.0/lib/
+total 92268
+drwxrwxr-x  2 flink flink     4096 Apr  8 15:55 ./
+drwxrwxr-x 10 flink flink     4096 Apr  8 13:07 ../
+-rw-r--r--  1 flink flink 93445474 Feb 11 16:38 flink-dist_2.11-1.9.0.jar
+-rw-rw-r--  1 flink flink    17739 Apr  8 15:55 flink-metrics-dropwizard-1.9.0.jar
+-rw-rw-r--  1 flink flink   102760 Mär 29 16:31 flink-metrics-prometheus_2.11-1.9.0.jar
+-rw-r--r--  1 flink flink   141937 Feb 11 16:37 flink-python_2.11-1.9.0.jar
+-rw-rw-r--  1 flink flink   489884 Feb 11 15:32 log4j-1.2.17.jar
+-rw-rw-r--  1 flink flink   120465 Apr  8 15:54 metrics-core-3.1.5.jar
+-rw-rw-r--  1 flink flink   126953 Mär 29 15:06 mqtt-client-1.15.jar
+-rw-rw-r--  1 flink flink     9931 Feb 11 15:32 slf4j-log4j12-1.7.15.jar
+```
+### Exporting data to Prometheus
+
+I am using the configuration below on the `flink-1.9.0/conf/flink-conf.yaml`. This file is also used to configure Prometheus with FLink.
+```
+jobmanager.rpc.address: IP_OF_THE_MASTER_NODE
+rest.address: IP_OF_THE_MASTER_NODE
+taskmanager.numberOfTaskSlots: 4
+parallelism.default: 4
+taskmanager.tmp.dirs: /home/flink/Server/tmp/
+
+## Prometheus configuration
+metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+metrics.reporter.prom.host: IP_OF_THE_MASTER_NODE
+metrics.reporter.prom.port: 9250-9260
+```
+
 
 ## Instructions to execute
 
@@ -13,44 +67,6 @@ mvn clean package
 or skiping the tests
 ```
 mvn clean package -DskipTests
-```
-
-### Flink cluster
-
-Setup a [Flink standalone cluster](https://ci.apache.org/projects/flink/flink-docs-release-1.8/tutorials/local_setup.html). This project was tested with Flink version 1.8.0.
-
-Download the required libraries and copy them to the Flink cluster `lib` directory. Make sure that you download the librarie version corresponding to the same version of Flink libraries.
-
- - [Flink Metrics Dropwizard](https://mvnrepository.com/artifact/org.apache.flink/flink-metrics-dropwizard)
- - [Flink Metrics Prometheus](https://mvnrepository.com/artifact/org.apache.flink/flink-metrics-prometheus)
- - [Metrics Core](https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-core)
- - [MQTT Client](https://mvnrepository.com/artifact/org.fusesource.mqtt-client/mqtt-client)
-
-```
-$ ll flink-1.7.2/lib/
-total 92268
-drwxrwxr-x  2 flink flink     4096 Apr  8 15:55 ./
-drwxrwxr-x 10 flink flink     4096 Apr  8 13:07 ../
--rw-r--r--  1 flink flink 93445474 Feb 11 16:38 flink-dist_2.11-1.8.0.jar
--rw-rw-r--  1 flink flink    17739 Apr  8 15:55 flink-metrics-dropwizard-1.8.0.jar
--rw-rw-r--  1 flink flink   102760 Mär 29 16:31 flink-metrics-prometheus_2.11-1.8.0.jar
--rw-r--r--  1 flink flink   141937 Feb 11 16:37 flink-python_2.11-1.8.0.jar
--rw-rw-r--  1 flink flink   489884 Feb 11 15:32 log4j-1.2.17.jar
--rw-rw-r--  1 flink flink   120465 Apr  8 15:54 metrics-core-3.1.5.jar
--rw-rw-r--  1 flink flink   126953 Mär 29 15:06 mqtt-client-1.15.jar
--rw-rw-r--  1 flink flink     9931 Feb 11 15:32 slf4j-log4j12-1.7.15.jar
-```
-
-I am using the configuration below on the `conf/flink-conf.yaml`. This file is also used to configure Prometheus with FLink.
-```
-jobmanager.rpc.address: IP_OF_THE_MASTER_NODE
-rest.address: IP_OF_THE_MASTER_NODE
-taskmanager.numberOfTaskSlots: 4
-parallelism.default: 4
-taskmanager.tmp.dirs: /home/flink/Server/tmp/
-metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
-metrics.reporter.prom.host: IP_OF_THE_MASTER_NODE
-metrics.reporter.prom.port: 9250-9260
 ```
 
 ### Starting the data source project
