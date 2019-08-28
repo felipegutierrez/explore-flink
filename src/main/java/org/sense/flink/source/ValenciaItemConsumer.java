@@ -19,7 +19,6 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMap
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
-import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
@@ -71,6 +70,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private boolean offlineData;
 	private boolean dataSkewedSyntheticInjection;
 	private boolean useDataSkewedFile;
+	private volatile boolean running = true;
 	// @formatter:on
 
 	/**
@@ -114,7 +114,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	@Override
 	public void run(SourceContext<ValenciaItem> ctx) throws Exception {
-		while (true) {
+		while (running) {
 			// get the data source file to collect data
 			File realTimeData = getDataSourceFile();
 
@@ -197,7 +197,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 						if (valenciaItem != null) {
 							if (collectWithTimestamp) {
 								ctx.collectWithTimestamp(valenciaItem, eventTime.getTime());
-								ctx.emitWatermark(new Watermark(eventTime.getTime()));
+								// ctx.emitWatermark(new Watermark(eventTime.getTime()));
 							} else {
 								ctx.collect(valenciaItem);
 							}
@@ -276,6 +276,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	@Override
 	public void cancel() {
+		running = false;
 	}
 
 	public static void main(String[] args) {
