@@ -63,8 +63,8 @@ public class ValenciaDataCpuIntensiveJoinExample {
  				.equalTo(new ValenciaItemDistrictSelector())
 		 		.window(TumblingEventTimeWindows.of(Time.seconds(frequencyWindow)))
 		 		.apply(new TrafficPollutionByDistrictJoinFunction())
-		 		// .print().name(METRIC_VALENCIA_SINK)
-		 		.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+		 		.print().name(METRIC_VALENCIA_SINK)
+		 		// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 		  		;
 		// streamTrafficJam.print();
 		// streamAirPollution.print();

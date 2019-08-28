@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 3,
-  "iteration": 1566917976182,
+  "iteration": 1566979777623,
   "links": [],
   "panels": [
     {
@@ -55,92 +55,6 @@
         "h": 4,
         "w": 3,
         "x": 0,
-        "y": 1
-      },
-      "hideTimeOverride": false,
-      "id": 53,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
-        "lineColor": "rgb(31, 120, 193)",
-        "show": true
-      },
-      "tableColumn": "",
-      "targets": [
-        {
-          "expr": "flink_jobmanager_taskSlotsAvailable",
-          "format": "time_series",
-          "hide": false,
-          "intervalFactor": 2,
-          "legendFormat": "",
-          "metric": "flink_jobmanager_taskSlotsAvailable",
-          "refId": "A",
-          "step": 20
-        }
-      ],
-      "thresholds": "",
-      "title": "Taskslots available",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "N/A",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
-    },
-    {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "rgba(245, 54, 54, 0.9)",
-        "rgba(255, 255, 255, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
-      ],
-      "datasource": "Prometheus",
-      "format": "none",
-      "gauge": {
-        "maxValue": null,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 3,
-        "x": 3,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -195,6 +109,92 @@
       ],
       "thresholds": "",
       "title": "Taskslots total",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": true,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(255, 255, 255, 0.89)",
+        "rgba(50, 172, 45, 0.97)"
+      ],
+      "datasource": "Prometheus",
+      "format": "none",
+      "gauge": {
+        "maxValue": null,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 1
+      },
+      "hideTimeOverride": false,
+      "id": 53,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "options": {},
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "flink_jobmanager_taskSlotsAvailable",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "metric": "flink_jobmanager_taskSlotsAvailable",
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "thresholds": "",
+      "title": "Taskslots available",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -384,12 +384,7 @@
       },
       "id": 30,
       "panels": [],
-      "targets": [
-        {
-          "refId": "A"
-        }
-      ],
-      "title": "Job Statistics",
+      "title": "Job Statistics (throughput)",
       "type": "row"
     },
     {
@@ -446,7 +441,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Records In per second and split by operators",
+      "title": "Records IN per second and split by operators",
       "tooltip": {
         "shared": false,
         "sort": 0,
@@ -533,7 +528,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Records Out per second and split by operators",
+      "title": "Records OUT per second and split by operators",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -620,7 +615,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Task Manager - number of bytes IN per second",
+      "title": "Number of bytes IN per second by Task Manager",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -708,7 +703,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Task Manager - number of Bytes OUT per second",
+      "title": "Number of bytes OUT per second by Task Manager",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -755,11 +750,6 @@
       },
       "id": 23,
       "panels": [],
-      "targets": [
-        {
-          "refId": "A"
-        }
-      ],
       "title": "Network and CPU",
       "type": "row"
     },
@@ -868,7 +858,7 @@
       "datasource": "Prometheus",
       "fill": 1,
       "gridPos": {
-        "h": 11,
+        "h": 7,
         "w": 12,
         "x": 12,
         "y": 29
@@ -910,7 +900,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "",
+      "title": "Process CPU in Prometheus",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -959,7 +949,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 36
       },
       "id": 14,
       "legend": {
@@ -1053,15 +1043,10 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 44
       },
       "id": 21,
       "panels": [],
-      "targets": [
-        {
-          "refId": "A"
-        }
-      ],
       "title": "Memory",
       "type": "row"
     },
@@ -1077,7 +1062,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 45
       },
       "id": 19,
       "legend": {
@@ -1189,7 +1174,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 45
       },
       "id": 16,
       "legend": {
@@ -1373,8 +1358,9 @@
       {
         "allValue": null,
         "current": {
-          "text": "org_sense_flink_examples_stream_valencia_ValenciaDataCpuIntensiveJoinExample",
-          "value": "org_sense_flink_examples_stream_valencia_ValenciaDataCpuIntensiveJoinExample"
+          "isNone": true,
+          "text": "None",
+          "value": ""
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -1521,5 +1507,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 19
+  "version": 28
 }
