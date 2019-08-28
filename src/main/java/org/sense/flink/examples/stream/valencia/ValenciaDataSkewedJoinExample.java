@@ -81,9 +81,9 @@ public class ValenciaDataSkewedJoinExample {
 	private List<Tuple4<Point, Long, Long, String>> syntheticCoordinates() {
 		// Static coordinate to create synthetic data
 		List<Tuple4<Point, Long, Long, String>> coordinates = new ArrayList<Tuple4<Point, Long, Long, String>>();
-		coordinates.add(Tuple4.of(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE), 3L,
+		coordinates.add(Tuple4.of(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830), 3L,
 				9L, "Extramurs"));
-		coordinates.add(Tuple4.of(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE), 10L,
+		coordinates.add(Tuple4.of(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830), 10L,
 				9L, "Quatre Carreres"));
 		return coordinates;
 	}

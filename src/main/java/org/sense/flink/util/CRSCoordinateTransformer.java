@@ -3,6 +3,7 @@ package org.sense.flink.util;
 import java.io.Serializable;
 
 import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.DirectPosition3D;
 import org.geotools.referencing.CRS;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -29,31 +30,37 @@ import org.sense.flink.pojo.Point;
  */
 public class CRSCoordinateTransformer implements Serializable {
 	private static final long serialVersionUID = -7588347384995665882L;
-	public static final String DEFAULT_CRS_SOURCE = "EPSG:25830";
-	public static final String DEFAULT_CRS_TARGET = "EPSG:4326";
-	private MathTransform forwardMathTransform;
-	private MathTransform reverseMathTransform;
-	private CoordinateReferenceSystem sourceCoordinateReferenceSystem;
-	private CoordinateReferenceSystem targetCoordinateReferenceSystem;
+	public static final String DEFAULT_CRS_EPSG_25830 = "EPSG:25830";
+	public static final String DEFAULT_CRS_EPSG_4326 = "EPSG:4326";
+	public static final String DEFAULT_CRS_EPSG_4989_RADIUS = "EPSG:4989";
+	private MathTransform transformEPSG25830;
+	private MathTransform transformEPSG4326;
+	private MathTransform transformRadius;
+	private CoordinateReferenceSystem coordinateReferenceSystemEPSG25830;
+	private CoordinateReferenceSystem coordinateReferenceSystemEPSG4326;
+	private CoordinateReferenceSystem coordinateReferenceSystemRadius;
 
 	public CRSCoordinateTransformer() {
 		try {
-			sourceCoordinateReferenceSystem = CRS.decode(DEFAULT_CRS_SOURCE);
-			targetCoordinateReferenceSystem = CRS.decode(DEFAULT_CRS_TARGET);
-			this.forwardMathTransform = CRS.findMathTransform(sourceCoordinateReferenceSystem,
-					targetCoordinateReferenceSystem, true);
-			this.reverseMathTransform = CRS.findMathTransform(targetCoordinateReferenceSystem,
-					sourceCoordinateReferenceSystem, true);
+			coordinateReferenceSystemEPSG25830 = CRS.decode(DEFAULT_CRS_EPSG_25830);
+			coordinateReferenceSystemEPSG4326 = CRS.decode(DEFAULT_CRS_EPSG_4326);
+			coordinateReferenceSystemRadius = CRS.decode(DEFAULT_CRS_EPSG_4989_RADIUS);
+			this.transformEPSG25830 = CRS.findMathTransform(coordinateReferenceSystemEPSG25830,
+					coordinateReferenceSystemEPSG4326, true);
+			this.transformEPSG4326 = CRS.findMathTransform(coordinateReferenceSystemEPSG4326,
+					coordinateReferenceSystemEPSG25830, true);
+			this.transformRadius = CRS.findMathTransform(coordinateReferenceSystemRadius,
+					coordinateReferenceSystemRadius, true);
 		} catch (FactoryException fex) {
 			throw new ExceptionInInitializerError(fex);
 		}
 	}
 
 	public double[] lonLatToXY(double lon, double lat) throws TransformException {
-		DirectPosition2D srcDirectPosition2D = new DirectPosition2D(sourceCoordinateReferenceSystem, lat, lon);
+		DirectPosition2D srcDirectPosition2D = new DirectPosition2D(coordinateReferenceSystemEPSG25830, lat, lon);
 		DirectPosition2D destDirectPosition2D = new DirectPosition2D();
 		try {
-			reverseMathTransform.transform(srcDirectPosition2D, destDirectPosition2D);
+			transformEPSG4326.transform(srcDirectPosition2D, destDirectPosition2D);
 			return new double[] { destDirectPosition2D.x, destDirectPosition2D.y };
 		} catch (Error error) {
 			throw error;
@@ -62,16 +69,45 @@ public class CRSCoordinateTransformer implements Serializable {
 
 	public double[] xyToLonLat(double x, double y) throws TransformException {
 
-		DirectPosition2D srcDirectPosition2D = new DirectPosition2D(sourceCoordinateReferenceSystem, x, y);
+		DirectPosition2D srcDirectPosition2D = new DirectPosition2D(coordinateReferenceSystemEPSG25830, x, y);
 		DirectPosition2D destDirectPosition2D = new DirectPosition2D();
-		forwardMathTransform.transform(srcDirectPosition2D, destDirectPosition2D);
+		transformEPSG25830.transform(srcDirectPosition2D, destDirectPosition2D);
 
 		return new double[] { destDirectPosition2D.y, destDirectPosition2D.x };
 	}
 
 	public Point xyToLonLatPoint(double x, double y) throws TransformException {
 		double[] lonLat = xyToLonLat(x, y);
-		return new Point(lonLat[0], lonLat[1], DEFAULT_CRS_TARGET);
+		return new Point(lonLat[0], lonLat[1], DEFAULT_CRS_EPSG_4326);
+	}
+
+	public double[] lonLatToRadius(double lon, double lat) throws TransformException {
+		DirectPosition3D srcDirectPosition3D = new DirectPosition3D(coordinateReferenceSystemRadius, lat, lon, 0);
+		DirectPosition3D destDirectPosition3D = new DirectPosition3D();
+		try {
+			transformRadius.transform(srcDirectPosition3D, destDirectPosition3D);
+			return new double[] { destDirectPosition3D.x, destDirectPosition3D.y };
+		} catch (Error error) {
+			throw error;
+		}
+	}
+
+	public Point lonLatToRadiusPoint(double x, double y) throws TransformException {
+		double[] lonLat = lonLatToRadius(x, y);
+		return new Point(lonLat[0], lonLat[1], DEFAULT_CRS_EPSG_4989_RADIUS);
+	}
+
+	public double[] xyToRadius(double x, double y) throws TransformException {
+		DirectPosition3D srcDirectPosition3D = new DirectPosition3D(coordinateReferenceSystemRadius, x, y, 0);
+		DirectPosition3D destDirectPosition3D = new DirectPosition3D();
+		transformRadius.transform(srcDirectPosition3D, destDirectPosition3D);
+
+		return new double[] { destDirectPosition3D.y, destDirectPosition3D.x };
+	}
+
+	public Point xyToRadiusPoint(double x, double y) throws TransformException {
+		double[] lonLat = xyToRadius(x, y);
+		return new Point(lonLat[0], lonLat[1], DEFAULT_CRS_EPSG_4989_RADIUS);
 	}
 
 	public static void main(String[] args) {
@@ -107,6 +143,12 @@ public class CRSCoordinateTransformer implements Serializable {
 			lonLat = ct.xyToLonLat(726777.707, 4369824.436);
 			System.out.println(lonLat[0] + " " + lonLat[1]);
 			xy = ct.lonLatToXY(lonLat[0], lonLat[1]);
+			System.out.println(xy[0] + " " + xy[1]);
+			
+			System.out.println("\nConverting radius: 726777.707, 4369824.436 ---- -0.36454475732992986 39.448141729595456");
+			lonLat = ct.xyToRadius(726777.707, 4369824.436);
+			System.out.println(lonLat[0] + " " + lonLat[1]);
+			xy = ct.lonLatToRadius(lonLat[0], lonLat[1]);
 			System.out.println(xy[0] + " " + xy[1]);
 			// @formatter:on
 		} catch (TransformException e) {

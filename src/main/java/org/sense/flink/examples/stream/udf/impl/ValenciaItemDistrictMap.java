@@ -17,7 +17,7 @@ public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, Valen
 	@Override
 	public void open(Configuration parameters) throws Exception {
 		super.open(parameters);
-		sgp = new SimpleGeographicalPolygons();
+		this.sgp = new SimpleGeographicalPolygons();
 	}
 
 	@Override
@@ -41,7 +41,7 @@ public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, Valen
 			// if we did not find a district with the given coordinate we assume the
 			// district 16
 			value.clearCoordinates();
-			value.addCoordinates(new Point(724328.279007, 4374887.874634, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE));
+			value.addCoordinates(new Point(724328.279007, 4374887.874634, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830));
 			value.setId(16L);
 			value.setAdminLevel(9L);
 			value.setDistrict("Benicalap");

@@ -46,8 +46,8 @@ public class ValenciaItemSyntheticData extends RichFlatMapFunction<ValenciaItem,
 		// @formatter:off
 		this(valenciaItemType,
 			new ArrayList<Tuple4<Point, Long, Long, String>>(Arrays.asList(
-						Tuple4.of(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE), 3L, 9L, "Extramurs"), 
-						Tuple4.of(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE), 10L, 9L, "Quatre Carreres")
+						Tuple4.of(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830), 3L, 9L, "Extramurs"), 
+						Tuple4.of(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830), 10L, 9L, "Quatre Carreres")
 						))
 			);
 		// @formatter:on

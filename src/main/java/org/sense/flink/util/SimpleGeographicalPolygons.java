@@ -80,9 +80,9 @@ public class SimpleGeographicalPolygons implements Serializable {
 	public Long getOsmId(Point point) {
 		try {
 			Point pointLonLat = null;
-			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_TARGET)) {
+			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_4326)) {
 				pointLonLat = point;
-			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)) {
+			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830)) {
 				pointLonLat = crsCoordinateTransformer.xyToLonLatPoint(point.getX(), point.getY());
 			} else {
 				return null;
@@ -105,6 +105,49 @@ public class SimpleGeographicalPolygons implements Serializable {
 		return null;
 	}
 
+	public Point getRadians(Point point) {
+		Point pointLonLat = null;
+		try {
+			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_4326)) {
+				pointLonLat = crsCoordinateTransformer.xyToRadiusPoint(point.getX(), point.getY());
+			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830)) {
+				pointLonLat = crsCoordinateTransformer.lonLatToRadiusPoint(point.getX(), point.getY());
+			} else {
+				logger.error("CRS Coordinate Reference System not defined!");
+			}
+		} catch (TransformException e) {
+			e.printStackTrace();
+		}
+		return pointLonLat;
+	}
+
+	public Point calculateDerivedPosition(Point point, double range, double bearing) {
+		double EarthRadius = 6371000; // m
+
+		Point radians = getRadians(point);
+
+		double latA = radians.getX();
+		double lonA = radians.getY();
+		double angularDistance = range / EarthRadius;
+		double trueCourse = Math.toRadians(bearing);
+
+		double lat = Math.asin(Math.sin(latA) * Math.cos(angularDistance)
+				+ Math.cos(latA) * Math.sin(angularDistance) * Math.cos(trueCourse));
+
+		double dlon = Math.atan2(Math.sin(trueCourse) * Math.sin(angularDistance) * Math.cos(latA),
+				Math.cos(angularDistance) - Math.sin(latA) * Math.sin(lat));
+
+		double lon = ((lonA + dlon + Math.PI) % (Math.PI * 2)) - Math.PI;
+
+		lat = Math.toDegrees(lat);
+		lon = Math.toDegrees(lon);
+
+		Point newPoint = new Point(lat, lon);
+
+		return newPoint;
+
+	}
+
 	/**
 	 * This method returns a Tuple3 object containing the districtID, administration
 	 * level, and the district name.
@@ -115,9 +158,9 @@ public class SimpleGeographicalPolygons implements Serializable {
 	public Tuple3<Long, Long, String> getAdminLevel(Point point) {
 		try {
 			Point pointLonLat = null;
-			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_TARGET)) {
+			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_4326)) {
 				pointLonLat = point;
-			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)) {
+			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830)) {
 				pointLonLat = crsCoordinateTransformer.xyToLonLatPoint(point.getX(), point.getY());
 			} else {
 				logger.error("CRS Coordinate Reference System not defined!");
@@ -147,9 +190,9 @@ public class SimpleGeographicalPolygons implements Serializable {
 	public Long getAdminLevelId(Point point) {
 		try {
 			Point pointLonLat = null;
-			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_TARGET)) {
+			if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_4326)) {
 				pointLonLat = point;
-			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)) {
+			} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830)) {
 				pointLonLat = crsCoordinateTransformer.xyToLonLatPoint(point.getX(), point.getY());
 			} else {
 				return null;
@@ -184,9 +227,9 @@ public class SimpleGeographicalPolygons implements Serializable {
 		try {
 			for (Point point : points) {
 				Point pointLonLat = null;
-				if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_TARGET)) {
+				if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_4326)) {
 					pointLonLat = point;
-				} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_SOURCE)) {
+				} else if (point.getCsr().equals(CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830)) {
 					pointLonLat = crsCoordinateTransformer.xyToLonLatPoint(point.getX(), point.getY());
 				} else {
 					return;

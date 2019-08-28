@@ -8,10 +8,11 @@ import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WATERMARKER_ASSI
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.examples.stream.udf.impl.TrafficPollutionWithDistanceByDistrictJoinFunction;
+import org.sense.flink.examples.stream.udf.impl.ValenciaIntensiveCpuDistancesMap;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemAscendingTimestampExtractor;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
 import org.sense.flink.pojo.ValenciaItem;
@@ -46,12 +47,12 @@ public class ValenciaDataCpuIntensiveJoinExample {
 		// Sources -> map latitude,longitude to district ID
 		DataStream<ValenciaItem> streamTrafficJam = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(frequencyPull).toMilliseconds(), collectWithTimestamp, offlineData, syntheticDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
-				.assignTimestampsAndWatermarks(new MyAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
+				.assignTimestampsAndWatermarks(new ValenciaItemAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				;
 		DataStream<ValenciaItem> streamAirPollution = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(frequencyPull).toMilliseconds(), collectWithTimestamp, offlineData, syntheticDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
-				.assignTimestampsAndWatermarks(new MyAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
+				.assignTimestampsAndWatermarks(new ValenciaItemAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				;
 
@@ -61,6 +62,7 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				.equalTo(new ValenciaItemDistrictSelector())
 		 		.window(TumblingEventTimeWindows.of(Time.seconds(frequencyWindow)))
 		 		.apply(new TrafficPollutionWithDistanceByDistrictJoinFunction())
+		 		.map(new ValenciaIntensiveCpuDistancesMap())
 		 		.print().name(METRIC_VALENCIA_SINK)
 		 		// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 		  		;
@@ -68,15 +70,6 @@ public class ValenciaDataCpuIntensiveJoinExample {
 		disclaimer(env.getExecutionPlan());
 		env.execute(ValenciaDataCpuIntensiveJoinExample.class.getName());
 		// @formatter:on
-	}
-
-	private static class MyAscendingTimestampExtractor extends AscendingTimestampExtractor<ValenciaItem> {
-		private static final long serialVersionUID = 4311406052896755965L;
-
-		@Override
-		public long extractAscendingTimestamp(ValenciaItem valenciaItem) {
-			return valenciaItem.getTimestamp();
-		}
 	}
 
 	private void disclaimer(String logicalPlan) {

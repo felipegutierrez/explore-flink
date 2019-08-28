@@ -14,7 +14,7 @@ public class Point implements Serializable {
 	private String csr;
 
 	public Point(Double x, Double y) {
-		this(x, y, CRSCoordinateTransformer.DEFAULT_CRS_SOURCE);
+		this(x, y, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830);
 	}
 
 	public Point(Double x, Double y, String csr) {
