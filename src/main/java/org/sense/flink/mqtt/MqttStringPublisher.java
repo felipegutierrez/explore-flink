@@ -54,6 +54,7 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 	}
 
 	private void disclaimer() {
+		System.out.println("In order to consume data from this application use the command line below:");
 		System.out.println("mosquitto_sub -h " + host + " -t " + topic);
 	}
 
