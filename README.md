@@ -71,13 +71,26 @@ mvn clean package -DskipTests
 
 ### Starting the data source project
 
+This subsection is useful only if you are aiming to use the data source project with apache Edgend. If you want to use an application which collects data form the internet you can skipt this subsection.
 We need to generate data in order to our Flink application consume and analyse it. Due to it, we are going to use [another project](https://github.com/felipegutierrez/explore-rpi) which is based on Apache Edgent. The command below shows how to start an application which is a data source for our Flink application. It sends data to a MQTT broker and Flink consumes it. We are using the application number `11` which generates data in specific MQTT topics which are consument by the Flink application number `18`.
 
 `java -jar target/explore-rpi.jar 11`
 
 ### Deploy the application on the Flink cluster
 
-Here we are deploying the application number 18 on the Flink cluster:
+Here we are deploying the application number 30 on the Flink cluster. We are also sending parameters with the source and sink IP address, the frequency of pulling data from the sources, a flag to inject synthetic data on the fly, and the frequency of the processing window.
+
+```
+./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar -app 30 -source 127.0.0.1 -sink 127.0.0.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true
+```
+Or if you define the variables on a bash script:
+```
+FLINK_HOME=/home/flink/flink-1.9.0
+FLINK_CLI=/home/flink/flink-1.9.0/bin/flink
+FLINK_APP=/home/flink/app/explore-flink.jar
+
+echo `$FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 30 -source 127.0.0.1 -sink 127.0.0.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true`
+```
 
 `./bin/flink run -c org.sense.flink.App explore-flink.jar 18 IP_OF_MQTT_DATA_SOURCE IP_OF_MQTT_SINK &`
 
