@@ -9,19 +9,14 @@ import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_STRING_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SYNTHETIC_FLATMAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WATERMARKER_ASSIGNER;
-import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_CPU_INTENSIVE_MAP;
 
-import org.apache.flink.api.common.functions.RichReduceFunction;
 import org.apache.flink.api.java.functions.NullByteKeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.udf.impl.TrafficPollutionWithDistanceByDistrictJoinFunction;
 import org.sense.flink.examples.stream.udf.impl.Valencia2ItemToStringMap;
-import org.sense.flink.examples.stream.udf.impl.ValenciaIntensiveCpuDistancesMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemAscendingTimestampExtractor;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
@@ -29,7 +24,6 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessingTimeStdRep
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticCoFlatMapper;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemTypeParamMap;
 import org.sense.flink.mqtt.FlinkMqttConsumer;
-import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
@@ -99,34 +93,6 @@ public class ValenciaDataCpuIntensiveJoinExample {
 		// @formatter:on
 	}
 
-	private static class ValenciaItemReducer extends RichReduceFunction<ValenciaItem> {
-		private static final long serialVersionUID = -6537849872946845956L;
-		private ValenciaItemType valenciaItemType;
-
-		public ValenciaItemReducer(ValenciaItemType valenciaItemType) {
-			this.valenciaItemType = valenciaItemType;
-		}
-
-		@Override
-		public ValenciaItem reduce(ValenciaItem value1, ValenciaItem value2) throws Exception {
-			if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
-				Integer traffic01 = (Integer) value1.getValue();
-				Integer traffic02 = (Integer) value2.getValue();
-				if (traffic01.intValue() > traffic02.intValue()) {
-					return value1;
-				} else {
-					return value2;
-				}
-			} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-				return value1;
-			} else if (valenciaItemType == ValenciaItemType.NOISE) {
-				return value1;
-			} else {
-				throw new Exception("ValenciaItemType is NULL!");
-			}
-		}
-	}
-
 	private void disclaimer(String logicalPlan, String ipAddressSource) {
 		// @formatter:off
 		System.out.println("This application aims to use intensive CPU.");
@@ -134,9 +100,9 @@ public class ValenciaDataCpuIntensiveJoinExample {
 		System.out.println("It is possible to publish a 'multiply factor' to each item from the source by issuing the commands below.");
 		System.out.println("Each item will be duplicated by 'multiply factor' times.");
 		System.out.println("where: 1 <= 'multiply factor' <=200");
-		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"AIR_POLLUTION 5\"");
-		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"TRAFFIC_JAM 10\"");
-		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"NOISE 60\"");
+		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"AIR_POLLUTION 500\"");
+		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"TRAFFIC_JAM 1000\"");
+		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"NOISE 600\"");
 
 		System.out.println("Use the 'Flink Plan Visualizer' [https://flink.apache.org/visualizer/] in order to see the logical plan of this application.");
 		System.out.println("Logical plan >>>");
