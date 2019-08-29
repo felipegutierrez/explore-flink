@@ -19,3 +19,10 @@ echo "Canceling a Flink Stream application"
 echo "$FLINK_CLI cancel APP_ID"
 echo
 
+echo "Sending parameters to change the frequency of synthetic item generators"
+echo "mosquitto_pub -h 127.0.0.1 -t topic-synthetic-frequency-pull -m \"AIR_POLLUTION 5\""
+echo "mosquitto_pub -h 127.0.0.1 -t topic-synthetic-frequency-pull -m \"TRAFFIC_JAM 10\""
+echo "mosquitto_pub -h 127.0.0.1 -t topic-synthetic-frequency-pull -m \"NOISE 60\""
+echo
+
+

@@ -1,26 +1,35 @@
 package org.sense.flink.examples.stream.valencia;
 
-import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_CPU_INTENSIVE_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_DISTRICT_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_FREQUENCY_PARAMETER;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_FREQUENCY_PARAMETER_SOURCE;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_JOIN;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_STRING_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SYNTHETIC_FLATMAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WATERMARKER_ASSIGNER;
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_CPU_INTENSIVE_MAP;
 
+import org.apache.flink.api.common.functions.RichReduceFunction;
 import org.apache.flink.api.java.functions.NullByteKeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.sense.flink.examples.stream.udf.impl.TrafficPollutionWithDistanceByDistrictJoinFunction;
+import org.sense.flink.examples.stream.udf.impl.Valencia2ItemToStringMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaIntensiveCpuDistancesMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemAscendingTimestampExtractor;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessingTimeStdRepartitionJoinCoProcess;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticCoFlatMapper;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemTypeParamMap;
 import org.sense.flink.mqtt.FlinkMqttConsumer;
+import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
@@ -76,20 +85,46 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				;
 
 		// Join -> Print
-		streamTrafficJam.union(streamAirPollution)
-		//streamTrafficJam.join(streamAirPollution)
-		//		.where(new ValenciaItemDistrictSelector())
-		//		.equalTo(new ValenciaItemDistrictSelector())
-		// 		.window(TumblingEventTimeWindows.of(Time.seconds(frequencyWindow)))
-		// 		.apply(new TrafficPollutionWithDistanceByDistrictJoinFunction())
-		 		.map(new ValenciaIntensiveCpuDistancesMap()).name(METRIC_VALENCIA_CPU_INTENSIVE_MAP)
-		 		.print().name(METRIC_VALENCIA_SINK)
-		 		// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
-		 		;
-		
+		streamTrafficJam
+				.keyBy(new ValenciaItemDistrictSelector())
+				.connect(streamAirPollution.keyBy(new ValenciaItemDistrictSelector()))
+				.process(new ValenciaItemProcessingTimeStdRepartitionJoinCoProcess(Time.seconds(frequencyWindow).toMilliseconds())).name(METRIC_VALENCIA_JOIN)
+				.map(new Valencia2ItemToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
+				// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+				.print().name(METRIC_VALENCIA_SINK)
+				;		
+
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);
 		env.execute(ValenciaDataCpuIntensiveJoinExample.class.getName());
 		// @formatter:on
+	}
+
+	private static class ValenciaItemReducer extends RichReduceFunction<ValenciaItem> {
+		private static final long serialVersionUID = -6537849872946845956L;
+		private ValenciaItemType valenciaItemType;
+
+		public ValenciaItemReducer(ValenciaItemType valenciaItemType) {
+			this.valenciaItemType = valenciaItemType;
+		}
+
+		@Override
+		public ValenciaItem reduce(ValenciaItem value1, ValenciaItem value2) throws Exception {
+			if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
+				Integer traffic01 = (Integer) value1.getValue();
+				Integer traffic02 = (Integer) value2.getValue();
+				if (traffic01.intValue() > traffic02.intValue()) {
+					return value1;
+				} else {
+					return value2;
+				}
+			} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
+				return value1;
+			} else if (valenciaItemType == ValenciaItemType.NOISE) {
+				return value1;
+			} else {
+				throw new Exception("ValenciaItemType is NULL!");
+			}
+		}
 	}
 
 	private void disclaimer(String logicalPlan, String ipAddressSource) {
