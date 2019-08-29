@@ -73,6 +73,11 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private volatile boolean running = true;
 	// @formatter:on
 
+	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
+			boolean collectWithTimestamp, boolean offlineData) throws Exception {
+		this(valenciaItemType, frequencyMilliSeconds, collectWithTimestamp, offlineData, false);
+	}
+
 	/**
 	 * 
 	 * @param valenciaItemType

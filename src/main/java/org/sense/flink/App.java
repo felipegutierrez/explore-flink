@@ -256,8 +256,8 @@ public class App {
 				app = 0;
 				break;
 			case 30:
-				new ValenciaDataCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, offlinedata, syntheticData,
-						frequencyPull, frequencyWindow);
+				new ValenciaDataCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
+						frequencyWindow);
 				app = 0;
 				break;
 			default:

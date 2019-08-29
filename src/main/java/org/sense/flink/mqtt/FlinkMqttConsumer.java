@@ -42,6 +42,14 @@ public class FlinkMqttConsumer extends RichSourceFunction<MqttMessage> {
 		this.port = port;
 		this.topic = topic;
 		this.qos = qos;
+		this.disclaimer();
+	}
+
+	private void disclaimer() {
+		// System.out.println("In order to publish a parameter to this application use
+		// the command line below:");
+		// System.out.println("mosquitto_pub -h " + host + " -t " + topic + "
+		// <MESSAGE>");
 	}
 
 	@Override

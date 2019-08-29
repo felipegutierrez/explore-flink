@@ -2,9 +2,9 @@
 #set -x
 #set -v
 
-FLINK_HOME=/nfshome/felipe/flink-1.9.0
-FLINK_CLI=/nfshome/felipe/flink-1.9.0/bin/flink
-FLINK_APP=/nfshome/felipe/explore-flink.jar
+FLINK_HOME=/home/flink/flink-1.9.0
+FLINK_CLI=/home/flink/flink-1.9.0/bin/flink
+FLINK_APP=/home/flink/explore-flink/target/explore-flink.jar
 
 echo
 echo "Launching a Flink Stream application >>"
@@ -18,3 +18,4 @@ echo
 echo "Canceling a Flink Stream application"
 echo "$FLINK_CLI cancel APP_ID"
 echo
+
