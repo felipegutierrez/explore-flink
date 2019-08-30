@@ -1,5 +1,6 @@
 package org.sense.flink.examples.stream.valencia;
 
+import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_CPU_INTENSIVE_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_DISTRICT_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_FREQUENCY_PARAMETER;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_FREQUENCY_PARAMETER_SOURCE;
@@ -16,10 +17,11 @@ import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.sense.flink.examples.stream.udf.impl.Valencia2ItemToStringMap;
+import org.sense.flink.examples.stream.udf.impl.ValenciaIntensiveCpuDistancesMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemAscendingTimestampExtractor;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemDistrictSelector;
+import org.sense.flink.examples.stream.udf.impl.ValenciaItemEnrichedToStringMap;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessingTimeStdRepartitionJoinCoProcess;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticCoFlatMapper;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemTypeParamMap;
@@ -84,7 +86,8 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				.keyBy(new ValenciaItemDistrictSelector())
 				.connect(streamAirPollution.keyBy(new ValenciaItemDistrictSelector()))
 				.process(new ValenciaItemProcessingTimeStdRepartitionJoinCoProcess(Time.seconds(frequencyWindow).toMilliseconds())).name(METRIC_VALENCIA_JOIN)
-				.map(new Valencia2ItemToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
+				.map(new ValenciaIntensiveCpuDistancesMap()).name(METRIC_VALENCIA_CPU_INTENSIVE_MAP)
+				.map(new ValenciaItemEnrichedToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				// .print().name(METRIC_VALENCIA_SINK)
 				;		

@@ -39,12 +39,12 @@ public class ValenciaItemEnriched extends ValenciaItem {
 	/** overriding default methods */
 	@Override
 	public Object getValue() {
-		return (String) this.value;
+		return this.value;
 	}
 
 	@Override
 	public void setValue(Object value) {
-		this.value = (String) value;
+		this.value = value;
 	}
 
 	@Override
