@@ -81,7 +81,8 @@ We need to generate data in order to our Flink application consume and analyse i
 Here we are deploying the application number 30 on the Flink cluster. We are also sending parameters with the source and sink IP address, the frequency of pulling data from the sources, a flag to inject synthetic data on the fly, and the frequency of the processing window.
 
 ```
-./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar -app 30 -source 127.0.0.1 -sink 127.0.0.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true
+./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar -app 30 -source 127.0.0.1 -sink 127.0.0.1 \
+-offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true
 ```
 Or if you define the variables on a bash script:
 ```
@@ -89,14 +90,18 @@ FLINK_HOME=/home/flink/flink-1.9.0
 FLINK_CLI=/home/flink/flink-1.9.0/bin/flink
 FLINK_APP=/home/flink/app/explore-flink.jar
 
-echo `$FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 30 -source 127.0.0.1 -sink 127.0.0.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true`
+echo `$FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 30 -source 127.0.0.1 -sink 127.0.0.1 \
+-offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true`
 ```
 
-`./bin/flink run -c org.sense.flink.App explore-flink.jar 18 IP_OF_MQTT_DATA_SOURCE IP_OF_MQTT_SINK &`
+Then, the application `30` for example, has a channel to receive a frequency parameter which changes dynamically.
+```
+mosquitto_pub -h 127.0.0.1 -t topic-synthetic-frequency-pull -m "TRAFFIC_JAM 1000"
+mosquitto_pub -h 127.0.0.1 -t topic-synthetic-frequency-pull -m "AIR_POLLUTION 500"
+```
 
-Then we can listen to the output of the sing in a MQTT sink using the command below. The `IP_OF_MQTT_SINK` below has to be the some of the above. The topic `topic-data-skewed-join` id defined on the application 18 [MqttSensorDataSkewedCombinerByKeySkewedDAG](https://github.com/felipegutierrez/explore-flink/blob/master/src/main/java/org/sense/flink/examples/stream/MqttSensorDataSkewedCombinerByKeySkewedDAG.java#L30).
-
-`mosquitto_sub -h IP_OF_MQTT_SINK -t topic-data-skewed-join`
+You can subscribe to the channel of each application in order to consume its data. For example:
+`mosquitto_sub -h 127.0.0.1 -t topic-valencia-data-cpu-intensive`
 
 
 ### Remove the application from the Flink cluster
