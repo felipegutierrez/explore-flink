@@ -38,6 +38,9 @@ public class ValenciaIntensiveCpuDistancesMap
 		String newValue = "";
 
 		if (valenciaItem00.getType() == ValenciaItemType.TRAFFIC_JAM) {
+			if (valenciaItem00.getValue() instanceof AirPollution) {
+				System.out.println("error");
+			}
 			newValue = ((Integer) valenciaItem00.getValue()).toString();
 		} else if (valenciaItem00.getType() == ValenciaItemType.AIR_POLLUTION) {
 			newValue = ((AirPollution) valenciaItem00.getValue()).toString();
@@ -46,9 +49,9 @@ public class ValenciaIntensiveCpuDistancesMap
 			throw new Exception("ValenciaItemType is NULL!");
 		}
 		if (valenciaItem01.getType() == ValenciaItemType.TRAFFIC_JAM) {
-			newValue += " - " + ((Integer) valenciaItem00.getValue()).toString();
+			newValue += " - " + ((Integer) valenciaItem01.getValue()).toString();
 		} else if (valenciaItem01.getType() == ValenciaItemType.AIR_POLLUTION) {
-			newValue += " - " + ((AirPollution) valenciaItem00.getValue()).toString();
+			newValue += " - " + ((AirPollution) valenciaItem01.getValue()).toString();
 		} else if (valenciaItem01.getType() == ValenciaItemType.NOISE) {
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
@@ -56,7 +59,6 @@ public class ValenciaIntensiveCpuDistancesMap
 		ValenciaItemEnriched valenciaItemEnriched = new ValenciaItemEnriched(valenciaItem00.getId(),
 				valenciaItem00.getAdminLevel(), valenciaItem00.getDistrict(), valenciaItem00.getUpdate(),
 				newCoordinates, newValue);
-
 
 		String allDistances = null;
 		for (Point point00 : coordinates00) {
