@@ -60,7 +60,7 @@ public class ValenciaDataCpuIntensiveJoinExample {
 		// @formatter:off
 		// Parameter source -> map type and frequency
 		DataStream<Tuple2<ValenciaItemType, String>> streamParameter = env
-				.addSource(new FlinkMqttConsumer(topicParamFrequencyPull)).name(METRIC_VALENCIA_FREQUENCY_PARAMETER_SOURCE)
+				.addSource(new FlinkMqttConsumer(ipAddressSource, topicParamFrequencyPull)).name(METRIC_VALENCIA_FREQUENCY_PARAMETER_SOURCE)
 				.map(new ValenciaItemTypeParamMap()).name(METRIC_VALENCIA_FREQUENCY_PARAMETER);
 
 		// Sources -> connect (parameter) -> change frequency -> assign timestamp -> map latitude,longitude to district ID
@@ -81,7 +81,7 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				;
 
-		// Join -> Print
+		// Join -> intensive CPU task -> map to String -> Publish/Print
 		streamTrafficJam
 				.keyBy(new ValenciaItemDistrictSelector())
 				.connect(streamAirPollution.keyBy(new ValenciaItemDistrictSelector()))
@@ -104,7 +104,7 @@ public class ValenciaDataCpuIntensiveJoinExample {
 		System.out.println("Changing frequency >>>");
 		System.out.println("It is possible to publish a 'multiply factor' to each item from the source by issuing the commands below.");
 		System.out.println("Each item will be duplicated by 'multiply factor' times.");
-		System.out.println("where: 1 <= 'multiply factor' <=200");
+		System.out.println("where: 1 <= 'multiply factor' <=1000");
 		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"AIR_POLLUTION 500\"");
 		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"TRAFFIC_JAM 1000\"");
 		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"NOISE 600\"");

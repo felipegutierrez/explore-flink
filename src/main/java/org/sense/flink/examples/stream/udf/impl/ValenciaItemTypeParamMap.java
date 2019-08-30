@@ -18,7 +18,7 @@ public class ValenciaItemTypeParamMap extends RichMapFunction<MqttMessage, Tuple
 		String payload = value.getPayload();
 		String[] parameters = payload.split(" ");
 		if (parameters == null || parameters.length != 2) {
-			throw new Exception("parameter invalid!");
+			System.err.println("parameter invalid!");
 		} else {
 			String itemType = String.valueOf(parameters[0]);
 			factor = String.valueOf(parameters[1]);
@@ -29,12 +29,19 @@ public class ValenciaItemTypeParamMap extends RichMapFunction<MqttMessage, Tuple
 			} else if (ValenciaItemType.NOISE.toString().equals(itemType)) {
 				valenciaItemType = ValenciaItemType.NOISE;
 			} else {
-				throw new Exception("Invalid ValenciaItemType[" + itemType + "]!");
+				System.err.println("Invalid ValenciaItemType[" + itemType + "]!");
+				return Tuple2.of(ValenciaItemType.NULL, "0");
 			}
 			if (!StringUtils.isNumeric(factor)) {
-				throw new Exception("Invalid frequency pull[" + factor + "]!");
+				System.err.println("Invalid frequency pull[" + factor + "]!");
+				return Tuple2.of(valenciaItemType, "0");
 			}
+			if (Integer.parseInt(factor) < 1 || Integer.parseInt(factor) > 1000) {
+				System.err.println("Invalid frequency pull (>1 or <1000) [" + factor + "]!");
+				return Tuple2.of(valenciaItemType, "0");
+			}
+			return Tuple2.of(valenciaItemType, factor);
 		}
-		return Tuple2.of(valenciaItemType, factor);
+		return Tuple2.of(valenciaItemType, "0");
 	}
 }

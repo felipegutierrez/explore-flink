@@ -80,18 +80,21 @@ public class ValenciaItemSyntheticCoFlatMapper
 
 	@Override
 	public void flatMap2(Tuple2<ValenciaItemType, String> value, Collector<ValenciaItem> out) throws Exception {
-		System.out.println(value);
+		// System.out.println(value);
 		ValenciaItemType valenciaItemType = value.f0;
 		Integer factor = Integer.valueOf(value.f1);
 
 		if (valenciaItemType != ValenciaItemType.AIR_POLLUTION && valenciaItemType != ValenciaItemType.TRAFFIC_JAM
 				&& valenciaItemType != ValenciaItemType.NOISE) {
-			throw new Exception("ValenciaItemType invalid [" + valenciaItemType + "]!");
-		}
-		if (factor.intValue() == 1) {
-			state.remove(valenciaItemType);
+			System.err.println("ValenciaItemType invalid [" + valenciaItemType + "]!");
 		} else {
-			state.put(valenciaItemType, factor);
+			if (factor.intValue() == 1) {
+				state.remove(valenciaItemType);
+			} else if (factor.intValue() > 1) {
+				state.put(valenciaItemType, factor);
+			} else {
+				System.out.println("Invalid factor[" + factor + "]!");
+			}
 		}
 	}
 
