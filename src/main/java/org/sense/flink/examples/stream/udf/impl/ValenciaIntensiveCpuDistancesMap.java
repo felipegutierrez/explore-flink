@@ -37,24 +37,25 @@ public class ValenciaIntensiveCpuDistancesMap
 		newCoordinates.addAll(coordinates01);
 		String newValue = "";
 
-		if (valenciaItem00.getType() == ValenciaItemType.TRAFFIC_JAM) {
-			if (valenciaItem00.getValue() instanceof AirPollution) {
-				System.out.println("error");
+		if (valenciaItem00.getValue() != null) {
+			if (valenciaItem00.getType() == ValenciaItemType.TRAFFIC_JAM) {
+				newValue = ((Integer) valenciaItem00.getValue()).toString();
+			} else if (valenciaItem00.getType() == ValenciaItemType.AIR_POLLUTION) {
+				newValue = ((AirPollution) valenciaItem00.getValue()).toString();
+			} else if (valenciaItem00.getType() == ValenciaItemType.NOISE) {
+			} else {
+				throw new Exception("ValenciaItemType is NULL!");
 			}
-			newValue = ((Integer) valenciaItem00.getValue()).toString();
-		} else if (valenciaItem00.getType() == ValenciaItemType.AIR_POLLUTION) {
-			newValue = ((AirPollution) valenciaItem00.getValue()).toString();
-		} else if (valenciaItem00.getType() == ValenciaItemType.NOISE) {
-		} else {
-			throw new Exception("ValenciaItemType is NULL!");
 		}
-		if (valenciaItem01.getType() == ValenciaItemType.TRAFFIC_JAM) {
-			newValue += " - " + ((Integer) valenciaItem01.getValue()).toString();
-		} else if (valenciaItem01.getType() == ValenciaItemType.AIR_POLLUTION) {
-			newValue += " - " + ((AirPollution) valenciaItem01.getValue()).toString();
-		} else if (valenciaItem01.getType() == ValenciaItemType.NOISE) {
-		} else {
-			throw new Exception("ValenciaItemType is NULL!");
+		if (valenciaItem01.getValue() != null) {
+			if (valenciaItem01.getType() == ValenciaItemType.TRAFFIC_JAM) {
+				newValue += " - " + ((Integer) valenciaItem01.getValue()).toString();
+			} else if (valenciaItem01.getType() == ValenciaItemType.AIR_POLLUTION) {
+				newValue += " - " + ((AirPollution) valenciaItem01.getValue()).toString();
+			} else if (valenciaItem01.getType() == ValenciaItemType.NOISE) {
+			} else {
+				throw new Exception("ValenciaItemType is NULL!");
+			}
 		}
 		ValenciaItemEnriched valenciaItemEnriched = new ValenciaItemEnriched(valenciaItem00.getId(),
 				valenciaItem00.getAdminLevel(), valenciaItem00.getDistrict(), valenciaItem00.getUpdate(),
