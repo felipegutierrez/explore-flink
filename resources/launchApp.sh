@@ -8,7 +8,12 @@ FLINK_APP=/home/flink/explore-flink/target/explore-flink.jar
 
 echo
 echo "Launching a Flink Stream application >>"
-echo "$FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 30 -source 127.0.0.1 -sink 127.0.0.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true"
+echo "$FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 30 -source 130.239.48.136 -sink 130.239.48.136 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true"
+echo
+
+echo
+echo "Consuming a Flink Stream application output >>"
+echo "mosquitto_sub -h 130.239.48.136 -t topic-valencia-data-cpu-intensive"
 echo
 
 echo "Listing all Flink Stream applications"

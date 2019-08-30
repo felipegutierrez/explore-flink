@@ -51,8 +51,6 @@ public class App {
 
 	public static void main(String[] args) throws Exception {
 
-		listApplications();
-
 		int app = 0;
 		String ipAddressSource = "127.0.0.1";
 		String ipAddressSink = "127.0.0.1";
@@ -93,8 +91,11 @@ public class App {
 					syntheticData = Boolean.valueOf(args[i]);
 				}
 			}
+		} else {
+			listApplications();
 		}
 		System.out.println();
+		System.out.println("Parameters chosen >>");
 		System.out.println("Application selected: " + app);
 		System.out.println("ipAddressSource: " + ipAddressSource);
 		System.out.println("ipAddressSink: " + ipAddressSink);
@@ -102,10 +103,14 @@ public class App {
 		System.out.println("frequencyPull: " + frequencyPull);
 		System.out.println("frequencyWindow: " + frequencyWindow);
 		System.out.println("syntheticData: " + syntheticData);
+		System.out.println();
 
 		try {
 			switch (app) {
 			case 0:
+				System.out.println("Parameters missing! Please launch the application following the example below.");
+				System.out.println(
+						"./bin/flink run -c org.sense.flink.App explore-flink.jar -app 30 -source 130.239.48.136 -sink 130.239.48.136 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true");
 				System.out.println("bis später");
 				break;
 			case 1:
@@ -273,6 +278,7 @@ public class App {
 
 	private static void listApplications() {
 		// @formatter:off
+		System.out.println("Applications available");
 		System.out.println("0  - exit");
 		System.out.println("1  - World count (Sokect stream) with Filter and QEP");
 		System.out.println("2  - World count (MQTT stream) with Filter and QEP");
@@ -304,6 +310,7 @@ public class App {
 		System.out.println("28 - Reading values from Valencia Open-data Web Portal and computing the Broadcast JOIN using Flink Data Stream");
 		System.out.println("29 - Reading values from Valencia Open-data Web Portal and computing the Improved Repartition JOIN with Bloom Filter using Flink Data Stream");
 		System.out.println("30 - Reading values from Valencia Open-data Web Portal and CPU intensive computation using Flink Data Stream");
+		System.out.println();
 		// @formatter:on
 	}
 

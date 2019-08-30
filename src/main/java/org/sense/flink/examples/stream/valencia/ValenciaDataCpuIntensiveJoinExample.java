@@ -24,6 +24,7 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessingTimeStdRep
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticCoFlatMapper;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemTypeParamMap;
 import org.sense.flink.mqtt.FlinkMqttConsumer;
+import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
@@ -84,8 +85,8 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				.connect(streamAirPollution.keyBy(new ValenciaItemDistrictSelector()))
 				.process(new ValenciaItemProcessingTimeStdRepartitionJoinCoProcess(Time.seconds(frequencyWindow).toMilliseconds())).name(METRIC_VALENCIA_JOIN)
 				.map(new Valencia2ItemToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
-				// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
-				.print().name(METRIC_VALENCIA_SINK)
+				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+				// .print().name(METRIC_VALENCIA_SINK)
 				;		
 
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);
