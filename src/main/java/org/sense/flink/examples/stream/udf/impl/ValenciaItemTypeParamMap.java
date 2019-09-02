@@ -36,8 +36,8 @@ public class ValenciaItemTypeParamMap extends RichMapFunction<MqttMessage, Tuple
 				System.err.println("Invalid frequency pull[" + factor + "]!");
 				return Tuple2.of(valenciaItemType, "0");
 			}
-			if (Integer.parseInt(factor) < 1 || Integer.parseInt(factor) > 1000) {
-				System.err.println("Invalid frequency pull (>1 or <1000) [" + factor + "]!");
+			if (Integer.parseInt(factor) < 1) {
+				System.err.println("Invalid frequency pull [" + factor + "]! It has to be greater than 0.");
 				return Tuple2.of(valenciaItemType, "0");
 			}
 			return Tuple2.of(valenciaItemType, factor);

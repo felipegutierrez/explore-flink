@@ -76,8 +76,8 @@ public class ValenciaIntensiveCpuDistancesMap
 					adminLevel01.f1 = 9L;
 					adminLevel01.f2 = "Benicalap";
 				}
-				Point pointDerived = sgp.calculateDerivedPosition(point00, 10, 10);
-				Point pointDerived02 = sgp.calculateDerivedPosition(point01, 10, 10);
+				Point pointDerived00 = sgp.calculateDerivedPosition(point00, 10, 10);
+				Point pointDerived01 = sgp.calculateDerivedPosition(point01, 10, 10);
 				double distance = point00.euclideanDistance(point01);
 				String msg = "districts[" + adminLevel00.f0 + ", " + adminLevel01.f0 + ", " + distance + " meters]";
 				if (Strings.isNullOrEmpty(allDistances)) {
@@ -85,7 +85,7 @@ public class ValenciaIntensiveCpuDistancesMap
 				} else {
 					allDistances += " ;" + msg;
 				}
-				msg += " " + pointDerived02.toString() + " " + pointDerived.toString();
+				msg += " " + pointDerived00.toString() + " " + pointDerived01.toString();
 			}
 		}
 		allDistances += "]";

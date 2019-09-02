@@ -58,26 +58,6 @@ public class ValenciaItemSyntheticCoFlatMapper
 		}
 	}
 
-	private ValenciaItem createRandomValenciaItem(ValenciaItem value) throws CloneNotSupportedException {
-		ValenciaItem valenciaItemClone = (ValenciaItem) value.clone();
-		List<Point> coordinates = valenciaItemClone.getCoordinates();
-		List<Point> points = new ArrayList<Point>();
-		for (Point point : coordinates) {
-			double x = point.getX() + getRandomNumberInRange(1, 100);
-			double y = point.getY() + getRandomNumberInRange(1, 100);
-			Point newPoint = new Point(x, y, point.getCsr());
-			points.add(newPoint);
-
-			x = point.getX() + getRandomNumberInRange(1, 100);
-			y = point.getY() + getRandomNumberInRange(1, 100);
-			newPoint = new Point(x, y, point.getCsr());
-			points.add(newPoint);
-		}
-		valenciaItemClone.clearCoordinates();
-		valenciaItemClone.addCoordinates(points);
-		return valenciaItemClone;
-	}
-
 	@Override
 	public void flatMap2(Tuple2<ValenciaItemType, String> value, Collector<ValenciaItem> out) throws Exception {
 		// System.out.println(value);
@@ -96,6 +76,28 @@ public class ValenciaItemSyntheticCoFlatMapper
 				System.out.println("Invalid factor[" + factor + "]!");
 			}
 		}
+	}
+
+	private ValenciaItem createRandomValenciaItem(ValenciaItem value) throws CloneNotSupportedException {
+		ValenciaItem valenciaItemClone = (ValenciaItem) value.clone();
+		List<Point> coordinates = valenciaItemClone.getCoordinates();
+		List<Point> points = new ArrayList<Point>();
+		for (Point point : coordinates) {
+			points.addAll(createPoints(point, 10));
+		}
+		valenciaItemClone.clearCoordinates();
+		valenciaItemClone.addCoordinates(points);
+		return valenciaItemClone;
+	}
+
+	private List<Point> createPoints(Point point, int max) {
+		List<Point> points = new ArrayList<Point>();
+		for (int count = 0; count < max; count++) {
+			double x = point.getX() + getRandomNumberInRange(1, 100);
+			double y = point.getY() + getRandomNumberInRange(1, 100);
+			points.add(new Point(x, y, point.getCsr()));
+		}
+		return points;
 	}
 
 	private int getRandomNumberInRange(int min, int max) {
