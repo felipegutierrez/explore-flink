@@ -257,7 +257,8 @@ public class App {
 				app = 0;
 				break;
 			case 29:
-				new ValenciaDataSkewedBloomFilterJoinExample(ipAddressSource, ipAddressSink);
+				new ValenciaDataSkewedBloomFilterJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
+						frequencyWindow);
 				app = 0;
 				break;
 			case 30:

@@ -32,6 +32,12 @@ import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
 
 /**
+ * <pre>
+ * This is a good command line to start this application:
+ * 
+ * /home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App /home/flink/explore-flink/target/explore-flink.jar 
+ * -app 30 -source 130.239.48.136 -sink 130.239.48.136 -offlineData true -frequencyPull 5 -frequencyWindow 30
+ * </pre>
  * 
  * @author Felipe Oliveira Gutierrez
  *

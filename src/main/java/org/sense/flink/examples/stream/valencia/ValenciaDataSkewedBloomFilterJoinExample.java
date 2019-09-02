@@ -27,10 +27,23 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaItemLookupKeySelector;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemOutputTag;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessSideOutput;
 import org.sense.flink.examples.stream.udf.impl.ValenciaLookupCoProcess;
+import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
 
+/**
+ * 
+ * <pre>
+ * This is a good command line to start this application:
+ * 
+ * /home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App /home/flink/explore-flink/target/explore-flink.jar 
+ * -app 29 -source 130.239.48.136 -sink 130.239.48.136 -offlineData true -frequencyPull 5 -frequencyWindow 30
+ * </pre>
+ * 
+ * @author felipe
+ *
+ */
 public class ValenciaDataSkewedBloomFilterJoinExample {
 	private final String topic = "topic-valencia-data-skewed";
 
@@ -38,14 +51,17 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 		new ValenciaDataSkewedBloomFilterJoinExample("127.0.0.1", "127.0.0.1");
 	}
 
-	public ValenciaDataSkewedBloomFilterJoinExample(String ipAddressSource01, String ipAddressSink) throws Exception {
-		disclaimer();
-		boolean offlineData = true;
+	public ValenciaDataSkewedBloomFilterJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
+		this(ipAddressSource, ipAddressSink, true, 10, 60);
+	}
+
+	public ValenciaDataSkewedBloomFilterJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
+			int frequencyPull, int frequencyWindow) throws Exception {
 		boolean collectWithTimestamp = true;
 		boolean skewedDataInjection = true;
 		boolean enableLookupKeys = true;
-		long trafficFrequency = Time.seconds(10).toMilliseconds();
-		long pollutionFrequency = Time.seconds(20).toMilliseconds();
+		long trafficFrequency = Time.seconds(frequencyPull).toMilliseconds();
+		long pollutionFrequency = Time.seconds(frequencyPull).toMilliseconds();
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
@@ -78,12 +94,12 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 			streamTrafficJamFiltered = streamTrafficJam
 					.connect(sideOutputStreamPollution)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(60).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP)
+					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP)
 					;
 			streamAirPollutionFiltered = streamAirPollution
 					.connect(sideOutputStreamTraffic)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(60).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP)
+					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds())).name(METRIC_VALENCIA_LOOKUP)
 					;
 		} else {
 			streamTrafficJamFiltered = streamTrafficJam;
@@ -95,10 +111,10 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 				.join(streamAirPollutionFiltered)
 				.where(new ValenciaItemDistrictSelector())
 				.equalTo(new ValenciaItemDistrictSelector())
-				.window(TumblingEventTimeWindows.of(Time.seconds(60)))
+				.window(TumblingEventTimeWindows.of(Time.seconds(frequencyWindow)))
 		 		.apply(new TrafficPollutionByDistrictJoinFunction())
-		 		.print().name(METRIC_VALENCIA_SINK)
-				// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+		 		// .print().name(METRIC_VALENCIA_SINK)
+				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				;
 		//streamTrafficJamFiltered
 		//		.keyBy(new ValenciaItemDistrictSelector())
@@ -109,9 +125,7 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 		//		// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 		//		;
 
-		System.out.println("ExecutionPlan ........................ ");
-		System.out.println(env.getExecutionPlan());
-		System.out.println("........................ ");
+		disclaimer(env.getExecutionPlan() ,ipAddressSource);
 		env.execute(ValenciaDataSkewedBloomFilterJoinExample.class.getName());
 		// @formatter:on
 	}
@@ -174,7 +188,22 @@ public class ValenciaDataSkewedBloomFilterJoinExample {
 		}
 	}
 
-	private void disclaimer() {
-		System.out.println("Disclaimer...");
+	private void disclaimer(String logicalPlan, String ipAddressSource) {
+		// @formatter:off
+		System.out.println("This application aims to show a dynamic combiner operator which reduces items on the shuffle phase.");
+		System.out.println();
+		//System.out.println("Changing frequency >>>");
+		//System.out.println("It is possible to publish a 'multiply factor' to each item from the source by issuing the commands below.");
+		//System.out.println("Each item will be duplicated by 'multiply factor' times.");
+		//System.out.println("where: 1 <= 'multiply factor' <=1000");
+		//System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"AIR_POLLUTION 500\"");
+		//System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"TRAFFIC_JAM 1000\"");
+		//System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"NOISE 600\"");
+		//System.out.println();
+		System.out.println("Use the 'Flink Plan Visualizer' [https://flink.apache.org/visualizer/] in order to see the logical plan of this application.");
+		System.out.println("Logical plan >>>");
+		System.out.println(logicalPlan);
+		System.out.println();
+		// @formatter:on
 	}
 }

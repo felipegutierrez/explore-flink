@@ -77,21 +77,31 @@ public class ValenciaLookupCoProcess
 
 		String key = valenciaItem.getId().toString();
 		if (valenciaItem.getType() == ValenciaItemType.TRAFFIC_JAM) {
-			// If the key is not redundant and if it is likely to match
-			// if (!state.isPresentLeft(key)) {
-			if (!state.isPresentLeft(key) && state.isPresentRight(key)) {
+			// If the key is not redundant
+			if (!state.isPresentLeft(key)) {
 				out.collect(valenciaItem);
 				state.addLeft(key);
 				flagUpdateState = true;
 			}
+			// If the key is not redundant and if it is likely to match
+			// if (!state.isPresentLeft(key) && state.isPresentRight(key)) {
+			// out.collect(valenciaItem);
+			// state.addLeft(key);
+			// flagUpdateState = true;
+			// }
 		} else if (valenciaItem.getType() == ValenciaItemType.AIR_POLLUTION) {
-			// If the key is not redundant and if it is likely to match
-			// if (!state.isPresentLeft(key)) {
-			if (!state.isPresentLeft(key) && state.isPresentRight(key)) {
+			// If the key is not redundant
+			if (!state.isPresentLeft(key)) {
 				out.collect(valenciaItem);
 				state.addLeft(key);
 				flagUpdateState = true;
 			}
+			// If the key is not redundant and if it is likely to match
+			// if (!state.isPresentLeft(key) && state.isPresentRight(key)) {
+			// out.collect(valenciaItem);
+			// state.addLeft(key);
+			// flagUpdateState = true;
+			// }
 		} else if (valenciaItem.getType() == ValenciaItemType.NOISE) {
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
