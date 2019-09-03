@@ -7,19 +7,13 @@ import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SINK;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WATERMARKER_ASSIGNER;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.co.CoProcessFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
-import org.apache.flink.util.Collector;
 import org.apache.flink.util.OutputTag;
 import org.sense.flink.examples.stream.udf.impl.TrafficPollutionByDistrictJoinFunction;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemAscendingTimestampExtractor;
@@ -40,25 +34,25 @@ import org.sense.flink.util.ValenciaItemType;
  * This is a good command line to start this application:
  * 
  * ./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar 
- * -app 29 -source 192.168.56.1 -sink 192.168.56.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true 
+ * -app 31 -source 192.168.56.1 -sink 192.168.56.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true 
  * -optimization true
  * </pre>
  * 
  * @author Felipe Oliveira Gutierrez
  *
  */
-public class ValenciaBloomFilterLookupJoinExample {
-	private final String topic = "topic-valencia-lookup-join";
+public class ValenciaBloomFilterSemiJoinExample {
+	private final String topic = "topic-valencia-semi-join";
 
 	public static void main(String[] args) throws Exception {
-		new ValenciaBloomFilterLookupJoinExample("127.0.0.1", "127.0.0.1");
+		new ValenciaBloomFilterSemiJoinExample("127.0.0.1", "127.0.0.1");
 	}
 
-	public ValenciaBloomFilterLookupJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
+	public ValenciaBloomFilterSemiJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
 		this(ipAddressSource, ipAddressSink, true, 10, 60, true);
 	}
 
-	public ValenciaBloomFilterLookupJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
+	public ValenciaBloomFilterSemiJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
 			int frequencyPull, int frequencyWindow, boolean optimization) throws Exception {
 		boolean collectWithTimestamp = false;
 		boolean skewedDataInjection = true;
@@ -73,45 +67,37 @@ public class ValenciaBloomFilterLookupJoinExample {
 
 		// @formatter:off
 		// Side outputs
-		OutputTag<Tuple2<ValenciaItemType, Long>> outputTagTraffic = new ValenciaItemOutputTag("side-output-traffic");
-		OutputTag<Tuple2<ValenciaItemType, Long>> outputTagPollution = new ValenciaItemOutputTag("side-output-pollution");
+		OutputTag<Tuple2<ValenciaItemType, Long>> outputTag = new ValenciaItemOutputTag("side-output");
 
 		// Sources -> add synthetic data -> filter
 		SingleOutputStreamOperator<ValenciaItem> streamTrafficJam = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, trafficFrequency, collectWithTimestamp, offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.assignTimestampsAndWatermarks(new ValenciaItemAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.process(new ValenciaItemProcessSideOutput(outputTagTraffic)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 		SingleOutputStreamOperator<ValenciaItem> streamAirPollution = env
 				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, pollutionFrequency, collectWithTimestamp, offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.assignTimestampsAndWatermarks(new ValenciaItemAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
-				.process(new ValenciaItemProcessSideOutput(outputTagPollution)).name(METRIC_VALENCIA_SIDE_OUTPUT)
+				.process(new ValenciaItemProcessSideOutput(outputTag)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 
 		DataStream<ValenciaItem> streamTrafficJamFiltered;
 		DataStream<ValenciaItem> streamAirPollutionFiltered;
 		if (enableLookupKeys) {
 			// get Side outputs
-			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamTraffic = streamTrafficJam.getSideOutput(outputTagTraffic);
-			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamPollution = streamAirPollution.getSideOutput(outputTagPollution);
+			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStream = streamAirPollution.getSideOutput(outputTag);
 
 			// Lookup keys with Bloom Filter
 			streamTrafficJamFiltered = streamTrafficJam
-					.connect(sideOutputStreamPollution)
-					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), distinct, lookup)).name(METRIC_VALENCIA_LOOKUP)
-					;
-			streamAirPollutionFiltered = streamAirPollution
-					.connect(sideOutputStreamTraffic)
+					.connect(sideOutputStream)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
 					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), distinct, lookup)).name(METRIC_VALENCIA_LOOKUP)
 					;
 		} else {
 			streamTrafficJamFiltered = streamTrafficJam;
-			streamAirPollutionFiltered = streamAirPollution;
 		}
+		streamAirPollutionFiltered = streamAirPollution;
 
 		// Join -> Print
 		streamTrafficJamFiltered.join(streamAirPollutionFiltered)
@@ -122,81 +108,15 @@ public class ValenciaBloomFilterLookupJoinExample {
 		 		// .print().name(METRIC_VALENCIA_SINK)
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				;
-		//streamTrafficJamFiltered
-		//		.keyBy(new ValenciaItemDistrictSelector())
-		//		.connect(streamAirPollutionFiltered.keyBy(new ValenciaItemDistrictSelector()))
-		//		.process(new ValenciaItemJoinCoProcess(pollutionFrequency, defaultWaterMark)).name(METRIC_VALENCIA_JOIN)
-		//		.map(new Valencia2ItemToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
-		//		.print().name(METRIC_VALENCIA_SINK)
-		//		// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
-		//		;
 
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);
-		env.execute(ValenciaBloomFilterLookupJoinExample.class.getName());
+		env.execute(ValenciaBloomFilterSemiJoinExample.class.getName());
 		// @formatter:on
-	}
-
-	private static class ValenciaItemJoinCoProcess
-			extends CoProcessFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>> {
-		private static final long serialVersionUID = -7201692377513092833L;
-		private final SimpleDateFormat sdf;
-		private final long maxDataSourceFrequency;
-		private final long watermarkFrequency;
-		private ValueState<String> state;
-
-		public ValenciaItemJoinCoProcess(long maxDataSourceFrequency, long watermarkFrequency) {
-			this.sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss");
-			this.maxDataSourceFrequency = maxDataSourceFrequency;
-			this.watermarkFrequency = watermarkFrequency;
-		}
-
-		@Override
-		public void processElement1(ValenciaItem traffic,
-				CoProcessFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.Context context,
-				Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
-			long valenciaTimestamp = traffic.getTimestamp();
-			long watermark = context.timerService().currentWatermark();
-			boolean flag = watermark > 0
-					&& (valenciaTimestamp - watermark - watermarkFrequency) < maxDataSourceFrequency;
-
-			String msg = "[" + Thread.currentThread().getId() + " " + traffic.getType() + "] ";
-			msg += "ts[" + sdf.format(new Date(valenciaTimestamp)) + "] ";
-			msg += "W[" + sdf.format(new Date(watermark)) + "] ";
-			msg += "[" + (valenciaTimestamp - watermark - watermarkFrequency) + " " + flag + "] ";
-			System.out.println(msg);
-			if (flag) {
-				state.update(traffic.getType().toString());
-				// schedule the next timer 60 seconds from the current event time
-				context.timerService().registerEventTimeTimer(watermark + watermarkFrequency);
-			}
-		}
-
-		@Override
-		public void processElement2(ValenciaItem pollution,
-				CoProcessFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.Context context,
-				Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
-		}
-
-		@Override
-		public void onTimer(long timestamp,
-				CoProcessFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>>.OnTimerContext context,
-				Collector<Tuple2<ValenciaItem, ValenciaItem>> out) throws Exception {
-			long watermark = context.timerService().currentWatermark();
-			String msg = "[" + Thread.currentThread().getId() + "] onTimer(" + state.value() + ") ";
-			msg += "ts[" + sdf.format(new Date(timestamp)) + "] ";
-			msg += "W[" + sdf.format(new Date(watermark)) + "] ";
-			msg += "ts[" + timestamp + "] ";
-			msg += "W[" + watermark + "] ";
-			// System.out.println(msg);
-			if (watermark >= timestamp) {
-
-			}
-		}
 	}
 
 	private void disclaimer(String logicalPlan, String ipAddressSource) {
 		// @formatter:off
-		System.out.println("This application (29) aims to show a lookup-join operation for stream data which reduces items on the shuffle phase.");
+		System.out.println("This application (31) aims to show a semi-join operation for stream data which reduces items on the shuffle phase.");
 		System.out.println();
 		//System.out.println("Changing frequency >>>");
 		//System.out.println("It is possible to publish a 'multiply factor' to each item from the source by issuing the commands below.");

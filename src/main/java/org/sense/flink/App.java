@@ -23,8 +23,9 @@ import org.sense.flink.examples.stream.edgent.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.edgent.WordCountSocketFilterQEP;
 import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
 import org.sense.flink.examples.stream.twitter.TwitterExample;
+import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterLookupJoinExample;
+import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterSemiJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataCpuIntensiveJoinExample;
-import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedBloomFilterJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedBroadcastJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedCombinerExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedJoinExample;
@@ -48,6 +49,7 @@ public class App {
 	private static String PARAMETER_FREQUENCY_PULL = "-frequencyPull";
 	private static String PARAMETER_FREQUENCY_WINDOW = "-frequencyWindow";
 	private static String PARAMETER_SYNTHETIC_DATA = "-syntheticData";
+	private static String PARAMETER_ENABLE_OPTIMIZATION = "-optimization";
 
 	public static void main(String[] args) throws Exception {
 
@@ -58,6 +60,7 @@ public class App {
 		int frequencyWindow = 30;
 		boolean offlinedata = false;
 		boolean syntheticData = false;
+		boolean optimization = true;
 
 		if (args != null && args.length > 0) {
 			int size = args.length;
@@ -83,6 +86,9 @@ public class App {
 				} else if (PARAMETER_FREQUENCY_PULL.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					frequencyPull = Integer.parseInt(args[i]);
+				} else if (PARAMETER_ENABLE_OPTIMIZATION.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					optimization = Boolean.valueOf(args[i]);
 				} else if (PARAMETER_FREQUENCY_WINDOW.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					frequencyWindow = Integer.parseInt(args[i]);
@@ -103,6 +109,7 @@ public class App {
 		System.out.println("frequencyPull: " + frequencyPull);
 		System.out.println("frequencyWindow: " + frequencyWindow);
 		System.out.println("syntheticData: " + syntheticData);
+		System.out.println("optimization: " + optimization);
 		System.out.println();
 
 		try {
@@ -257,13 +264,18 @@ public class App {
 				app = 0;
 				break;
 			case 29:
-				new ValenciaDataSkewedBloomFilterJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow);
+				new ValenciaBloomFilterLookupJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
+						frequencyWindow, optimization);
 				app = 0;
 				break;
 			case 30:
 				new ValenciaDataCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
 						frequencyWindow);
+				app = 0;
+				break;
+			case 31:
+				new ValenciaBloomFilterSemiJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
+						frequencyWindow, optimization);
 				app = 0;
 				break;
 			default:
@@ -309,8 +321,9 @@ public class App {
 		System.out.println("26 - Reading values from Valencia Open-data Web Portal and processing a COMBINER using Flink Data Stream");
 		System.out.println("27 - Reading values from Valencia Open-data Web Portal and computing the Standard Repartition JOIN using Flink Data Stream");
 		System.out.println("28 - Reading values from Valencia Open-data Web Portal and computing the Broadcast JOIN using Flink Data Stream");
-		System.out.println("29 - Reading values from Valencia Open-data Web Portal and computing the Improved Repartition JOIN with Bloom Filter using Flink Data Stream");
+		System.out.println("29 - Reading values from Valencia Open-data Web Portal and computing the Lookup-JOIN with Bloom Filter using Flink Data Stream");
 		System.out.println("30 - Reading values from Valencia Open-data Web Portal and CPU intensive computation using Flink Data Stream");
+		System.out.println("31 - Reading values from Valencia Open-data Web Portal and computing the semi-JOIN with Bloom Filter using Flink Data Stream");
 		System.out.println();
 		// @formatter:on
 	}
