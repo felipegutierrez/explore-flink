@@ -110,7 +110,7 @@ public class ValenciaBloomFilterSemiJoinExample {
 				;
 
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);
-		env.execute(ValenciaBloomFilterSemiJoinExample.class.getName());
+		env.execute(ValenciaBloomFilterSemiJoinExample.class.getSimpleName());
 		// @formatter:on
 	}
 

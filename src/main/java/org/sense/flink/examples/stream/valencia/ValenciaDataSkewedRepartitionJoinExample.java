@@ -86,7 +86,7 @@ public class ValenciaDataSkewedRepartitionJoinExample {
 		// streamTrafficJam.print();
 		// streamAirPollution.print();
 
-		env.execute(ValenciaDataSkewedRepartitionJoinExample.class.getName());
+		env.execute(ValenciaDataSkewedRepartitionJoinExample.class.getSimpleName());
 		// @formatter:on
 	}
 

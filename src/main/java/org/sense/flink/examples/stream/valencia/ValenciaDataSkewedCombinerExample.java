@@ -80,7 +80,7 @@ public class ValenciaDataSkewedCombinerExample {
 				.print().name(METRIC_VALENCIA_SINK)
 				;
 
-		env.execute(ValenciaDataSkewedCombinerExample.class.getName());
+		env.execute(ValenciaDataSkewedCombinerExample.class.getSimpleName());
 		// @formatter:on
 	}
 

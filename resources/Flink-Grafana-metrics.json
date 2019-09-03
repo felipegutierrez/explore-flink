@@ -81,7 +81,7 @@
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "{{host}}-{{job}}-{{job_id}}",
+          "legendFormat": "{{host}}-{{job}}-{{job_name}}",
           "refId": "A"
         }
       ],
@@ -1812,5 +1812,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 2
+  "version": 5
 }

@@ -33,6 +33,6 @@ public class ValenciaTrafficJamSocket {
 			.print();
 		// @formatter:on
 
-		env.execute(ValenciaTrafficJamSocket.class.getName());
+		env.execute(ValenciaTrafficJamSocket.class.getSimpleName());
 	}
 }

@@ -86,7 +86,7 @@ public class ValenciaDataSkewedBroadcastJoinExample {
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				;
 
-		env.execute(ValenciaDataSkewedBroadcastJoinExample.class.getName());
+		env.execute(ValenciaDataSkewedBroadcastJoinExample.class.getSimpleName());
 		// @formatter:on
 	}
 

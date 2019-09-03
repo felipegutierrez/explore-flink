@@ -40,6 +40,6 @@ public class ValenciaPollutionSocket {
 			.print();
 		// @formatter:off
 
-		env.execute(ValenciaPollutionSocket.class.getName());
+		env.execute(ValenciaPollutionSocket.class.getSimpleName());
 	}
 }

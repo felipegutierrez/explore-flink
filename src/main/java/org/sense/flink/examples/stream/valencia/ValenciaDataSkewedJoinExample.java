@@ -74,7 +74,7 @@ public class ValenciaDataSkewedJoinExample {
 		// streamTrafficJam.print();
 		// streamAirPollution.print();
 
-		env.execute(ValenciaDataSkewedJoinExample.class.getName());
+		env.execute(ValenciaDataSkewedJoinExample.class.getSimpleName());
 		// @formatter:on
 	}
 

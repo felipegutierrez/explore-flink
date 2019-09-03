@@ -38,6 +38,6 @@ public class ValenciaNoiseSocket {
 			.print();
 		// @formatter:on
 
-		env.execute(ValenciaNoiseSocket.class.getName());
+		env.execute(ValenciaNoiseSocket.class.getSimpleName());
 	}
 }

@@ -99,7 +99,7 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				;		
 
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);
-		env.execute(ValenciaDataCpuIntensiveJoinExample.class.getName());
+		env.execute(ValenciaDataCpuIntensiveJoinExample.class.getSimpleName());
 		// @formatter:on
 	}
 
