@@ -35,7 +35,7 @@ import org.sense.flink.util.ValenciaItemType;
  * 
  * ./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar 
  * -app 31 -source 192.168.56.1 -sink 192.168.56.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true 
- * -optimization true
+ * -lookupLeft true
  * </pre>
  * 
  * @author Felipe Oliveira Gutierrez
@@ -53,12 +53,11 @@ public class ValenciaBloomFilterSemiJoinExample {
 	}
 
 	public ValenciaBloomFilterSemiJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
-			int frequencyPull, int frequencyWindow, boolean optimization) throws Exception {
+			int frequencyPull, int frequencyWindow, boolean lookupLeft) throws Exception {
 		boolean collectWithTimestamp = false;
 		boolean skewedDataInjection = true;
-		boolean enableLookupKeys = optimization;
+		boolean lookup = lookupLeft;
 		boolean distinct = true;
-		boolean lookup = true;
 		long trafficFrequency = Time.seconds(frequencyPull).toMilliseconds();
 		long pollutionFrequency = Time.seconds(frequencyPull).toMilliseconds();
 
@@ -84,7 +83,7 @@ public class ValenciaBloomFilterSemiJoinExample {
 
 		DataStream<ValenciaItem> streamTrafficJamFiltered;
 		DataStream<ValenciaItem> streamAirPollutionFiltered;
-		if (enableLookupKeys) {
+		if (lookup) {
 			// get Side outputs
 			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStream = streamAirPollution.getSideOutput(outputTag);
 
@@ -92,9 +91,10 @@ public class ValenciaBloomFilterSemiJoinExample {
 			streamTrafficJamFiltered = streamTrafficJam
 					.connect(sideOutputStream)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), distinct, lookup)).name(METRIC_VALENCIA_LOOKUP)
+					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), distinct)).name(METRIC_VALENCIA_LOOKUP)
 					;
 		} else {
+			// TODO: Lookup for the RIGHT table
 			streamTrafficJamFiltered = streamTrafficJam;
 		}
 		streamAirPollutionFiltered = streamAirPollution;

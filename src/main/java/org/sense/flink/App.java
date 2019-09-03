@@ -50,6 +50,7 @@ public class App {
 	private static String PARAMETER_FREQUENCY_WINDOW = "-frequencyWindow";
 	private static String PARAMETER_SYNTHETIC_DATA = "-syntheticData";
 	private static String PARAMETER_ENABLE_OPTIMIZATION = "-optimization";
+	private static String PARAMETER_LOOKUP_LEFT_TABLE = "-lookupLeft";
 
 	public static void main(String[] args) throws Exception {
 
@@ -61,6 +62,7 @@ public class App {
 		boolean offlinedata = false;
 		boolean syntheticData = false;
 		boolean optimization = true;
+		boolean lookupLeft = true;
 
 		if (args != null && args.length > 0) {
 			int size = args.length;
@@ -95,6 +97,9 @@ public class App {
 				} else if (PARAMETER_SYNTHETIC_DATA.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					syntheticData = Boolean.valueOf(args[i]);
+				} else if (PARAMETER_LOOKUP_LEFT_TABLE.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					lookupLeft = Boolean.valueOf(args[i]);
 				}
 			}
 		} else {
@@ -275,7 +280,7 @@ public class App {
 				break;
 			case 31:
 				new ValenciaBloomFilterSemiJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, optimization);
+						frequencyWindow, lookupLeft);
 				app = 0;
 				break;
 			default:
