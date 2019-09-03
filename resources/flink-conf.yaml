@@ -41,22 +41,23 @@ jobmanager.rpc.port: 6123
 # The heap size for the JobManager JVM
 
 jobmanager.heap.size: 1024m
-# jobmanager.heap.size: 512m
 
 
 # The heap size for the TaskManager JVM
 
 taskmanager.heap.size: 1024m
-# taskmanager.heap.size: 512m
 
 
 # The number of task slots that each TaskManager offers. Each slot runs one parallel pipeline.
-taskmanager.numberOfTaskSlots: 4
-# taskmanager.numberOfTaskSlots: 2
+
+taskmanager.numberOfTaskSlots: 2
+
 # The parallelism used for programs that did not specify and other parallelism.
+
+#parallelism.default: 1
 parallelism.default: 2
 
-taskmanager.tmp.dirs: /home/flink/Server/tmp/
+taskmanager.tmp.dirs: /home/flink/flink-1.9.0/tmp/
 
 # The default file system scheme and authority.
 # 
@@ -123,18 +124,32 @@ taskmanager.tmp.dirs: /home/flink/Server/tmp/
 #
 # state.backend.incremental: false
 
+# The failover strategy, i.e., how the job computation recovers from task failures.
+# Only restart tasks that may have been affected by the task failure, which typically includes
+# downstream tasks and potentially upstream tasks if their produced data is no longer available for consumption.
+
+jobmanager.execution.failover-strategy: region
+
 #==============================================================================
-# Web Frontend
+# Rest & web frontend
 #==============================================================================
 
-# The address under which the web-based runtime monitor listens.
+# The port to which the REST client connects to. If rest.bind-port has
+# not been specified, then the server will bind to this port as well.
 #
-#web.address: 0.0.0.0
+#rest.port: 8081
 
-# The port under which the web-based runtime monitor listens.
-# A value of -1 deactivates the web server.
+# The address to which the REST client will connect to
+#
+#rest.address: 0.0.0.0
 
-rest.port: 8081
+# Port range for the REST and web server to bind to.
+#
+#rest.bind-port: 8080-8090
+
+# The address that the REST & web server binds to
+#
+#rest.bind-address: 0.0.0.0
 
 # Flag to specify whether job submission is enabled from the web-based
 # runtime monitor. Uncomment to disable.
@@ -184,7 +199,7 @@ rest.port: 8081
 
 # The amount of memory going to the network stack. These numbers usually need 
 # no tuning. Adjusting them may be necessary in case of an "Insufficient number
-# of network buffers" error. The default min is 64MB, teh default max is 1GB.
+# of network buffers" error. The default min is 64MB, the default max is 1GB.
 # 
 # taskmanager.network.memory.fraction: 0.1
 # taskmanager.network.memory.min: 64mb
@@ -246,14 +261,13 @@ rest.port: 8081
 # Interval in milliseconds for refreshing the monitored directories.
 #historyserver.archive.fs.refresh-interval: 10000
 
-
 # Metrics Reporter
 #metrics.reporters: jmx,grph
 #metrics.reporter.jmx.class: org.apache.flink.metrics.jmx.JMXReporter
 #metrics.reporter.jmx.host: 192.168.56.1
 #metrics.reporter.jmx.port: 8789-8790
 #metrics.reporter.jmx.interval: 30 SECONDS
-#metrics.reporter.jmx.scope.delimiter: 
+#metrics.reporter.jmx.scope.delimiter:
 
 #metrics.reporter.grph.class: org.apache.flink.metrics.graphite.GraphiteReporter
 #metrics.reporter.grph.host: 192.168.56.1
@@ -264,9 +278,9 @@ metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusRepor
 metrics.reporter.prom.host: 192.168.56.1
 metrics.reporter.prom.port: 9250-9260
 
-# env.java.opts: -Djava.net.preferIPv4Stack=true -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9999 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Djava.rmi.server.hostname=192.168.56.1
 
-
-
+# System resources reporting. Sdditional metrics listed below will be available on Job- and TaskManager.
+metrics.system-resource: true
+# metrics.system-resource-probing-interval: 5000
 
 

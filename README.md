@@ -18,26 +18,33 @@ sudo apt install mosquitto mosquitto-clients
 
 Setup a [Flink standalone cluster](https://ci.apache.org/projects/flink/flink-docs-release-1.8/tutorials/local_setup.html). This project was tested with Flink version 1.9.0.
 
-Download the required libraries and copy them to the Flink cluster `lib` directory. Make sure that you download the librarie version corresponding to the same version of Flink libraries.
+Download the required libraries and copy them to the Flink cluster `lib` directory. Make sure that you download the librarie version corresponding to the same version of Flink libraries. It is necessary to download additional libraries for [Prometheus](https://ci.apache.org/projects/flink/flink-docs-release-1.9/monitoring/metrics.html#prometheus-orgapacheflinkmetricsprometheusprometheusreporter) and for [system resource metrics](https://ci.apache.org/projects/flink/flink-docs-release-1.9/monitoring/metrics.html#system-resources). All libraries are listed below.
 
  - [Flink Metrics Dropwizard](https://mvnrepository.com/artifact/org.apache.flink/flink-metrics-dropwizard)
  - [Flink Metrics Prometheus](https://mvnrepository.com/artifact/org.apache.flink/flink-metrics-prometheus)
  - [Metrics Core](https://mvnrepository.com/artifact/io.dropwizard.metrics/metrics-core)
  - [MQTT Client](https://mvnrepository.com/artifact/org.fusesource.mqtt-client/mqtt-client)
+ - [OSHI Core](https://mvnrepository.com/artifact/com.github.oshi/oshi-core/3.4.0)
+ - [Java Native Access Platform](https://mvnrepository.com/artifact/net.java.dev.jna/jna-platform/4.2.2)
+ - [Java Native Access](https://mvnrepository.com/artifact/net.java.dev.jna/jna/4.2.2)
 
 ```
 $ ll flink-1.9.0/lib/
-total 92268
-drwxrwxr-x  2 flink flink     4096 Apr  8 15:55 ./
-drwxrwxr-x 10 flink flink     4096 Apr  8 13:07 ../
--rw-r--r--  1 flink flink 93445474 Feb 11 16:38 flink-dist_2.11-1.9.0.jar
--rw-rw-r--  1 flink flink    17739 Apr  8 15:55 flink-metrics-dropwizard-1.9.0.jar
--rw-rw-r--  1 flink flink   102760 Mär 29 16:31 flink-metrics-prometheus_2.11-1.9.0.jar
--rw-r--r--  1 flink flink   141937 Feb 11 16:37 flink-python_2.11-1.9.0.jar
--rw-rw-r--  1 flink flink   489884 Feb 11 15:32 log4j-1.2.17.jar
--rw-rw-r--  1 flink flink   120465 Apr  8 15:54 metrics-core-3.1.5.jar
--rw-rw-r--  1 flink flink   126953 Mär 29 15:06 mqtt-client-1.15.jar
--rw-rw-r--  1 flink flink     9931 Feb 11 15:32 slf4j-log4j12-1.7.15.jar
+total 138448
+drwxrwxr-x  2 flink flink     4096 Sep  3 16:23 ./
+drwxrwxr-x 11 flink flink     4096 Aug 28 09:41 ../
+-rw-r--r--  1 flink flink 96634700 Aug 19 18:55 flink-dist_2.11-1.9.0.jar
+-rw-r--r--  1 flink flink    17732 Aug 23 16:50 flink-metrics-dropwizard-1.9.0.jar
+-rw-r--r--  1 flink flink   103759 Aug 23 16:50 flink-metrics-prometheus_2.11-1.9.0.jar
+-rw-r--r--  1 flink flink 18739722 Aug 19 18:54 flink-table_2.11-1.9.0.jar
+-rw-r--r--  1 flink flink 22175615 Aug 19 18:55 flink-table-blink_2.11-1.9.0.jar
+-rw-rw-r--  1 flink flink  1137286 Sep  3 16:23 jna-4.2.2.jar
+-rw-rw-r--  1 flink flink  1856200 Sep  3 16:23 jna-platform-4.2.2.jar
+-rw-rw-r--  1 flink flink   489884 Aug 19 18:22 log4j-1.2.17.jar
+-rw-rw-r--  1 flink flink   104225 Aug 22 16:34 metrics-core-4.1.0.jar
+-rw-r--r--  1 flink flink   126953 Aug 22 16:34 mqtt-client-1.15.jar
+-rw-rw-r--  1 flink flink   338636 Sep  3 16:23 oshi-core-3.4.0.jar
+-rw-rw-r--  1 flink flink     9931 Aug 19 18:22 slf4j-log4j12-1.7.15.jar
 ```
 ### Exporting data to Prometheus
 
