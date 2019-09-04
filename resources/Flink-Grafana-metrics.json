@@ -40,17 +40,17 @@
       "colors": [
         "rgba(245, 54, 54, 0.9)",
         "rgba(255, 255, 255, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
+        "#1F60C4"
       ],
       "datasource": "Prometheus",
-      "description": "Number of task slots on the Flink cluster",
-      "format": "none",
+      "description": "Total number of task slots on the Flink cluster",
+      "format": "short",
       "gauge": {
         "maxValue": null,
         "minValue": 0,
-        "show": false,
+        "show": true,
         "thresholdLabels": false,
-        "thresholdMarkers": true
+        "thresholdMarkers": false
       },
       "gridPos": {
         "h": 4,
@@ -77,10 +77,10 @@
       "nullPointMode": "connected",
       "nullText": null,
       "options": {},
-      "postfix": "",
-      "postfixFontSize": "50%",
+      "postfix": " slots",
+      "postfixFontSize": "100%",
       "prefix": "",
-      "prefixFontSize": "50%",
+      "prefixFontSize": "100%",
       "rangeMaps": [
         {
           "from": "null",
@@ -90,9 +90,9 @@
       ],
       "sparkline": {
         "fillColor": "rgba(31, 118, 189, 0.18)",
-        "full": false,
+        "full": true,
         "lineColor": "rgb(31, 120, 193)",
-        "show": true
+        "show": false
       },
       "tableColumn": "__name__",
       "targets": [
@@ -102,16 +102,16 @@
           "hide": false,
           "instant": false,
           "intervalFactor": 2,
-          "legendFormat": "# Task slots",
+          "legendFormat": "Total task slots",
           "metric": "flink_jobmanager_taskSlotsTotal",
           "refId": "A",
           "step": 20
         }
       ],
       "thresholds": "",
-      "title": "# Task slots",
+      "title": "Task slots",
       "type": "singlestat",
-      "valueFontSize": "80%",
+      "valueFontSize": "100%",
       "valueMaps": [
         {
           "op": "=",
@@ -128,15 +128,15 @@
       "colors": [
         "rgba(245, 54, 54, 0.9)",
         "rgba(255, 255, 255, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
+        "#1F60C4"
       ],
       "datasource": "Prometheus",
-      "description": "The number of tasks slots available on the Flink cluster.",
+      "description": "Available tasks slots on the Flink cluster.",
       "format": "none",
       "gauge": {
         "maxValue": null,
         "minValue": 0,
-        "show": false,
+        "show": true,
         "thresholdLabels": false,
         "thresholdMarkers": true
       },
@@ -165,7 +165,7 @@
       "nullPointMode": "connected",
       "nullText": null,
       "options": {},
-      "postfix": "",
+      "postfix": " slots",
       "postfixFontSize": "50%",
       "prefix": "",
       "prefixFontSize": "50%",
@@ -180,7 +180,7 @@
         "fillColor": "rgba(31, 118, 189, 0.18)",
         "full": false,
         "lineColor": "rgb(31, 120, 193)",
-        "show": true
+        "show": false
       },
       "tableColumn": "",
       "targets": [
@@ -198,7 +198,7 @@
       "thresholds": "",
       "title": "Available task slots",
       "type": "singlestat",
-      "valueFontSize": "80%",
+      "valueFontSize": "100%",
       "valueMaps": [
         {
           "op": "=",
@@ -215,15 +215,15 @@
       "colors": [
         "rgba(245, 54, 54, 0.9)",
         "rgba(255, 255, 255, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
+        "#C4162A"
       ],
       "datasource": "Prometheus",
-      "description": "The number of Task Managers on the Flink cluster.",
-      "format": "none",
+      "description": "The total number of Task Managers (TM) on the Flink cluster.",
+      "format": "short",
       "gauge": {
         "maxValue": null,
         "minValue": 0,
-        "show": false,
+        "show": true,
         "thresholdLabels": false,
         "thresholdMarkers": true
       },
@@ -252,7 +252,7 @@
       "nullPointMode": "connected",
       "nullText": null,
       "options": {},
-      "postfix": "",
+      "postfix": " TM(s)",
       "postfixFontSize": "50%",
       "prefix": "",
       "prefixFontSize": "50%",
@@ -267,7 +267,7 @@
         "fillColor": "rgba(251, 129, 76, 0.18)",
         "full": false,
         "lineColor": "rgb(193, 31, 31)",
-        "show": true
+        "show": false
       },
       "tableColumn": "__name__",
       "targets": [
@@ -280,9 +280,9 @@
         }
       ],
       "thresholds": "",
-      "title": "# Task Managers",
+      "title": "Task Managers",
       "type": "singlestat",
-      "valueFontSize": "80%",
+      "valueFontSize": "100%",
       "valueMaps": [
         {
           "op": "=",
@@ -299,15 +299,15 @@
       "colors": [
         "rgba(245, 54, 54, 0.9)",
         "rgba(255, 255, 255, 0.89)",
-        "rgba(50, 172, 45, 0.97)"
+        "#C4162A"
       ],
       "datasource": "Prometheus",
-      "description": "The number of running jobs on the Flink cluster.",
-      "format": "none",
+      "description": "The total number of running jobs on the Flink cluster.",
+      "format": "short",
       "gauge": {
         "maxValue": null,
         "minValue": 0,
-        "show": false,
+        "show": true,
         "thresholdLabels": false,
         "thresholdMarkers": true
       },
@@ -336,7 +336,7 @@
       "nullPointMode": "connected",
       "nullText": null,
       "options": {},
-      "postfix": "",
+      "postfix": " job(s)",
       "postfixFontSize": "50%",
       "prefix": "",
       "prefixFontSize": "50%",
@@ -351,7 +351,7 @@
         "fillColor": "rgba(251, 129, 76, 0.18)",
         "full": false,
         "lineColor": "rgb(193, 31, 31)",
-        "show": true
+        "show": false
       },
       "tableColumn": "",
       "targets": [
@@ -368,7 +368,7 @@
       "thresholds": "",
       "title": "Running Jobs",
       "type": "singlestat",
-      "valueFontSize": "80%",
+      "valueFontSize": "100%",
       "valueMaps": [
         {
           "op": "=",
@@ -405,10 +405,6 @@
               {
                 "color": "green",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ],
             "title": "",
@@ -2853,5 +2849,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 62
+  "version": 64
 }
