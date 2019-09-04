@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1567590700939,
+  "iteration": 1567592952135,
   "links": [],
   "panels": [
     {
@@ -54,7 +54,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 2,
+        "w": 3,
         "x": 0,
         "y": 1
       },
@@ -142,8 +142,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 2,
-        "x": 2,
+        "w": 3,
+        "x": 3,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -229,8 +229,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 2,
-        "x": 4,
+        "w": 3,
+        "x": 6,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -313,8 +313,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 2,
-        "x": 6,
+        "w": 3,
+        "x": 9,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -384,8 +384,8 @@
       "description": "The number of CPU cores on each node of the cluster.",
       "gridPos": {
         "h": 4,
-        "w": 2,
-        "x": 8,
+        "w": 3,
+        "x": 12,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -405,6 +405,10 @@
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
               }
             ],
             "title": "",
@@ -444,16 +448,16 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 4,
-        "w": 14,
-        "x": 10,
+        "w": 9,
+        "x": 15,
         "y": 1
       },
       "id": 63,
       "legend": {
         "alignAsTable": true,
         "avg": false,
-        "current": false,
-        "max": true,
+        "current": true,
+        "max": false,
         "min": false,
         "rightSide": true,
         "show": true,
@@ -484,7 +488,7 @@
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
-          "legendFormat": "{{host}}-{{job}}-{{job_name}}",
+          "legendFormat": "{{job_name}}",
           "refId": "A"
         }
       ],
@@ -562,7 +566,7 @@
         "avg": true,
         "current": true,
         "max": true,
-        "min": false,
+        "min": true,
         "rightSide": false,
         "show": true,
         "total": false,
@@ -642,7 +646,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Job Manager CPU usage",
+      "title": "Job Manager CPU usage per core",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -699,7 +703,7 @@
         "avg": true,
         "current": true,
         "max": true,
-        "min": false,
+        "min": true,
         "rightSide": false,
         "show": true,
         "total": false,
@@ -779,7 +783,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Task Manager CPU usage",
+      "title": "Task Manager CPU usage per core",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -832,7 +836,8 @@
       },
       "id": 70,
       "legend": {
-        "avg": false,
+        "alignAsTable": true,
+        "avg": true,
         "current": true,
         "max": true,
         "min": true,
@@ -876,7 +881,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Job Manager CPU load 1, 5, 15 minutes",
+      "title": "Job Manager CPU load 1, 5, 15 minutes per node",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -929,7 +934,8 @@
       },
       "id": 71,
       "legend": {
-        "avg": false,
+        "alignAsTable": true,
+        "avg": true,
         "current": true,
         "max": true,
         "min": true,
@@ -973,7 +979,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Task Manager CPU load 1, 5, 15 minutes",
+      "title": "Task Manager CPU load 1, 5, 15 minutes per node",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1026,7 +1032,8 @@
       },
       "id": 72,
       "legend": {
-        "avg": false,
+        "alignAsTable": true,
+        "avg": true,
         "current": true,
         "max": true,
         "min": true,
@@ -1070,7 +1077,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Job Manager CPU Idle, Usage, User",
+      "title": "Job Manager CPU Idle, Usage, User per node",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1123,7 +1130,8 @@
       },
       "id": 73,
       "legend": {
-        "avg": false,
+        "alignAsTable": true,
+        "avg": true,
         "current": true,
         "max": true,
         "min": true,
@@ -1167,7 +1175,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Task Manager CPU Idle, Usage, User",
+      "title": "Task Manager CPU Idle, Usage, User per node",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -2849,5 +2857,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 64
+  "version": 70
 }
