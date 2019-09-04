@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1567582705048,
+  "iteration": 1567590700939,
   "links": [],
   "panels": [
     {
@@ -43,6 +43,7 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "Prometheus",
+      "description": "Number of task slots on the Flink cluster",
       "format": "none",
       "gauge": {
         "maxValue": null,
@@ -53,7 +54,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
+        "w": 2,
         "x": 0,
         "y": 1
       },
@@ -101,14 +102,14 @@
           "hide": false,
           "instant": false,
           "intervalFactor": 2,
-          "legendFormat": "TaskSlotsTotal",
+          "legendFormat": "# Task slots",
           "metric": "flink_jobmanager_taskSlotsTotal",
           "refId": "A",
           "step": 20
         }
       ],
       "thresholds": "",
-      "title": "Taskslots total",
+      "title": "# Task slots",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -130,6 +131,7 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "Prometheus",
+      "description": "The number of tasks slots available on the Flink cluster.",
       "format": "none",
       "gauge": {
         "maxValue": null,
@@ -140,8 +142,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 3,
+        "w": 2,
+        "x": 2,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -194,7 +196,7 @@
         }
       ],
       "thresholds": "",
-      "title": "Taskslots available",
+      "title": "Available task slots",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -216,6 +218,7 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "Prometheus",
+      "description": "The number of Task Managers on the Flink cluster.",
       "format": "none",
       "gauge": {
         "maxValue": null,
@@ -226,8 +229,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 6,
+        "w": 2,
+        "x": 4,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -277,7 +280,7 @@
         }
       ],
       "thresholds": "",
-      "title": "# of TaskManagers",
+      "title": "# Task Managers",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -299,6 +302,7 @@
         "rgba(50, 172, 45, 0.97)"
       ],
       "datasource": "Prometheus",
+      "description": "The number of running jobs on the Flink cluster.",
       "format": "none",
       "gauge": {
         "maxValue": null,
@@ -309,8 +313,8 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 3,
-        "x": 9,
+        "w": 2,
+        "x": 6,
         "y": 1
       },
       "hideTimeOverride": false,
@@ -355,14 +359,14 @@
           "expr": "flink_jobmanager_numRunningJobs",
           "hide": false,
           "intervalFactor": 2,
-          "legendFormat": "",
+          "legendFormat": "Running Jobs",
           "metric": "flink_jobmanager_numRunningJobs",
           "refId": "A",
           "step": 20
         }
       ],
       "thresholds": "",
-      "title": "# of Running Jobs",
+      "title": "Running Jobs",
       "type": "singlestat",
       "valueFontSize": "80%",
       "valueMaps": [
@@ -375,6 +379,65 @@
       "valueName": "current"
     },
     {
+      "cacheTimeout": null,
+      "datasource": "Prometheus",
+      "description": "The number of CPU cores on each node of the cluster.",
+      "gridPos": {
+        "h": 4,
+        "w": 2,
+        "x": 8,
+        "y": 1
+      },
+      "hideTimeOverride": false,
+      "id": 81,
+      "links": [],
+      "options": {
+        "displayMode": "gradient",
+        "fieldOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "defaults": {
+            "mappings": [],
+            "max": 10,
+            "min": 0,
+            "thresholds": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ],
+            "title": "",
+            "unit": "short"
+          },
+          "override": {},
+          "values": false
+        },
+        "orientation": "horizontal"
+      },
+      "pluginVersion": "6.3.3",
+      "targets": [
+        {
+          "expr": "count without(cpu, mode) (node_cpu_seconds_total{mode=\"idle\"})",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "{{instance}}",
+          "metric": "flink_jobmanager_numRunningJobs",
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "# CPU cores",
+      "type": "bargauge"
+    },
+    {
       "aliasColors": {},
       "bars": true,
       "cacheTimeout": null,
@@ -385,8 +448,8 @@
       "fillGradient": 0,
       "gridPos": {
         "h": 4,
-        "w": 12,
-        "x": 12,
+        "w": 14,
+        "x": 10,
         "y": 1
       },
       "id": 63,
@@ -2556,96 +2619,6 @@
         "align": false,
         "alignLevel": null
       }
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "Prometheus",
-      "fill": 1,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 7,
-        "w": 12,
-        "x": 12,
-        "y": 98
-      },
-      "id": 26,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "paceLength": 10,
-      "percentage": false,
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "irate(process_cpu_seconds_total{job=\"prometheus\"}[5m])",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{instance}}-{{job}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Process CPU in Prometheus",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": "queue length",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
     }
   ],
   "refresh": "2m",
@@ -2880,5 +2853,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 51
+  "version": 62
 }
