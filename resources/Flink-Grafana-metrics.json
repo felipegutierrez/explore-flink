@@ -527,55 +527,55 @@
         {
           "expr": "flink_jobmanager_System_CPU_Usage",
           "format": "time_series",
-          "legendFormat": "{{host}} - Total",
+          "legendFormat": "{{host}} - Usage",
           "refId": "A"
         },
         {
           "expr": "flink_jobmanager_System_CPU_UsageCPU0",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 0",
+          "legendFormat": "{{host}} - Usage CPU 0",
           "refId": "B"
         },
         {
           "expr": "flink_jobmanager_System_CPU_UsageCPU1",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 1",
+          "legendFormat": "{{host}} - Usage CPU 1",
           "refId": "C"
         },
         {
           "expr": "flink_jobmanager_System_CPU_UsageCPU2",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 2",
+          "legendFormat": "{{host}} - Usage CPU 2",
           "refId": "D"
         },
         {
           "expr": "flink_jobmanager_System_CPU_UsageCPU3",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 3",
+          "legendFormat": "{{host}} - Usage CPU 3",
           "refId": "E"
         },
         {
           "expr": "flink_jobmanager_System_CPU_UsageCPU4",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 4",
+          "legendFormat": "{{host}} - Usage CPU 4",
           "refId": "F"
         },
         {
           "expr": "flink_jobmanager_System_CPU_UsageCPU5",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 5",
+          "legendFormat": "{{host}} - Usage CPU 5",
           "refId": "G"
         },
         {
           "expr": "flink_jobmanager_System_CPU_UsageCPU6",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 6",
+          "legendFormat": "{{host}} - Usage CPU 6",
           "refId": "H"
         },
         {
           "expr": "flink_jobmanager_System_CPU_UsageCPU7",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 7",
+          "legendFormat": "{{host}} - Usage CPU 7",
           "refId": "I"
         }
       ],
@@ -664,55 +664,55 @@
         {
           "expr": "flink_taskmanager_System_CPU_Usage",
           "format": "time_series",
-          "legendFormat": "{{host}} - Total",
+          "legendFormat": "{{host}} - Usage",
           "refId": "A"
         },
         {
           "expr": "flink_taskmanager_System_CPU_UsageCPU0",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 0",
+          "legendFormat": "{{host}} - Usage CPU 0",
           "refId": "B"
         },
         {
           "expr": "flink_taskmanager_System_CPU_UsageCPU1",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 1",
+          "legendFormat": "{{host}} - Usage CPU 1",
           "refId": "C"
         },
         {
           "expr": "flink_taskmanager_System_CPU_UsageCPU2",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 2",
+          "legendFormat": "{{host}} - Usage CPU 2",
           "refId": "D"
         },
         {
           "expr": "flink_taskmanager_System_CPU_UsageCPU3",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 3",
+          "legendFormat": "{{host}} - Usage CPU 3",
           "refId": "E"
         },
         {
           "expr": "flink_taskmanager_System_CPU_UsageCPU4",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 4",
+          "legendFormat": "{{host}} - Usage CPU 4",
           "refId": "F"
         },
         {
           "expr": "flink_taskmanager_System_CPU_UsageCPU5",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 5",
+          "legendFormat": "{{host}} - Usage CPU 5",
           "refId": "G"
         },
         {
           "expr": "flink_taskmanager_System_CPU_UsageCPU6",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 6",
+          "legendFormat": "{{host}} - Usage CPU 6",
           "refId": "H"
         },
         {
           "expr": "flink_taskmanager_System_CPU_UsageCPU7",
           "format": "time_series",
-          "legendFormat": "{{host}} - CPU 7",
+          "legendFormat": "{{host}} - Usage CPU 7",
           "refId": "I"
         }
       ],
@@ -1027,10 +1027,10 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "percent",
           "label": null,
           "logBase": 1,
-          "max": null,
+          "max": "100",
           "min": null,
           "show": true
         },
@@ -1124,7 +1124,213 @@
       },
       "yaxes": [
         {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": null,
+          "show": true
+        },
+        {
           "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "description": "An interrupt request (or IRQ) is a hardware signal sent to the processor that temporarily stops a running program and allows a special program, an interrupt handler, to run instead.\nIOWait - % of IOWait CPU usage on the machine.\nSys - % of System CPU usage on the machine.\nIrq - % of Irq CPU usage on the machine.\nSoft Irq - % of SoftIrq CPU usage on the machine.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 32
+      },
+      "id": 79,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_System_CPU_IOWait",
+          "legendFormat": "{{host}} - CPU IO Wait",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_Irq",
+          "legendFormat": "{{host}} - CPU Irq (interrupt request)",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_SoftIrq",
+          "legendFormat": "{{host}} - CPU Soft Irq (soft interrupt request)",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_Sys",
+          "legendFormat": "{{host}} - CPU Sys",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job Manager CPU IO Wait, IRQ, Soft IRQ, Sys",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "description": "An interrupt request (or IRQ) is a hardware signal sent to the processor that temporarily stops a running program and allows a special program, an interrupt handler, to run instead.\nIOWait - % of IOWait CPU usage on the machine.\nSys - % of System CPU usage on the machine.\nIrq - % of Irq CPU usage on the machine.\nSoft Irq - % of SoftIrq CPU usage on the machine.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 32
+      },
+      "id": 80,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_System_CPU_IOWait",
+          "legendFormat": "{{host}} - CPU IO Wait",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_Irq",
+          "legendFormat": "{{host}} - CPU Irq (interrupt request)",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_SoftIrq",
+          "legendFormat": "{{host}} - CPU Soft Irq (soft interrupt request)",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_Sys",
+          "legendFormat": "{{host}} - CPU Sys",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Task Manager CPU IO Wait, IRQ, Soft IRQ, Sys",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -1156,7 +1362,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 40
       },
       "id": 59,
       "legend": {
@@ -1243,7 +1449,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 40
       },
       "id": 14,
       "legend": {
@@ -1340,7 +1546,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 40
+        "y": 48
       },
       "id": 75,
       "panels": [],
@@ -1359,7 +1565,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 41
+        "y": 49
       },
       "id": 77,
       "legend": {
@@ -1451,7 +1657,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 41
+        "y": 49
       },
       "id": 78,
       "legend": {
@@ -1544,7 +1750,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 57
       },
       "id": 19,
       "legend": {
@@ -1659,7 +1865,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 57
       },
       "id": 16,
       "legend": {
@@ -1767,7 +1973,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 59
+        "y": 67
       },
       "id": 30,
       "panels": [],
@@ -1787,7 +1993,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 60
+        "y": 68
       },
       "id": 2,
       "legend": {
@@ -1883,7 +2089,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 60
+        "y": 68
       },
       "id": 34,
       "legend": {
@@ -1974,7 +2180,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 72
+        "y": 80
       },
       "id": 35,
       "legend": {
@@ -2065,7 +2271,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 72
+        "y": 80
       },
       "id": 44,
       "legend": {
@@ -2151,7 +2357,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 90
       },
       "id": 23,
       "panels": [],
@@ -2171,7 +2377,7 @@
         "h": 14,
         "w": 12,
         "x": 0,
-        "y": 83
+        "y": 91
       },
       "id": 61,
       "legend": {
@@ -2263,7 +2469,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 83
+        "y": 91
       },
       "id": 47,
       "legend": {
@@ -2363,7 +2569,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 90
+        "y": 98
       },
       "id": 26,
       "legend": {
@@ -2674,5 +2880,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 34
+  "version": 51
 }
