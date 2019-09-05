@@ -266,8 +266,8 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	private boolean useDataSkewedFile() {
 		if (dataSkewedSyntheticInjection) {
-			long before = Calendar.getInstance().getTimeInMillis() - DEFAULT_INTERVAL_CHANGE_DATA_SOURCE;
-			if (before >= startTime) {
+			long elapsedTime = Calendar.getInstance().getTimeInMillis() - DEFAULT_INTERVAL_CHANGE_DATA_SOURCE;
+			if (elapsedTime >= startTime) {
 				startTime = Calendar.getInstance().getTimeInMillis();
 				useDataSkewedFile = (useDataSkewedFile ? false : true);
 

@@ -258,7 +258,7 @@ public class App {
 				break;
 			case 26:
 				new ValenciaDataSkewedCombinerExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, optimization);
+						frequencyWindow, syntheticData, optimization);
 				app = 0;
 				break;
 			case 27:
