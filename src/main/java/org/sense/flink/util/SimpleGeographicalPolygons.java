@@ -32,7 +32,7 @@ public class SimpleGeographicalPolygons implements Serializable {
 	private static final long serialVersionUID = 7331398841196874219L;
 	private static final Logger logger = LoggerFactory.getLogger(SimpleGeographicalPolygons.class);
 	private static final String CURRENT_PATH = Paths.get("").toAbsolutePath().toString() + "/";
-	private static final String RESOURCE_DIR = "resources/valencia/";
+	private static final String RESOURCE_DIR = "conf/resources/valencia/";
 	private static final String DEFAULT_VALENCIA_DISTRICTS_POLYGONS = "admin_level_9_Valencia_polygons.geojson";
 
 	private File geoJSON;
