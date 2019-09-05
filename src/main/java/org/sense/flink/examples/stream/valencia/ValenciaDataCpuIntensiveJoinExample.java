@@ -61,7 +61,7 @@ public class ValenciaDataCpuIntensiveJoinExample {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-		env.disableOperatorChaining();
+		// env.disableOperatorChaining();
 
 		// @formatter:off
 		// Parameter source -> map type and frequency
