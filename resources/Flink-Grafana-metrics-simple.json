@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 15,
-  "iteration": 1567603529314,
+  "iteration": 1567672900165,
   "links": [],
   "panels": [
     {
@@ -35,11 +35,11 @@
     },
     {
       "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
+      "colorBackground": true,
+      "colorValue": false,
       "colors": [
         "rgba(245, 54, 54, 0.9)",
-        "rgba(255, 255, 255, 0.89)",
+        "rgb(255, 255, 255)",
         "#1F60C4"
       ],
       "datasource": "Prometheus",
@@ -124,7 +124,7 @@
     {
       "cacheTimeout": null,
       "colorBackground": false,
-      "colorValue": true,
+      "colorValue": false,
       "colors": [
         "rgba(245, 54, 54, 0.9)",
         "rgba(255, 255, 255, 0.89)",
@@ -285,7 +285,7 @@
         "alignAsTable": true,
         "avg": false,
         "current": true,
-        "max": false,
+        "max": true,
         "min": false,
         "rightSide": true,
         "show": true,
@@ -364,7 +364,7 @@
     {
       "cacheTimeout": null,
       "colorBackground": false,
-      "colorValue": true,
+      "colorValue": false,
       "colors": [
         "rgba(245, 54, 54, 0.9)",
         "rgba(255, 255, 255, 0.89)",
@@ -448,7 +448,7 @@
     {
       "cacheTimeout": null,
       "colorBackground": false,
-      "colorValue": true,
+      "colorValue": false,
       "colors": [
         "rgba(245, 54, 54, 0.9)",
         "rgba(255, 255, 255, 0.89)",
@@ -510,6 +510,7 @@
       "targets": [
         {
           "expr": "flink_jobmanager_numRunningJobs",
+          "format": "time_series",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "Running Jobs",
@@ -2834,7 +2835,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-30m",
     "to": "now"
   },
   "timepicker": {
@@ -2856,5 +2857,5 @@
   "timezone": "",
   "title": "Flink Metrics - simple version",
   "uid": "GPkyky2ik",
-  "version": 5
+  "version": 8
 }

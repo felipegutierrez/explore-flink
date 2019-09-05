@@ -109,7 +109,7 @@ public class ValenciaBloomFilterSemiJoinExample {
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				;
 
-		disclaimer(env.getExecutionPlan() ,ipAddressSource);
+		disclaimer(env.getExecutionPlan(), ipAddressSource);
 		env.execute(ValenciaBloomFilterSemiJoinExample.class.getSimpleName());
 		// @formatter:on
 	}

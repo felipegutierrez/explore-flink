@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1567592952135,
+  "iteration": 1567674385688,
   "links": [],
   "panels": [
     {
@@ -457,7 +457,7 @@
         "alignAsTable": true,
         "avg": false,
         "current": true,
-        "max": false,
+        "max": true,
         "min": false,
         "rightSide": true,
         "show": true,
@@ -2857,5 +2857,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 70
+  "version": 72
 }
