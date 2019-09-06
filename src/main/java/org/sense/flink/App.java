@@ -50,7 +50,7 @@ public class App {
 	private static String PARAMETER_FREQUENCY_WINDOW = "-frequencyWindow";
 	private static String PARAMETER_SYNTHETIC_DATA = "-syntheticData";
 	private static String PARAMETER_ENABLE_OPTIMIZATION = "-optimization";
-	private static String PARAMETER_LOOKUP_LEFT_TABLE = "-lookupLeft";
+	private static String PARAMETER_LOOKUP_TABLE = "-lookup";
 
 	public static void main(String[] args) throws Exception {
 
@@ -62,7 +62,7 @@ public class App {
 		boolean offlinedata = false;
 		boolean syntheticData = false;
 		boolean optimization = true;
-		boolean lookupLeft = true;
+		boolean lookup = true;
 
 		if (args != null && args.length > 0) {
 			int size = args.length;
@@ -97,9 +97,9 @@ public class App {
 				} else if (PARAMETER_SYNTHETIC_DATA.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					syntheticData = Boolean.valueOf(args[i]);
-				} else if (PARAMETER_LOOKUP_LEFT_TABLE.equals(String.valueOf(args[i])) && i + 1 < size) {
+				} else if (PARAMETER_LOOKUP_TABLE.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
-					lookupLeft = Boolean.valueOf(args[i]);
+					lookup = Boolean.valueOf(args[i]);
 				}
 			}
 		} else {
@@ -115,6 +115,7 @@ public class App {
 		System.out.println("frequencyWindow: " + frequencyWindow);
 		System.out.println("syntheticData: " + syntheticData);
 		System.out.println("optimization: " + optimization);
+		System.out.println("lookup: " + lookup);
 		System.out.println();
 
 		try {
@@ -271,7 +272,7 @@ public class App {
 				break;
 			case 29:
 				new ValenciaBloomFilterLookupJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, optimization);
+						frequencyWindow, syntheticData, optimization, lookup);
 				app = 0;
 				break;
 			case 30:
@@ -281,7 +282,7 @@ public class App {
 				break;
 			case 31:
 				new ValenciaBloomFilterSemiJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, syntheticData, optimization);
+						frequencyWindow, syntheticData, optimization, lookup);
 				app = 0;
 				break;
 			default:

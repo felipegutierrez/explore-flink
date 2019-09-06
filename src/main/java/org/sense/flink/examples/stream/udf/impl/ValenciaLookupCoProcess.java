@@ -36,7 +36,8 @@ public class ValenciaLookupCoProcess
 	private ListState<ValenciaItem> valenciaItemLeftTable;
 	private ListState<Long> valenciaItemRightTable;
 	private final long timeOut;
-	private final boolean optimizationBloomFilter;
+	private final boolean distinctBloomFilter;
+	private final boolean lookupBloomFilter;
 
 	/**
 	 * If @distinct is TRUE it will preserve only one (the first) item for distinct
@@ -46,13 +47,14 @@ public class ValenciaLookupCoProcess
 	 * @param timeOut
 	 */
 	public ValenciaLookupCoProcess(long timeOut) {
-		this(timeOut, true);
+		this(timeOut, true, true);
 	}
 
-	public ValenciaLookupCoProcess(long timeOut, boolean optimization) {
+	public ValenciaLookupCoProcess(long timeOut, boolean distinct, boolean lookupAproximation) {
 		this.sdf = new SimpleDateFormat("dd-MM-yyyy hh:mm:ss.SSS");
 		this.timeOut = timeOut;
-		this.optimizationBloomFilter = optimization;
+		this.distinctBloomFilter = distinct;
+		this.lookupBloomFilter = lookupAproximation;
 	}
 
 	@Override
@@ -65,7 +67,7 @@ public class ValenciaLookupCoProcess
 				"ValenciaItemLeftListState", ValenciaItem.class);
 		valenciaItemLeftTable = getRuntimeContext().getListState(listStateLeftProperties);
 
-		if (!optimizationBloomFilter) {
+		if (!distinctBloomFilter) {
 			ListStateDescriptor<Long> listStateRightProperties = new ListStateDescriptor<Long>(
 					"ValenciaItemRightListState", Long.class);
 			valenciaItemRightTable = getRuntimeContext().getListState(listStateRightProperties);
@@ -105,19 +107,22 @@ public class ValenciaLookupCoProcess
 			// }
 		}
 
-		if (optimizationBloomFilter) {
+		if (distinctBloomFilter) {
 			String key = valenciaItem.getId().toString();
 			String hash = getHashCode(valenciaItem);
 			// If the key is not redundant
 			if (!bloomFilterState.isPresentLeft(hash)) {
 				bloomFilterState.addLeft(hash);
-				valenciaItemLeftTable.add(valenciaItem);
 				flagUpdateState = true;
 
-				// if it is likely to match with the RIGHT table
-				// if (bloomFilterState.isPresentRight(key)) {
-				// out.collect(valenciaItem);
-				// }
+				if (lookupBloomFilter) {
+					// if it is likely to match with the RIGHT table
+					if (bloomFilterState.isPresentRight(key)) {
+						out.collect(valenciaItem);
+					}
+				} else {
+					valenciaItemLeftTable.add(valenciaItem);
+				}
 			}
 		} else {
 			// When not using the distinct bloom-filter we are not filtering redundant item.
@@ -147,7 +152,7 @@ public class ValenciaLookupCoProcess
 			flagUpdateState = true;
 		}
 
-		if (optimizationBloomFilter) {
+		if (distinctBloomFilter) {
 			String key = lookupValue.f1.toString();
 			bloomFilterState.addRight(key);
 			flagUpdateState = true;
@@ -178,24 +183,26 @@ public class ValenciaLookupCoProcess
 		// debug
 		System.out.println(msg);
 
-		List<ValenciaItem> valenciaItemLeftList = new ArrayList<ValenciaItem>();
-		valenciaItemLeftTable.get().iterator().forEachRemaining(valenciaItemLeftList::add);
-		valenciaItemLeftTable.clear();
-		for (ValenciaItem valenciaItem : valenciaItemLeftList) {
-			if (optimizationBloomFilter) {
-				// Using Bloom filter
-				String key = valenciaItem.getId().toString();
-				if (bloomFilterState.isPresentRight(key)) {
-					out.collect(valenciaItem);
-				}
-			} else {
-				// NOT using Bloom filter
-				Long key = valenciaItem.getId();
-				List<Long> valenciaItemRightList = new ArrayList<Long>();
-				valenciaItemRightTable.get().iterator().forEachRemaining(valenciaItemRightList::add);
-				for (Long valenciaItemRightKey : valenciaItemRightList) {
-					if (valenciaItemRightKey != null && valenciaItemRightKey.equals(key)) {
+		if (!lookupBloomFilter) {
+			List<ValenciaItem> valenciaItemLeftList = new ArrayList<ValenciaItem>();
+			valenciaItemLeftTable.get().iterator().forEachRemaining(valenciaItemLeftList::add);
+			valenciaItemLeftTable.clear();
+			for (ValenciaItem valenciaItem : valenciaItemLeftList) {
+				if (distinctBloomFilter) {
+					// Using Bloom filter
+					String key = valenciaItem.getId().toString();
+					if (bloomFilterState.isPresentRight(key)) {
 						out.collect(valenciaItem);
+					}
+				} else {
+					// NOT using Bloom filter
+					Long key = valenciaItem.getId();
+					List<Long> valenciaItemRightList = new ArrayList<Long>();
+					valenciaItemRightTable.get().iterator().forEachRemaining(valenciaItemRightList::add);
+					for (Long valenciaItemRightKey : valenciaItemRightList) {
+						if (valenciaItemRightKey != null && valenciaItemRightKey.equals(key)) {
+							out.collect(valenciaItem);
+						}
 					}
 				}
 			}

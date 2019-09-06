@@ -35,7 +35,7 @@ import org.sense.flink.util.ValenciaItemType;
  * 
  * ./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar 
  * -app 31 -source 192.168.56.1 -sink 192.168.56.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true 
- * -optimization true
+ * -optimization true -lookup true
  * </pre>
  * 
  * @author Felipe Oliveira Gutierrez
@@ -49,19 +49,18 @@ public class ValenciaBloomFilterSemiJoinExample {
 	}
 
 	public ValenciaBloomFilterSemiJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
-		this(ipAddressSource, ipAddressSink, true, 10, 30, true, true);
+		this(ipAddressSource, ipAddressSink, true, 10, 30, true, true, true);
 	}
 
 	public ValenciaBloomFilterSemiJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
-			int frequencyPull, int frequencyWindow, boolean skewedDataInjection, boolean optimization)
-			throws Exception {
+			int frequencyPull, int frequencyWindow, boolean skewedDataInjection, boolean distinct,
+			boolean lookupAproximation) throws Exception {
 		boolean collectWithTimestamp = false;
 		long trafficFrequency = Time.seconds(frequencyPull).toMilliseconds();
 		long pollutionFrequency = Time.seconds(frequencyPull).toMilliseconds();
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-		env.disableOperatorChaining();
 
 		// @formatter:off
 		// Creating side outputs
@@ -87,7 +86,7 @@ public class ValenciaBloomFilterSemiJoinExample {
 		DataStream<ValenciaItem> streamTrafficJamFiltered = streamTrafficJam
 				.connect(sideOutputStream)
 				.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-				.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), optimization)).name(METRIC_VALENCIA_LOOKUP)
+				.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), distinct, lookupAproximation)).name(METRIC_VALENCIA_LOOKUP)
 				;
 		DataStream<ValenciaItem> streamAirPollutionFiltered = streamAirPollution;
 
@@ -97,7 +96,7 @@ public class ValenciaBloomFilterSemiJoinExample {
 				.equalTo(new ValenciaItemDistrictSelector())
 				.window(TumblingEventTimeWindows.of(Time.seconds(frequencyWindow)))
 		 		.apply(new TrafficPollutionByDistrictJoinFunction())
-		 		//.print().name(METRIC_VALENCIA_SINK)
+		 		// .print().name(METRIC_VALENCIA_SINK)
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				;
 

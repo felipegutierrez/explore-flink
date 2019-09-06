@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 15,
-  "iteration": 1567672900165,
+  "iteration": 1567781026781,
   "links": [],
   "panels": [
     {
@@ -211,7 +211,7 @@
     {
       "cacheTimeout": null,
       "datasource": "Prometheus",
-      "description": "The number of CPU cores on each node of the cluster.",
+      "description": "The number of CPU cores on each node of the cluster. This panel will be updated only if you start node_exporter \"sudo systemctl [status|start|stop] node_exporter\".",
       "gridPos": {
         "h": 8,
         "w": 6,
@@ -2710,9 +2710,8 @@
       {
         "allValue": null,
         "current": {
-          "isNone": true,
-          "text": "None",
-          "value": ""
+          "text": "ValenciaBloomFilterSemiJoinExample",
+          "value": "ValenciaBloomFilterSemiJoinExample"
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -2837,7 +2836,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -2859,5 +2858,5 @@
   "timezone": "",
   "title": "Flink Metrics - simple version",
   "uid": "GPkyky2ik",
-  "version": 13
+  "version": 16
 }
