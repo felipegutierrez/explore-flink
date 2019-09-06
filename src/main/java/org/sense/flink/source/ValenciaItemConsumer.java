@@ -46,7 +46,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	// @formatter:off
 	private static final long serialVersionUID = 8320419468972434516L;
 	private static final String CURRENT_PATH = Paths.get("").toAbsolutePath().toString() + "/";
-	private static final String RESOURCE_DIR = "/nfshome/felipe/resources/valencia/";
+	private static final String RESOURCE_DIR = "resources/valencia/";
 	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";
 	private static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
 	private static final String VALENCIA_NOISE_URL = "http://???.??";

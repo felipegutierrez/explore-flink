@@ -281,7 +281,7 @@ public class App {
 				break;
 			case 31:
 				new ValenciaBloomFilterSemiJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, lookupLeft);
+						frequencyWindow, syntheticData, optimization);
 				app = 0;
 				break;
 			default:

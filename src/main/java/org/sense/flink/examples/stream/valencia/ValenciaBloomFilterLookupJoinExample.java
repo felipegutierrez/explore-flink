@@ -62,9 +62,6 @@ public class ValenciaBloomFilterLookupJoinExample {
 			int frequencyPull, int frequencyWindow, boolean optimization) throws Exception {
 		boolean collectWithTimestamp = false;
 		boolean skewedDataInjection = true;
-		boolean enableLookupKeys = optimization;
-		boolean distinct = true;
-		boolean lookup = true;
 		long trafficFrequency = Time.seconds(frequencyPull).toMilliseconds();
 		long pollutionFrequency = Time.seconds(frequencyPull).toMilliseconds();
 
@@ -92,7 +89,7 @@ public class ValenciaBloomFilterLookupJoinExample {
 
 		DataStream<ValenciaItem> streamTrafficJamFiltered;
 		DataStream<ValenciaItem> streamAirPollutionFiltered;
-		if (enableLookupKeys) {
+		if (optimization) {
 			// get Side outputs
 			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamTraffic = streamTrafficJam.getSideOutput(outputTagTraffic);
 			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamPollution = streamAirPollution.getSideOutput(outputTagPollution);
@@ -101,12 +98,12 @@ public class ValenciaBloomFilterLookupJoinExample {
 			streamTrafficJamFiltered = streamTrafficJam
 					.connect(sideOutputStreamPollution)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), distinct, lookup)).name(METRIC_VALENCIA_LOOKUP)
+					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), optimization)).name(METRIC_VALENCIA_LOOKUP)
 					;
 			streamAirPollutionFiltered = streamAirPollution
 					.connect(sideOutputStreamTraffic)
 					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), distinct, lookup)).name(METRIC_VALENCIA_LOOKUP)
+					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), optimization)).name(METRIC_VALENCIA_LOOKUP)
 					;
 		} else {
 			streamTrafficJamFiltered = streamTrafficJam;
