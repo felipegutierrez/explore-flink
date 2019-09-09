@@ -39,9 +39,8 @@ import org.sense.flink.util.ValenciaItemType;
  * <pre>
  * This is a good command line to start this application:
  * 
- * ./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar 
- * -app 29 -source 192.168.56.1 -sink 192.168.56.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true 
- * -optimization true
+ * ./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar -app 29 -source 127.0.0.1 -sink 127.0.0.1 
+ * -offlineData true -frequencyPull 60 -frequencyWindow 10 -syntheticData [true|false] -optimization [true|false] -lookup [true|false] &
  * </pre>
  * 
  * @author Felipe Oliveira Gutierrez
@@ -87,28 +86,28 @@ public class ValenciaBloomFilterLookupJoinExample {
 				.process(new ValenciaItemProcessSideOutput(outputTagPollution)).name(METRIC_VALENCIA_SIDE_OUTPUT)
 				;
 
-		DataStream<ValenciaItem> streamTrafficJamFiltered;
-		DataStream<ValenciaItem> streamAirPollutionFiltered;
-		if (optimization) {
-			// get Side outputs
-			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamTraffic = streamTrafficJam.getSideOutput(outputTagTraffic);
-			DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamPollution = streamAirPollution.getSideOutput(outputTagPollution);
+		//DataStream<ValenciaItem> streamTrafficJamFiltered;
+		//DataStream<ValenciaItem> streamAirPollutionFiltered;
+		//if (optimization) {
+		// get Side outputs
+		DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamTraffic = streamTrafficJam.getSideOutput(outputTagTraffic);
+		DataStream<Tuple2<ValenciaItemType, Long>> sideOutputStreamPollution = streamAirPollution.getSideOutput(outputTagPollution);
 
-			// Lookup keys with Bloom Filter
-			streamTrafficJamFiltered = streamTrafficJam
-					.connect(sideOutputStreamPollution)
-					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), optimization, lookupAproximation)).name(METRIC_VALENCIA_LOOKUP)
-					;
-			streamAirPollutionFiltered = streamAirPollution
-					.connect(sideOutputStreamTraffic)
-					.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
-					.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), optimization, lookupAproximation)).name(METRIC_VALENCIA_LOOKUP)
-					;
-		} else {
-			streamTrafficJamFiltered = streamTrafficJam;
-			streamAirPollutionFiltered = streamAirPollution;
-		}
+		// Lookup keys with Bloom Filter
+		DataStream<ValenciaItem> streamTrafficJamFiltered = streamTrafficJam
+				.connect(sideOutputStreamPollution)
+				.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
+				.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), optimization, lookupAproximation)).name(METRIC_VALENCIA_LOOKUP)
+				;
+		DataStream<ValenciaItem> streamAirPollutionFiltered = streamAirPollution
+				.connect(sideOutputStreamTraffic)
+				.keyBy(new ValenciaItemDistrictSelector(), new ValenciaItemLookupKeySelector())
+				.process(new ValenciaLookupCoProcess(Time.seconds(frequencyWindow).toMilliseconds(), optimization, lookupAproximation)).name(METRIC_VALENCIA_LOOKUP)
+				;
+		//} else {
+			//streamTrafficJamFiltered = streamTrafficJam;
+			//streamAirPollutionFiltered = streamAirPollution;
+		//}
 
 		// Join -> Print
 		streamTrafficJamFiltered.join(streamAirPollutionFiltered)

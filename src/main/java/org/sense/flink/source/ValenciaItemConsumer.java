@@ -214,11 +214,11 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				if (useDataSkewedFile) {
-					Thread.sleep(this.frequencyMilliSeconds / 1000);
-				} else {
-					Thread.sleep(this.frequencyMilliSeconds);
-				}
+				// if (useDataSkewedFile) {
+				// Thread.sleep(this.frequencyMilliSeconds / 1000);
+				// } else {
+				Thread.sleep(this.frequencyMilliSeconds);
+				// }
 			}
 		}
 	}
