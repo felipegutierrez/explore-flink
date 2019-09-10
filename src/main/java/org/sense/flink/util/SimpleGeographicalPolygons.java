@@ -2,14 +2,15 @@ package org.sense.flink.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
@@ -31,11 +32,9 @@ import org.slf4j.LoggerFactory;
 public class SimpleGeographicalPolygons implements Serializable {
 	private static final long serialVersionUID = 7331398841196874219L;
 	private static final Logger logger = LoggerFactory.getLogger(SimpleGeographicalPolygons.class);
-	private static final String CURRENT_PATH = Paths.get("").toAbsolutePath().toString() + "/";
-	private static final String RESOURCE_DIR = "resources/valencia/";
-	private static final String DEFAULT_VALENCIA_DISTRICTS_POLYGONS = "admin_level_9_Valencia_polygons.geojson";
+	private static final String DEFAULT_VALENCIA_DISTRICTS_POLYGONS = "/valencia/admin_level_9_Valencia_polygons.geojson";
 
-	private File geoJSON;
+	private File geoJSON = File.createTempFile("temp", ".geojson");
 	private DataStore dataStore;
 	private FilterFactory2 filerFactory2;
 	private SimpleFeatureSource simpleFeatureSource;
@@ -48,14 +47,14 @@ public class SimpleGeographicalPolygons implements Serializable {
 	 * @throws Exception
 	 */
 	public SimpleGeographicalPolygons() throws Exception {
-		this(new File(CURRENT_PATH + RESOURCE_DIR + DEFAULT_VALENCIA_DISTRICTS_POLYGONS));
-	}
-
-	public SimpleGeographicalPolygons(File geoJSON) throws Exception {
+		InputStream in = getClass().getResourceAsStream(DEFAULT_VALENCIA_DISTRICTS_POLYGONS);
+		if (in == null) {
+			throw new Exception("GeoJSON file which contains the polygons does not exist!");
+		}
+		FileUtils.copyInputStreamToFile(in, geoJSON);
 		if (!geoJSON.exists()) {
 			throw new Exception("GeoJSON file [" + geoJSON + "] which contains the polygons does not exist!");
 		}
-		this.geoJSON = geoJSON;
 		this.createDataStore();
 		this.crsCoordinateTransformer = new CRSCoordinateTransformer();
 	}

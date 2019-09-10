@@ -1,19 +1,15 @@
 package org.sense.flink.source;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
@@ -45,20 +41,19 @@ import org.sense.flink.util.ValenciaItemType;
 public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	// @formatter:off
 	private static final long serialVersionUID = 8320419468972434516L;
-	private static final String CURRENT_PATH = Paths.get("").toAbsolutePath().toString() + "/";
-	private static final String RESOURCE_DIR = "resources/valencia/";
 	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";
 	private static final String VALENCIA_POLLUTION_URL = "http://mapas.valencia.es/lanzadera/opendata/Estautomaticas/JSON";
 	private static final String VALENCIA_NOISE_URL = "http://???.??";
-	private static final String VALENCIA_TRAFFIC_JAM_ONLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state-online.json";
-	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state-offline.json";
-	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_SKEWED_FILE = CURRENT_PATH + RESOURCE_DIR + "traffic-jam-state-offline-skewed.json";
-	private static final String VALENCIA_POLLUTION_ONLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution-online.json";
-	private static final String VALENCIA_POLLUTION_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution-offline.json";
-	private static final String VALENCIA_POLLUTION_OFFLINE_SKEWED_FILE = CURRENT_PATH + RESOURCE_DIR + "air-pollution-offline-skewed.json";
-	private static final String VALENCIA_NOISE_FILE = CURRENT_PATH + RESOURCE_DIR + "noise.json";
-	private static final String VALENCIA_NOISE_OFFLINE_FILE = CURRENT_PATH + RESOURCE_DIR + "noise-offline.json";
-	private static final String VALENCIA_NOISE_OFFLINE_SKEWED_FILE = CURRENT_PATH + RESOURCE_DIR + "noise-offline-skewed.json";
+	
+	private static final String VALENCIA_TRAFFIC_JAM_ONLINE_FILE = "/valencia/traffic-jam-state-online.json";
+	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_FILE = "/valencia/traffic-jam-state-offline.json";
+	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_SKEWED_FILE = "/valencia/traffic-jam-state-offline-skewed.json";
+	private static final String VALENCIA_POLLUTION_ONLINE_FILE = "/valencia/air-pollution-online.json";
+	private static final String VALENCIA_POLLUTION_OFFLINE_FILE = "/valencia/air-pollution-offline.json";
+	private static final String VALENCIA_POLLUTION_OFFLINE_SKEWED_FILE = "/valencia/air-pollution-offline-skewed.json";
+	private static final String VALENCIA_NOISE_FILE = "/valencia/noise.json";
+	private static final String VALENCIA_NOISE_OFFLINE_FILE = "/valencia/noise-offline.json";
+	private static final String VALENCIA_NOISE_OFFLINE_SKEWED_FILE = "/valencia/noise-offline-skewed.json";
 	private static final long DEFAULT_INTERVAL_CHANGE_DATA_SOURCE = Time.minutes(5).toMilliseconds();
 
 	private URL url;
@@ -107,43 +102,38 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.dataSkewedSyntheticInjection = dataSkewedSyntheticInjection;
 		this.useDataSkewedFile = false;
 		this.startTime = Calendar.getInstance().getTimeInMillis();
-		createResourceDir();
-	}
-
-	private void createResourceDir() {
-		File directory = new File(CURRENT_PATH + RESOURCE_DIR);
-		if (!directory.exists()) {
-			directory.mkdir();
-		}
 	}
 
 	@Override
 	public void run(SourceContext<ValenciaItem> ctx) throws Exception {
 		while (running) {
 			// get the data source file to collect data
-			File realTimeData = getDataSourceFile();
+			InputStream in = getDataSourceInputStream();
 
-			boolean isNew = false;
 			if (!offlineData) {
-				if (realTimeData.exists()) {
+				in = url.openStream();
+				// @formatter:off
+				// if (realTimeData.exists()) {
+				//if (in != null) {
 					// check if the file is older than 5 minutes
-					isNew = FileUtils.isFileNewer(realTimeData.getAbsoluteFile(),
-							Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
-				} else {
-					createResourceDir();
+					// isNew = FileUtils.isFileNewer(realTimeData.getAbsoluteFile(),
+							// Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
+				//} else {
+					// createResourceDir();
 					// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
 					// exist!");
-				}
-				if (!isNew) {
+				//}
+				//if (!isNew) {
 					// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
 					// exist or it is old!");
 					// System.out.println(realTimeData.getAbsoluteFile().toPath().toString());
-					InputStream is = url.openStream();
-					Files.copy(is, realTimeData.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
-				}
+					//InputStream is = url.openStream();
+					//Files.copy(is, realTimeData.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+				//}
+				// @formatter:on
 			}
 
-			BufferedReader bufferedReader = Files.newBufferedReader(realTimeData.getAbsoluteFile().toPath());
+			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
 			StringBuilder builder = new StringBuilder();
 			String line;
 			try {
@@ -214,54 +204,48 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			} finally {
-				// if (useDataSkewedFile) {
-				// Thread.sleep(this.frequencyMilliSeconds / 1000);
-				// } else {
 				Thread.sleep(this.frequencyMilliSeconds);
-				// }
 			}
 		}
 	}
 
-	private File getDataSourceFile() throws Exception {
-		File realTimeData = null;
+	private InputStream getDataSourceInputStream() throws Exception {
 		// decide if we will inject the skewed data from an offline
 		useDataSkewedFile = useDataSkewedFile();
 
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			if (useDataSkewedFile) {
-				realTimeData = new File(VALENCIA_TRAFFIC_JAM_OFFLINE_SKEWED_FILE);
+				return getClass().getResourceAsStream(VALENCIA_TRAFFIC_JAM_OFFLINE_SKEWED_FILE);
 			} else {
 				if (offlineData) {
-					realTimeData = new File(VALENCIA_TRAFFIC_JAM_OFFLINE_FILE);
+					return getClass().getResourceAsStream(VALENCIA_TRAFFIC_JAM_OFFLINE_FILE);
 				} else {
-					realTimeData = new File(VALENCIA_TRAFFIC_JAM_ONLINE_FILE);
+					return getClass().getResourceAsStream(VALENCIA_TRAFFIC_JAM_ONLINE_FILE);
 				}
 			}
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 			if (useDataSkewedFile) {
-				realTimeData = new File(VALENCIA_POLLUTION_OFFLINE_SKEWED_FILE);
+				return getClass().getResourceAsStream(VALENCIA_POLLUTION_OFFLINE_SKEWED_FILE);
 			} else {
 				if (offlineData) {
-					realTimeData = new File(VALENCIA_POLLUTION_OFFLINE_FILE);
+					return getClass().getResourceAsStream(VALENCIA_POLLUTION_OFFLINE_FILE);
 				} else {
-					realTimeData = new File(VALENCIA_POLLUTION_ONLINE_FILE);
+					return getClass().getResourceAsStream(VALENCIA_POLLUTION_ONLINE_FILE);
 				}
 			}
 		} else if (valenciaItemType == ValenciaItemType.NOISE) {
 			if (useDataSkewedFile) {
-				realTimeData = new File(VALENCIA_NOISE_OFFLINE_SKEWED_FILE);
+				return getClass().getResourceAsStream(VALENCIA_NOISE_OFFLINE_SKEWED_FILE);
 			} else {
 				if (offlineData) {
-					realTimeData = new File(VALENCIA_NOISE_OFFLINE_FILE);
+					return getClass().getResourceAsStream(VALENCIA_NOISE_OFFLINE_FILE);
 				} else {
-					realTimeData = new File(VALENCIA_NOISE_FILE);
+					return getClass().getResourceAsStream(VALENCIA_NOISE_FILE);
 				}
 			}
 		} else {
 			throw new Exception("ValenciaItemType is NULL!");
 		}
-		return realTimeData;
 	}
 
 	private boolean useDataSkewedFile() {

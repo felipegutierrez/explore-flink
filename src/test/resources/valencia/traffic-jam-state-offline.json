@@ -1,0 +1,266 @@
+{
+	"type": "FeatureCollection",
+	"crs": {
+		"type": "name",
+		"properties": {
+			"name": "urn:ogc:def:crs:EPSG::25830"
+		}
+	},
+	"features": [{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "1",
+				"idtramo": "62"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						725681.2117, 4372282.7883
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						725701.3880000003, 4370891.1142
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						725141.37, 4371851.492
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						722861.4094000002, 4373371.1132
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						726231.4035999998, 4373301.101
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						726421.431815, 4373031.130474
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						723961.784325, 4372421.897437
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						723621.655515, 4370771.759536
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						724031.3761, 4369991.1312
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						726771.707, 4369821.436
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						730001.679276, 4369411.885897
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						728631.3849999998, 4370922.0409
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						729011.3865999999, 4373391.0215
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						727331.396370, 4374101.624796
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						726241.844004, 4375081.354217
+					]
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"denominacion": "",
+				"estado": "2",
+				"idtramo": "33"
+			},
+			"geometry": {
+				"type": "LineString",
+				"coordinates": [
+					[
+						724321.279007, 4374881.874634
+					]
+				]
+			}
+		}
+	]
+}

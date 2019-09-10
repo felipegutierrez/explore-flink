@@ -26,7 +26,6 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessingTimeStdRep
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticCoFlatMapper;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemTypeParamMap;
 import org.sense.flink.mqtt.FlinkMqttConsumer;
-import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
@@ -44,7 +43,7 @@ import org.sense.flink.util.ValenciaItemType;
  */
 public class ValenciaDataCpuIntensiveJoinExample {
 
-	private final String topic = "topic-valencia-data-cpu-intensive";
+	private final String topic = "topic-valencia-cpu-intensive";
 	private final String topicParamFrequencyPull = "topic-synthetic-frequency-pull";
 
 	public static void main(String[] args) throws Exception {
@@ -61,6 +60,7 @@ public class ValenciaDataCpuIntensiveJoinExample {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+		env.setParallelism(1);
 		// env.disableOperatorChaining();
 
 		// @formatter:off
@@ -94,8 +94,8 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				.process(new ValenciaItemProcessingTimeStdRepartitionJoinCoProcess(Time.seconds(frequencyWindow).toMilliseconds())).name(METRIC_VALENCIA_JOIN)
 				.map(new ValenciaIntensiveCpuDistancesMap()).name(METRIC_VALENCIA_CPU_INTENSIVE_MAP)
 				.map(new ValenciaItemEnrichedToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
-				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
-				// .print().name(METRIC_VALENCIA_SINK)
+				// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+				.print().name(METRIC_VALENCIA_SINK)
 				;		
 
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);

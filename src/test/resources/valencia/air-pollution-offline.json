@@ -1,0 +1,298 @@
+{
+	"type": "FeatureCollection",
+	"crs": {
+		"type": "name",
+		"properties": {
+			"name": "urn:ogc:def:crs:EPSG::25830"
+		}
+	},
+	"features": [{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Centro",
+				"direccion": "Plaza Ayuntamiento",
+				"tipozona": "Urbana",
+				"tipoemision": "Tráfico",
+				"parametros": "Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5",
+				"mediciones": ""
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					725682.2117,
+					4372283.7883
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Francia",
+				"direccion": "Avda. de Francia, 60",
+				"tipozona": "Urbana",
+				"tipoemision": "Tráfico",
+				"parametros": "Dióxido de azufre (SO2),Monóxido de carbono (CO),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Velocidad de viento (Veloc.), Particulas PM10, Particulas PM2,5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/6A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					728631.3849999998,
+					4370923.0409
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Francia",
+				"direccion": "Avda. de Francia, 60",
+				"tipozona": "Urbana",
+				"tipoemision": "Tráfico",
+				"parametros": "Dióxido de azufre (SO2),Monóxido de carbono (CO),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Velocidad de viento (Veloc.), Particulas PM10, Particulas PM2,5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/6A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					724323.279007,
+					4374884.874634
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Francia",
+				"direccion": "Avda. de Francia, 60",
+				"tipozona": "Urbana",
+				"tipoemision": "Tráfico",
+				"parametros": "Dióxido de azufre (SO2),Monóxido de carbono (CO),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Velocidad de viento (Veloc.), Particulas PM10, Particulas PM2,5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/6A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					726244.844004,
+					4375085.354217
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Francia",
+				"direccion": "Avda. de Francia, 60",
+				"tipozona": "Urbana",
+				"tipoemision": "Tráfico",
+				"parametros": "Dióxido de azufre (SO2),Monóxido de carbono (CO),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Velocidad de viento (Veloc.), Particulas PM10, Particulas PM2,5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/6A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					727336.396370,
+					4374107.624796
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Boulevar Sur",
+				"direccion": "Avda. Tres Cruces s/n (Parking Cementerio de Valencia)",
+				"tipozona": "Urbana",
+				"tipoemision": "Tráfico",
+				"parametros": "Dióxido de azufre (SO2),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Niquel (Ni),Arsénico (As),Plomo (Pb),Benzo(a)pireno (BaP),Cadmio (Cd)",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/7A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					724038.3761,
+					4369999.1312
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Molí del Sol",
+				"direccion": "Avda. Pío Baroja - Avda. General Avilés",
+				"tipozona": "Suburbana",
+				"tipoemision": "Tráfico",
+				"parametros": "Dióxido de azufre (SO2),Monóxido de carbono (CO),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5,Partículas PM1",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/3A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					722860.4094000002,
+					4373371.1132
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Pista de Silla",
+				"direccion": "C/ Filipinas, s/n",
+				"tipozona": "Urbana",
+				"tipoemision": "Tráfico",
+				"parametros": "Dióxido de azufre (SO2),Monóxido de carbono (CO),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Benceno (Benc),Tolueno (Tolue),Xileno (Xilen),Partículas PM10,Partículas PM2.5,Nivel de presión sonora (SPL)",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/4A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					725701.3880000003,
+					4370892.1142
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Universidad Politécnica",
+				"direccion": "Campus de la U. Politécnica. Avda. Tarongers",
+				"tipozona": "Suburbana",
+				"tipoemision": "Fondo",
+				"parametros": "Dióxido de azufre (SO2),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/1A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					729012.3865999999,
+					4373393.0215
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Universidad Politécnica",
+				"direccion": "Campus de la U. Politécnica. Avda. Tarongers",
+				"tipozona": "Suburbana",
+				"tipoemision": "Fondo",
+				"parametros": "Dióxido de azufre (SO2),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/1A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					725144.37,
+					4371855.492
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Universidad Politécnica",
+				"direccion": "Campus de la U. Politécnica. Avda. Tarongers",
+				"tipozona": "Suburbana",
+				"tipoemision": "Fondo",
+				"parametros": "Dióxido de azufre (SO2),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/1A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					726775.707,
+					4369826.436
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Universidad Politécnica",
+				"direccion": "Campus de la U. Politécnica. Avda. Tarongers",
+				"tipozona": "Suburbana",
+				"tipoemision": "Fondo",
+				"parametros": "Dióxido de azufre (SO2),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/1A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					730005.679276,
+					4369417.885897
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Universidad Politécnica",
+				"direccion": "Campus de la U. Politécnica. Avda. Tarongers",
+				"tipozona": "Suburbana",
+				"tipoemision": "Fondo",
+				"parametros": "Dióxido de azufre (SO2),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/1A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					726424.431815,
+					4373035.130474
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Universidad Politécnica",
+				"direccion": "Campus de la U. Politécnica. Avda. Tarongers",
+				"tipozona": "Suburbana",
+				"tipoemision": "Fondo",
+				"parametros": "Dióxido de azufre (SO2),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/1A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					723960.784325,
+					4372422.897437
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Universidad Politécnica",
+				"direccion": "Campus de la U. Politécnica. Avda. Tarongers",
+				"tipozona": "Suburbana",
+				"tipoemision": "Fondo",
+				"parametros": "Dióxido de azufre (SO2),Ozono,Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Partículas PM10,Partículas PM2.5",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/1A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					723621.655515,
+					4370773.759536
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"properties": {
+				"nombre": "Viveros",
+				"direccion": "Jardines de Viveros",
+				"tipozona": "Urbana",
+				"tipoemision": "Fondo",
+				"parametros": "Dióxido de azufre (SO2),Óxidos de nitrógeno totales (NOx),Monóxido de nitrógeno (NO),Dióxido de nitrógeno (NO2),Ozono,Partículas PM2.5,Partículas PM10,Niquel (Ni),Arsénico (As),Plomo (Pb),Cadmio (Cd)",
+				"mediciones": "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/5A.csv"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					726235.4035999998,
+					4373306.101
+				]
+			}
+		}
+	]
+}
