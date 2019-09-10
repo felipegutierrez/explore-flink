@@ -49,8 +49,7 @@ public class ValenciaDataSkewedBroadcastJoinExample {
 		new ValenciaDataSkewedBroadcastJoinExample("127.0.0.1", "127.0.0.1");
 	}
 
-	public ValenciaDataSkewedBroadcastJoinExample(String ipAddressSource01, String ipAddressSink) throws Exception {
-		disclaimer();
+	public ValenciaDataSkewedBroadcastJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
 		List<Tuple4<Point, Long, Long, String>> coordinates = syntheticCoordinates();
 		boolean offlineData = true;
 		boolean collectWithTimestamp = true;
@@ -86,6 +85,7 @@ public class ValenciaDataSkewedBroadcastJoinExample {
 				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
 				;
 
+		disclaimer(env.getExecutionPlan(), ipAddressSource);
 		env.execute(ValenciaDataSkewedBroadcastJoinExample.class.getSimpleName());
 		// @formatter:on
 	}
@@ -93,14 +93,30 @@ public class ValenciaDataSkewedBroadcastJoinExample {
 	private List<Tuple4<Point, Long, Long, String>> syntheticCoordinates() {
 		// Static coordinate to create synthetic data
 		List<Tuple4<Point, Long, Long, String>> coordinates = new ArrayList<Tuple4<Point, Long, Long, String>>();
-		coordinates.add(Tuple4.of(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830), 3L,
-				9L, "Extramurs"));
-		coordinates.add(Tuple4.of(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830), 10L,
-				9L, "Quatre Carreres"));
+		coordinates.add(Tuple4.of(new Point(725140.37, 4371855.492, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830),
+				3L, 9L, "Extramurs"));
+		coordinates.add(Tuple4.of(new Point(726777.707, 4369824.436, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830),
+				10L, 9L, "Quatre Carreres"));
 		return coordinates;
 	}
 
-	private void disclaimer() {
-		System.out.println("Disclaimer...");
+	private void disclaimer(String logicalPlan, String ipAddressSource) {
+		// @formatter:off
+		System.out.println("This is the application [" + ValenciaDataSkewedBroadcastJoinExample.class.getSimpleName() + "].");
+		System.out.println("It aims to show a broadcas-join operation for stream data which reduces items on the shuffle phase.");
+		System.out.println();
+		//System.out.println("Changing frequency >>>");
+		//System.out.println("It is possible to publish a 'multiply factor' to each item from the source by issuing the commands below.");
+		//System.out.println("Each item will be duplicated by 'multiply factor' times.");
+		//System.out.println("where: 1 <= 'multiply factor' <=1000");
+		//System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"AIR_POLLUTION 500\"");
+		//System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"TRAFFIC_JAM 1000\"");
+		//System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"NOISE 600\"");
+		//System.out.println();
+		System.out.println("Use the 'Flink Plan Visualizer' [https://flink.apache.org/visualizer/] in order to see the logical plan of this application.");
+		System.out.println("Logical plan >>>");
+		System.out.println(logicalPlan);
+		System.out.println();
+		// @formatter:on
 	}
 }

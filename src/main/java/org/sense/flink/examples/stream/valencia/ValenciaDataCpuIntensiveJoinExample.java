@@ -36,6 +36,7 @@ import org.sense.flink.util.ValenciaItemType;
  * 
  * /home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App /home/flink/explore-flink/target/explore-flink.jar 
  * -app 30 -source 130.239.48.136 -sink 130.239.48.136 -offlineData true -frequencyPull 5 -frequencyWindow 30
+ * -parallelism 1 -disableOperatorChaining false
  * </pre>
  * 
  * @author Felipe Oliveira Gutierrez
@@ -51,17 +52,21 @@ public class ValenciaDataCpuIntensiveJoinExample {
 	}
 
 	public ValenciaDataCpuIntensiveJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
-		this(ipAddressSource, ipAddressSink, true, 10, 60);
+		this(ipAddressSource, ipAddressSink, true, 10, 60, 1, false);
 	}
 
 	public ValenciaDataCpuIntensiveJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
-			int frequencyPull, int frequencyWindow) throws Exception {
+			int frequencyPull, int frequencyWindow, int parallelism, boolean disableOperatorChaining) throws Exception {
 		boolean collectWithTimestamp = false;
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
-		env.setParallelism(1);
-		// env.disableOperatorChaining();
+		if (parallelism > 0) {
+			env.setParallelism(parallelism);
+		}
+		if (disableOperatorChaining) {
+			env.disableOperatorChaining();
+		}
 
 		// @formatter:off
 		// Parameter source -> map type and frequency
@@ -105,7 +110,8 @@ public class ValenciaDataCpuIntensiveJoinExample {
 
 	private void disclaimer(String logicalPlan, String ipAddressSource) {
 		// @formatter:off
-		System.out.println("This application aims to use intensive CPU.");
+		System.out.println("This is the application [" + ValenciaDataCpuIntensiveJoinExample.class.getSimpleName() + "].");
+		System.out.println("It aims to use intensive CPU.");
 		System.out.println();
 		System.out.println("Changing frequency >>>");
 		System.out.println("It is possible to publish a 'multiply factor' to each item from the source by issuing the commands below.");

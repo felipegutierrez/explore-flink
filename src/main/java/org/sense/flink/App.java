@@ -51,6 +51,8 @@ public class App {
 	private static String PARAMETER_SYNTHETIC_DATA = "-syntheticData";
 	private static String PARAMETER_ENABLE_OPTIMIZATION = "-optimization";
 	private static String PARAMETER_LOOKUP_TABLE = "-lookup";
+	private static String PARAMETER_PARALLELISM = "-parallelism";
+	private static String PARAMETER_DISABLE_OPERATOR_CHAINING = "-disableOperatorChaining";
 
 	public static void main(String[] args) throws Exception {
 
@@ -59,10 +61,12 @@ public class App {
 		String ipAddressSink = "127.0.0.1";
 		int frequencyPull = 10;
 		int frequencyWindow = 30;
+		int parallelism = 0;
 		boolean offlinedata = false;
 		boolean syntheticData = false;
 		boolean optimization = true;
 		boolean lookup = true;
+		boolean disableOperatorChaining = false;
 
 		if (args != null && args.length > 0) {
 			int size = args.length;
@@ -91,6 +95,9 @@ public class App {
 				} else if (PARAMETER_ENABLE_OPTIMIZATION.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					optimization = Boolean.valueOf(args[i]);
+				} else if (PARAMETER_DISABLE_OPERATOR_CHAINING.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					disableOperatorChaining = Boolean.valueOf(args[i]);
 				} else if (PARAMETER_FREQUENCY_WINDOW.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					frequencyWindow = Integer.parseInt(args[i]);
@@ -100,6 +107,9 @@ public class App {
 				} else if (PARAMETER_LOOKUP_TABLE.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					lookup = Boolean.valueOf(args[i]);
+				} else if (PARAMETER_PARALLELISM.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					parallelism = Integer.parseInt(args[i]);
 				}
 			}
 		} else {
@@ -116,6 +126,8 @@ public class App {
 		System.out.println("syntheticData: " + syntheticData);
 		System.out.println("optimization: " + optimization);
 		System.out.println("lookup: " + lookup);
+		System.out.println("parallelism: " + parallelism);
+		System.out.println("disableOperatorChaining: " + disableOperatorChaining);
 		System.out.println();
 
 		try {
@@ -254,7 +266,7 @@ public class App {
 				app = 0;
 				break;
 			case 25:
-				new ValenciaDataSkewedJoinExample();
+				new ValenciaDataSkewedJoinExample(ipAddressSource, ipAddressSink);
 				app = 0;
 				break;
 			case 26:
@@ -277,7 +289,7 @@ public class App {
 				break;
 			case 30:
 				new ValenciaDataCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow);
+						frequencyWindow, parallelism, disableOperatorChaining);
 				app = 0;
 				break;
 			case 31:

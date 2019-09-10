@@ -192,7 +192,8 @@ public class ValenciaBloomFilterLookupJoinExample {
 
 	private void disclaimer(String logicalPlan, String ipAddressSource) {
 		// @formatter:off
-		System.out.println("This application (29) aims to show a lookup-join operation for stream data which reduces items on the shuffle phase.");
+		System.out.println("This is the application [" + ValenciaBloomFilterLookupJoinExample.class.getSimpleName() + "].");
+		System.out.println("It aims to show a lookup-join operation for stream data which reduces items on the shuffle phase.");
 		System.out.println();
 		//System.out.println("Changing frequency >>>");
 		//System.out.println("It is possible to publish a 'multiply factor' to each item from the source by issuing the commands below.");
