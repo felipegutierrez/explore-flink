@@ -14,7 +14,7 @@ This project is based on [Apache Flink](https://flink.apache.org/) and it is con
 sudo apt install mosquitto mosquitto-clients
 ```
 
-### Flink cluster
+### Flink on the cluster
 
 Setup a [Flink standalone cluster](https://ci.apache.org/projects/flink/flink-docs-release-1.8/tutorials/local_setup.html). This project was tested with Flink version 1.9.0.
 
@@ -62,6 +62,32 @@ metrics.reporter.prom.host: IP_OF_THE_MASTER_NODE
 metrics.reporter.prom.port: 9250-9260
 ```
 
+### Flink + Mesos on the cluster
+
+You have to configure the `conf/flink-conf.yaml` file according to the [official documentation](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/mesos.html#mesos-without-dcos). Mesos has the ability to deliver resources dynamically to Flink as it asks. The property `mesos.resourcemanager.tasks.cpus` cannot exceed the number of cores of a node in the cluster, otherwise the TaskManager will not start.
+
+```
+#===============================================================================
+#Mesos configuration
+#=============================================================================
+mesos.master: MESOS_MASTER_IP:5050
+mesos.initial-tasks: 2
+mesos.resourcemanager.tasks.container.type: mesos
+jobmanager.heap.mb: 1024
+jobmanager.web.address: 130.239.48.136
+jobmanager.web.port: 8081
+#   mesos.resourcemanager.tasks.mem: 4096
+#   taskmanager.heap.mb: 3500
+mesos.resourcemanager.tasks.cpus: 5.0
+#   mesos.resourcemanager.tasks.disk: 4096
+#   mesos.resourcemanager.framework.name: "FLINK_on_MESOS_intensive_cpu_usage"
+```
+
+Then start Flink on Mesos cluster and deploy an application.
+```
+./bin/mesos-appmaster.sh &
+./bin/flink run /home/flink/hello-flink-mesos/target/hello-flink-mesos.jar &
+```
 
 ## Instructions to execute
 
