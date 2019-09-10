@@ -68,6 +68,22 @@ taskmanager.tmp.dirs: /home/flink/flink-1.9.0/tmp/
 #
 # fs.default-scheme
 
+#===============================================================================
+#Mesos configuration
+#===============================================================================
+#mesos.master: 130.239.48.136:5050
+#mesos.initial-tasks: 2
+#mesos.resourcemanager.tasks.container.type: mesos
+#jobmanager.heap.mb: 1024
+#jobmanager.web.address: 130.239.48.136
+#jobmanager.web.port: 8081
+#   mesos.resourcemanager.tasks.mem: 4096
+#   taskmanager.heap.mb: 3500
+#mesos.resourcemanager.tasks.cpus: 5.0
+#   mesos.resourcemanager.tasks.disk: 4096
+#   mesos.resourcemanager.framework.name: "FLINK_on_MESOS_intensive_cpu_usage"
+
+
 #==============================================================================
 # High Availability
 #==============================================================================
