@@ -64,17 +64,17 @@ metrics.reporter.prom.port: 9250-9260
 
 ### Flink + Mesos on the cluster
 
-You have to configure the `conf/flink-conf.yaml` file according to the [official documentation](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/mesos.html#mesos-without-dcos). Mesos has the ability to deliver resources dynamically to Flink as it asks. The property `mesos.resourcemanager.tasks.cpus` cannot exceed the number of cores of a node in the cluster, otherwise the TaskManager will not start.
+You have to configure the `conf/flink-conf.yaml` file according to the [official documentation](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/mesos.html#mesos-without-dcos). Mesos has the ability to deliver resources dynamically to Flink as it asks. The property `mesos.resourcemanager.tasks.cpus` cannot exceed the number of cores of a node in the cluster, otherwise the TaskManager will not start. Additionaly, you have to download a [Pre-bundled Hadoop X.X.X](https://flink.apache.org/downloads.html#apache-flink-190) library and copy it to the `lib` directory.
 
 ```
 #===============================================================================
 #Mesos configuration
 #=============================================================================
-mesos.master: MESOS_MASTER_IP:5050
+mesos.master: 127.0.0.1:5050
 mesos.initial-tasks: 2
 mesos.resourcemanager.tasks.container.type: mesos
 jobmanager.heap.mb: 1024
-jobmanager.web.address: 130.239.48.136
+jobmanager.web.address: 127.0.0.1
 jobmanager.web.port: 8081
 #   mesos.resourcemanager.tasks.mem: 4096
 #   taskmanager.heap.mb: 3500
@@ -83,9 +83,16 @@ mesos.resourcemanager.tasks.cpus: 5.0
 #   mesos.resourcemanager.framework.name: "FLINK_on_MESOS_intensive_cpu_usage"
 ```
 
+Load the mesos libs on your environment and start Flink cluster on Mesos resource manager.
+```
+export MESOS_NATIVE_JAVA_LIBRARY="/home/felipe/workspace-vsc/mesos/build/src/.libs/libmesos.so"
+LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/felipe/workspace-vsc/mesos/build/src/.libs/
+PATH=$PATH:/home/felipe/workspace-vsc/mesos/build/bin/
+```
+
 Then start Flink on Mesos cluster and deploy an application.
 ```
-./bin/mesos-appmaster.sh &
+/home/flink/flink-1.9.0/bin/mesos-appmaster.sh &
 ./bin/flink run /home/flink/hello-flink-mesos/target/hello-flink-mesos.jar &
 ```
 
