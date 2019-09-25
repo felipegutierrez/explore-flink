@@ -14,10 +14,17 @@ normal=$(tput sgr0)
 FLINK_HOME=/home/flink/flink-1.9.0
 FLINK_CLI=/home/flink/flink-1.9.0/bin/flink
 FLINK_APP=/home/flink/explore-flink/target/explore-flink.jar
+FLINK_START_CLUSTER=/home/flink/flink-1.9.0/bin/start-cluster.sh
+FLINK_START_CLUSTER_MESOS=/home/flink/flink-1.9.0/bin/mesos-appmaster.sh
 
 #######################################################################
 ## Instructions
 #######################################################################
+echo
+echo "${bold}Launching the Flink Standalone cluster:${normal}"
+echo "   $FLINK_START_CLUSTER"
+echo "${bold}Launching the Flink + Mesos cluster:${normal}"
+echo "   $FLINK_START_CLUSTER_MESOS"
 echo
 echo "${bold}Launching a Flink Stream application >>${normal}"
 echo
