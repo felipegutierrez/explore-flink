@@ -30,6 +30,7 @@ import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedBroadcastJoinE
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedCombinerExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedRepartitionJoinExample;
+import org.sense.flink.util.SinkOutputs;
 
 /**
  * 
@@ -53,12 +54,14 @@ public class App {
 	private static String PARAMETER_LOOKUP_TABLE = "-lookup";
 	private static String PARAMETER_PARALLELISM = "-parallelism";
 	private static String PARAMETER_DISABLE_OPERATOR_CHAINING = "-disableOperatorChaining";
+	private static String PARAMETER_OUTPUT = "-output";
 
 	public static void main(String[] args) throws Exception {
 
-		int app = 0;
 		String ipAddressSource = "127.0.0.1";
 		String ipAddressSink = "127.0.0.1";
+		String output = SinkOutputs.PARAMETER_OUTPUT_FILE;
+		int app = 0;
 		int frequencyPull = 10;
 		int frequencyWindow = 30;
 		int parallelism = 0;
@@ -110,6 +113,13 @@ public class App {
 				} else if (PARAMETER_PARALLELISM.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					parallelism = Integer.parseInt(args[i]);
+				} else if (PARAMETER_OUTPUT.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					if (SinkOutputs.PARAMETER_OUTPUT_FILE.equals(String.valueOf(args[i]))) {
+						output = SinkOutputs.PARAMETER_OUTPUT_FILE;
+					} else if (SinkOutputs.PARAMETER_OUTPUT_MQTT.equals(String.valueOf(args[i]))) {
+						output = SinkOutputs.PARAMETER_OUTPUT_MQTT;
+					}
 				}
 			}
 		} else {
@@ -128,6 +138,7 @@ public class App {
 		System.out.println("lookup: " + lookup);
 		System.out.println("parallelism: " + parallelism);
 		System.out.println("disableOperatorChaining: " + disableOperatorChaining);
+		System.out.println("output: " + output);
 		System.out.println();
 
 		try {
@@ -289,7 +300,7 @@ public class App {
 				break;
 			case 30:
 				new ValenciaDataCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, parallelism, disableOperatorChaining);
+						frequencyWindow, parallelism, disableOperatorChaining, output);
 				app = 0;
 				break;
 			case 31:

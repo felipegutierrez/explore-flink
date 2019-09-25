@@ -118,6 +118,7 @@ We need to generate data in order to our Flink application consume and analyse i
 
 ### Deploy the application on the Flink cluster
 
+You can execute the following script to receive instructions on how to deploy an application with several arguments on the cluster by executing the command: `bash ./conf/launchApp.sh` on your terminal. Otherwise you can follow this section.
 Here we are deploying the application number 30 on the Flink cluster. We are also sending parameters with the source and sink IP address, the frequency of pulling data from the sources, a flag to inject synthetic data on the fly, and the frequency of the processing window.
 
 ```

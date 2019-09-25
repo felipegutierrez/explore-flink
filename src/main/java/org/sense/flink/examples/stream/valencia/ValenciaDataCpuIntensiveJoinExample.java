@@ -26,8 +26,10 @@ import org.sense.flink.examples.stream.udf.impl.ValenciaItemProcessingTimeStdRep
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemSyntheticCoFlatMapper;
 import org.sense.flink.examples.stream.udf.impl.ValenciaItemTypeParamMap;
 import org.sense.flink.mqtt.FlinkMqttConsumer;
+import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.source.ValenciaItemConsumer;
+import org.sense.flink.util.SinkOutputs;
 import org.sense.flink.util.ValenciaItemType;
 
 /**
@@ -36,7 +38,7 @@ import org.sense.flink.util.ValenciaItemType;
  * 
  * /home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App /home/flink/explore-flink/target/explore-flink.jar 
  * -app 30 -source 130.239.48.136 -sink 130.239.48.136 -offlineData true -frequencyPull 5 -frequencyWindow 30
- * -parallelism 1 -disableOperatorChaining false
+ * -parallelism 1 -disableOperatorChaining false -output file
  * </pre>
  * 
  * @author Felipe Oliveira Gutierrez
@@ -52,11 +54,12 @@ public class ValenciaDataCpuIntensiveJoinExample {
 	}
 
 	public ValenciaDataCpuIntensiveJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
-		this(ipAddressSource, ipAddressSink, true, 10, 60, 1, false);
+		this(ipAddressSource, ipAddressSink, true, 10, 60, 4, false, SinkOutputs.PARAMETER_OUTPUT_FILE);
 	}
 
 	public ValenciaDataCpuIntensiveJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
-			int frequencyPull, int frequencyWindow, int parallelism, boolean disableOperatorChaining) throws Exception {
+			int frequencyPull, int frequencyWindow, int parallelism, boolean disableOperatorChaining, String output)
+			throws Exception {
 		boolean collectWithTimestamp = false;
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -93,15 +96,21 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				;
 
 		// Join -> intensive CPU task -> map to String -> Publish/Print
-		streamTrafficJam
+		DataStream<String> result = streamTrafficJam
 				.keyBy(new ValenciaItemDistrictSelector())
 				.connect(streamAirPollution.keyBy(new ValenciaItemDistrictSelector()))
 				.process(new ValenciaItemProcessingTimeStdRepartitionJoinCoProcess(Time.seconds(frequencyWindow).toMilliseconds())).name(METRIC_VALENCIA_JOIN)
 				.map(new ValenciaIntensiveCpuDistancesMap()).name(METRIC_VALENCIA_CPU_INTENSIVE_MAP)
 				.map(new ValenciaItemEnrichedToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
-				// .addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
-				.print().name(METRIC_VALENCIA_SINK)
-				;		
+				;
+		
+		if (SinkOutputs.PARAMETER_OUTPUT_FILE.equals(output)) {
+			result.print().name(METRIC_VALENCIA_SINK);	
+		} else if (SinkOutputs.PARAMETER_OUTPUT_MQTT.equals(output)) {
+			result.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK);
+		} else {
+			result.print().name(METRIC_VALENCIA_SINK);	
+		}
 
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);
 		env.execute(ValenciaDataCpuIntensiveJoinExample.class.getSimpleName());
