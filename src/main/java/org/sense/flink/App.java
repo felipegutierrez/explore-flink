@@ -26,6 +26,7 @@ import org.sense.flink.examples.stream.twitter.TwitterExample;
 import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterLookupJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterSemiJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataCpuIntensiveJoinExample;
+import org.sense.flink.examples.stream.valencia.ValenciaDataMqttCpuIntensiveJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataProducer;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedBroadcastJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedCombinerExample;
@@ -324,6 +325,11 @@ public class App {
 				producerPollution.connect();
 				producerPollution.start();
 				producerPollution.publish();
+				app = 0;
+				break;
+			case 34:
+				new ValenciaDataMqttCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, frequencyWindow,
+						parallelism, disableOperatorChaining, output);
 				app = 0;
 				break;
 			default:

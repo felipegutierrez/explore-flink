@@ -1,5 +1,12 @@
 package org.sense.flink.examples.stream.valencia;
 
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_NOISE;
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_POLLUTION;
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_TRAFFIC_JAM;
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_VALENCIA_NOISE;
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_VALENCIA_POLLUTION;
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_VALENCIA_TRAFFIC_JAM;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,14 +40,6 @@ public class ValenciaDataProducer extends Thread {
 	private static final String VALENCIA_NOISE_FILE = "/valencia/noise.json";
 	private static final String VALENCIA_NOISE_OFFLINE_FILE = "/valencia/noise-offline.json";
 
-	private static final String TOPIC_PUBLISH_VALENCIA_TRAFFIC_JAM = "topic-valencia-traffic-jam";
-	private static final String TOPIC_PUBLISH_VALENCIA_POLLUTION = "topic-valencia-pollution";
-	private static final String TOPIC_PUBLISH_VALENCIA_NOISE = "topic-valencia-noise";
-
-	private static final String TOPIC_SUBSCRIPTION_FREQUENCY_VALENCIA_TRAFFIC_JAM = "topic-valencia-traffic-jam-frequency";
-	private static final String TOPIC_SUBSCRIPTION_FREQUENCY_VALENCIA_POLLUTION = "topic-valencia-pollution-frequency";
-	private static final String TOPIC_SUBSCRIPTION_FREQUENCY_VALENCIA_NOISE = "topic-valencia-noise-frequency";
-
 	private ValenciaItemType valenciaItemType;
 	private FutureConnection connection;
 	private CallbackConnection connectionSideParameter;
@@ -71,16 +70,16 @@ public class ValenciaDataProducer extends Thread {
 		this.running = true;
 		this.offlineData = offlineData;
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
-			this.topicToPublish = TOPIC_PUBLISH_VALENCIA_TRAFFIC_JAM;
-			this.topicFrequencyParameter = TOPIC_SUBSCRIPTION_FREQUENCY_VALENCIA_TRAFFIC_JAM;
+			this.topicToPublish = TOPIC_VALENCIA_TRAFFIC_JAM;
+			this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_TRAFFIC_JAM;
 			this.url = new URL(VALENCIA_TRAFFIC_JAM_URL);
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-			this.topicToPublish = TOPIC_PUBLISH_VALENCIA_POLLUTION;
-			this.topicFrequencyParameter = TOPIC_SUBSCRIPTION_FREQUENCY_VALENCIA_POLLUTION;
+			this.topicToPublish = TOPIC_VALENCIA_POLLUTION;
+			this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_POLLUTION;
 			this.url = new URL(VALENCIA_POLLUTION_URL);
 		} else if (valenciaItemType == ValenciaItemType.NOISE) {
-			this.topicToPublish = TOPIC_PUBLISH_VALENCIA_NOISE;
-			this.topicFrequencyParameter = TOPIC_SUBSCRIPTION_FREQUENCY_VALENCIA_NOISE;
+			this.topicToPublish = TOPIC_VALENCIA_NOISE;
+			this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_NOISE;
 			this.url = new URL(VALENCIA_NOISE_URL);
 		} else {
 			System.out.println("Wrong topic to publish messages");
