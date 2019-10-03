@@ -311,14 +311,16 @@ public class App {
 				app = 0;
 				break;
 			case 32:
-				ValenciaDataProducer producerTrafficJam = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM);
+				ValenciaDataProducer producerTrafficJam = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM,
+						offlinedata);
 				producerTrafficJam.connect();
 				producerTrafficJam.start();
 				producerTrafficJam.publish();
 				app = 0;
 				break;
 			case 33:
-				ValenciaDataProducer producerPollution = new ValenciaDataProducer(ValenciaItemType.AIR_POLLUTION);
+				ValenciaDataProducer producerPollution = new ValenciaDataProducer(ValenciaItemType.AIR_POLLUTION,
+						offlinedata);
 				producerPollution.connect();
 				producerPollution.start();
 				producerPollution.publish();
