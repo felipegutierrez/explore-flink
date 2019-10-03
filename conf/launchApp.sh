@@ -31,6 +31,9 @@ echo "intructions of how to change the frequency of producing data will be prese
 echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 32 -offlineData true &"
 echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 33 -offlineData true &"
 echo
+echo "${bold}Sending parameters to change the frequency (milliseconds) of synthetic item generators${normal}"
+echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-traffic-jam-frequency -m '10000'"
+echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-pollution-frequency -m '5000'"
 echo
 echo "${bold}Launching the Flink Standalone cluster:${normal}"
 echo "   $FLINK_START_CLUSTER"
@@ -40,7 +43,7 @@ echo
 echo "${bold}Launching a Flink Stream application >>${normal}"
 echo
 echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -output [file|mqtt] &"
-echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 30 -parallelism 4 -disableOperatorChaining true -output mqtt &"
+echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 -parallelism 4 -disableOperatorChaining true -output mqtt &"
 echo
 echo "${bold}description of each parameter:${normal}"
 echo "   ${bold}-app :${normal} which application to deploy. If you don't pass any parameter the jar file will output all applications available."
