@@ -49,7 +49,7 @@ public class ValenciaDataProducer extends Thread {
 	private String topicToPublish;
 	private String topicFrequencyParameter;
 	private int port;
-	private int delay = 1000;
+	private int delay = 10000;
 	private boolean running = false;
 	private boolean offlineData;
 

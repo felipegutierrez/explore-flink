@@ -149,7 +149,6 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 					}
 				}
 			}
-			// ctx.collect(mqttMessage);
 		}
 		blockingConnection.disconnect();
 	}
