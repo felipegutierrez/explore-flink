@@ -72,6 +72,13 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		} else {
 			System.out.println("Wrong topic to consume messages");
 		}
+		this.disclaimer();
+	}
+
+	private void disclaimer() {
+		System.out.println("Use the following command to consume data from the application >>>");
+		System.out.println("mosquitto_sub -h " + host + " -p " + port + " -t " + topic);
+		System.out.println();
 	}
 
 	@Override

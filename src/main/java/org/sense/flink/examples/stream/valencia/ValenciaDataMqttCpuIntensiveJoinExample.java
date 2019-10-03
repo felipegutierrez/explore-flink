@@ -102,14 +102,6 @@ public class ValenciaDataMqttCpuIntensiveJoinExample {
 		System.out.println("This is the application [" + ValenciaDataMqttCpuIntensiveJoinExample.class.getSimpleName() + "].");
 		System.out.println("It aims to use intensive CPU.");
 		System.out.println();
-		System.out.println("Changing frequency >>>");
-		System.out.println("It is possible to publish a 'multiply factor' to each item from the source by issuing the commands below.");
-		System.out.println("Each item will be duplicated by 'multiply factor' times.");
-		System.out.println("where: 1 <= 'multiply factor' <=1000");
-		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"AIR_POLLUTION 500\"");
-		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"TRAFFIC_JAM 1000\"");
-		System.out.println("mosquitto_pub -h " + ipAddressSource + " -t " + topicParamFrequencyPull + " -m \"NOISE 600\"");
-		System.out.println();
 		System.out.println("Use the 'Flink Plan Visualizer' [https://flink.apache.org/visualizer/] in order to see the logical plan of this application.");
 		System.out.println("Logical plan >>>");
 		System.out.println(logicalPlan);

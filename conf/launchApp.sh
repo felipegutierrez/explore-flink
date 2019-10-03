@@ -28,8 +28,8 @@ echo "${bold}Launching producers${normal}"
 echo "application 32 is a mqtt producer for traffic jam data from Valencia Open-data web portal"
 echo "application 33 is a mqtt producer for noise data from Valencia Open-data web portal"
 echo "intructions of how to change the frequency of producing data will be present when the command is issued"
-echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 32 -offlineData true"
-echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 33 -offlineData true"
+echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 32 -offlineData true &"
+echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 33 -offlineData true &"
 echo
 echo
 echo "${bold}Launching the Flink Standalone cluster:${normal}"
@@ -39,8 +39,8 @@ echo "   $FLINK_START_CLUSTER_MESOS"
 echo
 echo "${bold}Launching a Flink Stream application >>${normal}"
 echo
-echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -output [file|mqtt]"
-echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 30 -parallelism 4 -disableOperatorChaining true -output file"
+echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -output [file|mqtt] &"
+echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 30 -parallelism 4 -disableOperatorChaining true -output mqtt &"
 echo
 echo "${bold}description of each parameter:${normal}"
 echo "   ${bold}-app :${normal} which application to deploy. If you don't pass any parameter the jar file will output all applications available."
