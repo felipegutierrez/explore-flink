@@ -26,11 +26,13 @@ import org.sense.flink.examples.stream.twitter.TwitterExample;
 import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterLookupJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterSemiJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataCpuIntensiveJoinExample;
+import org.sense.flink.examples.stream.valencia.ValenciaDataProducer;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedBroadcastJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedCombinerExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaDataSkewedRepartitionJoinExample;
 import org.sense.flink.util.SinkOutputs;
+import org.sense.flink.util.ValenciaItemType;
 
 /**
  * 
@@ -308,6 +310,20 @@ public class App {
 						frequencyWindow, syntheticData, optimization, lookup);
 				app = 0;
 				break;
+			case 32:
+				ValenciaDataProducer producerTrafficJam = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM);
+				producerTrafficJam.connect();
+				producerTrafficJam.start();
+				producerTrafficJam.publish();
+				app = 0;
+				break;
+			case 33:
+				ValenciaDataProducer producerPollution = new ValenciaDataProducer(ValenciaItemType.AIR_POLLUTION);
+				producerPollution.connect();
+				producerPollution.start();
+				producerPollution.publish();
+				app = 0;
+				break;
 			default:
 				args = null;
 				System.out.println("No application selected [" + app + "] ");
@@ -354,6 +370,8 @@ public class App {
 		System.out.println("29 - Reading values from Valencia Open-data Web Portal and computing the Lookup-JOIN with Bloom Filter using Flink Data Stream");
 		System.out.println("30 - Reading values from Valencia Open-data Web Portal and CPU intensive computation using Flink Data Stream");
 		System.out.println("31 - Reading values from Valencia Open-data Web Portal and computing the semi-JOIN with Bloom Filter using Flink Data Stream");
+		System.out.println("32 - Mqtt data source of traffic-jam from Valencia Open-data Web Portal");
+		System.out.println("33 - Mqtt data source of pollution from Valencia Open-data Web Portal");
 		System.out.println();
 		// @formatter:on
 	}

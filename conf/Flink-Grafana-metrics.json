@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1567781256294,
+  "iteration": 1570023994638,
   "links": [],
   "panels": [
     {
@@ -2053,7 +2053,6 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "description": "Records in per second",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
@@ -2062,21 +2061,19 @@
         "x": 0,
         "y": 68
       },
-      "id": 2,
+      "id": 82,
       "legend": {
         "alignAsTable": true,
         "avg": true,
         "current": true,
         "max": true,
         "min": true,
-        "rightSide": false,
         "show": true,
-        "sideWidth": null,
         "total": true,
         "values": true
       },
       "lines": true,
-      "linewidth": 1,
+      "linewidth": 2,
       "links": [],
       "nullPointMode": "null",
       "options": {
@@ -2095,9 +2092,6 @@
         {
           "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond",
           "format": "time_series",
-          "hide": false,
-          "instant": false,
-          "interval": "1m",
           "intervalFactor": 1,
           "legendFormat": "{{host}}-{{task_name}}",
           "refId": "A"
@@ -2109,8 +2103,8 @@
       "timeShift": null,
       "title": "Records IN per second and split by operators",
       "tooltip": {
-        "shared": false,
-        "sort": 0,
+        "shared": true,
+        "sort": 2,
         "value_type": "individual"
       },
       "type": "graph",
@@ -2127,12 +2121,12 @@
           "label": "Number of Records/sec",
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
-          "format": "none",
-          "label": "",
+          "format": "short",
+          "label": null,
           "logBase": 1,
           "max": null,
           "min": null,
@@ -2428,7 +2422,7 @@
       },
       "id": 23,
       "panels": [],
-      "title": "Network and Garbage Collection",
+      "title": "Network metrics",
       "type": "row"
     },
     {
@@ -2436,23 +2430,20 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "decimals": null,
-      "description": "An estimate on the ratio of the output buffers used in the respective local buffer pools.",
+      "description": "The number of bytes this task reads from a local source per second.",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 14,
+        "h": 16,
         "w": 12,
         "x": 0,
         "y": 91
       },
-      "id": 61,
+      "id": 84,
       "legend": {
         "alignAsTable": true,
         "avg": true,
         "current": true,
-        "hideEmpty": false,
-        "hideZero": false,
         "max": true,
         "min": true,
         "show": true,
@@ -2475,8 +2466,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "flink_taskmanager_job_task_buffers_outPoolUsage",
-          "intervalFactor": 1,
+          "expr": "flink_taskmanager_job_task_Shuffle_Netty_Output_numBytesInLocalPerSecond",
           "legendFormat": "{{host}}-{{task_name}}",
           "refId": "A"
         }
@@ -2485,7 +2475,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "NETWORK - Ratio of the output buffers used per operator",
+      "title": "Task Manager reads from a LOCAL source bytes/sec",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -2501,16 +2491,14 @@
       },
       "yaxes": [
         {
-          "decimals": null,
-          "format": "percentunit",
-          "label": "Buffer usage",
+          "format": "Bps",
+          "label": "Bytes/sec",
           "logBase": 1,
-          "max": "1",
-          "min": "0",
+          "max": null,
+          "min": null,
           "show": true
         },
         {
-          "decimals": null,
           "format": "short",
           "label": null,
           "logBase": 1,
@@ -2529,17 +2517,18 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
-      "datasource": "Prometheus",
+      "description": "The number of bytes this task reads from a remote source per second.",
       "fill": 1,
       "fillGradient": 0,
       "gridPos": {
-        "h": 7,
+        "h": 16,
         "w": 12,
         "x": 12,
         "y": 91
       },
-      "id": 47,
+      "id": 85,
       "legend": {
+        "alignAsTable": true,
         "avg": true,
         "current": true,
         "max": true,
@@ -2550,13 +2539,12 @@
       },
       "lines": true,
       "linewidth": 1,
-      "links": [],
       "nullPointMode": "null",
       "options": {
         "dataLinks": []
       },
       "percentage": false,
-      "pointradius": 5,
+      "pointradius": 2,
       "points": false,
       "renderer": "flot",
       "seriesOverrides": [],
@@ -2565,29 +2553,103 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "flink_taskmanager_Status_JVM_GarbageCollector_G1_Young_Generation_Time",
-          "format": "time_series",
-          "intervalFactor": 2,
-          "legendFormat": "{{host}} Young Gen Time",
-          "metric": "flink_taskmanager_Status_JVM_GarbageCollector_G1_Young_Generation_Count",
-          "refId": "A",
-          "step": 2
-        },
-        {
-          "expr": "flink_taskmanager_Status_JVM_GarbageCollector_G1_Old_Generation_Time",
-          "format": "time_series",
-          "intervalFactor": 2,
-          "legendFormat": "{{host}} Old Gen Time",
-          "metric": "flink_taskmanager_Status_JVM_GarbageCollector_G1_Young_Generation_Count",
-          "refId": "B",
-          "step": 2
+          "expr": "flink_taskmanager_job_task_Shuffle_Netty_Output_numBytesInRemotePerSecond",
+          "legendFormat": "{{host}}-{{task_name}}",
+          "refId": "A"
         }
       ],
       "thresholds": [],
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "TaskManagers Garbage Collection",
+      "title": "Task Manager reads from a REMOTE source bytes/sec",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": "Bytes/sec",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "description": "The number of buffer this task reads from a local source per second.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 16,
+        "w": 12,
+        "x": 0,
+        "y": 107
+      },
+      "id": 87,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_Shuffle_Netty_Output_numBuffersInLocalPerSecond",
+          "legendFormat": "{{host}}-{{task_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Task Manager reads from a LOCAL source buffer/sec",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -2604,7 +2666,181 @@
       "yaxes": [
         {
           "format": "short",
+          "label": "Buffers/sec",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
           "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "description": "The number of buffers this task reads from a remote source per second.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 16,
+        "w": 12,
+        "x": 12,
+        "y": 107
+      },
+      "id": 88,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_Shuffle_Netty_Output_numBuffersInRemotePerSecond",
+          "legendFormat": "{{host}}-{{task_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Task Manager reads from a REMOTE source buffers/sec",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Buffers/sec",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "description": "The number of unused memory segments.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 16,
+        "w": 12,
+        "x": 0,
+        "y": 123
+      },
+      "id": 86,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_Status_Shuffle_Netty_AvailableMemorySegments",
+          "legendFormat": "{{host}}-{{task_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Memory segments",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Number of UNUSED memory segments",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -2709,9 +2945,8 @@
       {
         "allValue": null,
         "current": {
-          "isNone": true,
-          "text": "None",
-          "value": ""
+          "text": "ValenciaDataCpuIntensiveJoinExample",
+          "value": "ValenciaDataCpuIntensiveJoinExample"
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -2836,7 +3071,7 @@
     ]
   },
   "time": {
-    "from": "now-30m",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {
@@ -2858,5 +3093,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 74
+  "version": 89
 }
