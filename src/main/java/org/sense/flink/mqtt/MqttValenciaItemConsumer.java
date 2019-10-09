@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.metrics.Gauge;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
@@ -22,7 +24,10 @@ import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.pojo.ValenciaPollution;
 import org.sense.flink.pojo.ValenciaTraffic;
+import org.sense.flink.util.CpuGauge;
 import org.sense.flink.util.ValenciaItemType;
+
+import net.openhft.affinity.impl.LinuxJNAAffinity;
 
 /**
  * This is a source for Mqtt sensor with ID of the sensor.
@@ -42,6 +47,8 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private QoS qos;
 	private ValenciaItemType valenciaItemType;
 	private boolean collectWithTimestamp;
+	// private transient int cpuCore;
+	private transient CpuGauge cpuGauge;
 
 	public MqttValenciaItemConsumer(ValenciaItemType valenciaItemType, boolean collectWithTimestamp) {
 		this(DEFAUL_HOST, DEFAUL_PORT, QoS.AT_LEAST_ONCE, valenciaItemType, collectWithTimestamp);
@@ -75,6 +82,18 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.disclaimer();
 	}
 
+	@Override
+	public void open(Configuration config) {
+		this.cpuGauge = new CpuGauge();
+		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+//		getRuntimeContext().getMetricGroup().gauge("cpu", new Gauge<Integer>() {
+//			@Override
+//			public Integer getValue() {
+//				return cpuCore;
+//			}
+//		});
+	}
+
 	private void disclaimer() {
 		System.out.println("Use the following command to consume data from the application >>>");
 		System.out.println("mosquitto_sub -h " + host + " -p " + port + " -t " + topic);
@@ -91,6 +110,10 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		byte[] qoses = blockingConnection.subscribe(new Topic[] { new Topic(topic, qos) });
 
 		while (blockingConnection.isConnected()) {
+			// updates the CPU core current in use
+			// this.cpuCore = LinuxJNAAffinity.INSTANCE.getCpu();
+			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+
 			Message message = blockingConnection.receive();
 			String payload = new String(message.getPayload());
 			message.ack();

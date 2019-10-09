@@ -12,21 +12,30 @@ import org.sense.flink.pojo.AirPollution;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.pojo.ValenciaItemEnriched;
+import org.sense.flink.util.CpuGauge;
 import org.sense.flink.util.SimpleGeographicalPolygons;
 import org.sense.flink.util.ValenciaItemType;
+
+import net.openhft.affinity.impl.LinuxJNAAffinity;
 
 public class ValenciaIntensiveCpuDistancesMap
 		extends RichMapFunction<Tuple2<ValenciaItem, ValenciaItem>, ValenciaItemEnriched> {
 	private static final long serialVersionUID = -3613815938544784076L;
 	private SimpleGeographicalPolygons sgp;
+	private transient CpuGauge cpuGauge;
 
 	@Override
 	public void open(Configuration parameters) throws Exception {
 		this.sgp = new SimpleGeographicalPolygons();
+		this.cpuGauge = new CpuGauge();
+		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
 	}
 
 	@Override
 	public ValenciaItemEnriched map(Tuple2<ValenciaItem, ValenciaItem> value) throws Exception {
+
+		// updates the CPU core current in use
+		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
 		ValenciaItem valenciaItem00 = value.f0;
 		ValenciaItem valenciaItem01 = value.f1;

@@ -8,20 +8,29 @@ import org.apache.flink.configuration.Configuration;
 import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.util.CRSCoordinateTransformer;
+import org.sense.flink.util.CpuGauge;
 import org.sense.flink.util.SimpleGeographicalPolygons;
+
+import net.openhft.affinity.impl.LinuxJNAAffinity;
 
 public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, ValenciaItem> {
 	private static final long serialVersionUID = 624354384779615610L;
 	private SimpleGeographicalPolygons sgp;
+	private transient CpuGauge cpuGauge;
 
 	@Override
 	public void open(Configuration parameters) throws Exception {
 		super.open(parameters);
 		this.sgp = new SimpleGeographicalPolygons();
+		this.cpuGauge = new CpuGauge();
+		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
 	}
 
 	@Override
 	public ValenciaItem map(ValenciaItem value) throws Exception {
+		// updates the CPU core current in use
+		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+
 		List<Point> coordinates = value.getCoordinates();
 
 		boolean flag = true;
@@ -41,7 +50,8 @@ public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, Valen
 			// if we did not find a district with the given coordinate we assume the
 			// district 16
 			value.clearCoordinates();
-			value.addCoordinates(new Point(724328.279007, 4374887.874634, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830));
+			value.addCoordinates(
+					new Point(724328.279007, 4374887.874634, CRSCoordinateTransformer.DEFAULT_CRS_EPSG_25830));
 			value.setId(16L);
 			value.setAdminLevel(9L);
 			value.setDistrict("Benicalap");

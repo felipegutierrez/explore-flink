@@ -3,8 +3,6 @@ package org.sense.flink.mqtt;
 import java.util.LinkedList;
 
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.dropwizard.metrics.DropwizardMeterWrapper;
-import org.apache.flink.metrics.Meter;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.fusesource.hawtbuf.AsciiBuffer;
 import org.fusesource.hawtbuf.Buffer;
@@ -13,6 +11,9 @@ import org.fusesource.mqtt.client.Future;
 import org.fusesource.mqtt.client.FutureConnection;
 import org.fusesource.mqtt.client.MQTT;
 import org.fusesource.mqtt.client.QoS;
+import org.sense.flink.util.CpuGauge;
+
+import net.openhft.affinity.impl.LinuxJNAAffinity;
 
 public class MqttStringPublisher extends RichSinkFunction<String> {
 	private static final long serialVersionUID = 1736047291991894958L;
@@ -29,9 +30,7 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 	private String topic;
 	private QoS qos;
 
-	// Create metrics
-	// private transient Counter counter;
-	private transient Meter meter;
+	private transient CpuGauge cpuGauge;
 
 	public MqttStringPublisher(String topic) {
 		this(DEFAUL_HOST, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
@@ -63,10 +62,8 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 	@Override
 	public void open(Configuration config) throws Exception {
 		super.open(config);
-		// this.counter=getRuntimeContext().getMetricGroup().counter("counterSensorTypeMapper");
-		com.codahale.metrics.Meter dropwizardMeter = new com.codahale.metrics.Meter();
-		this.meter = getRuntimeContext().getMetricGroup().meter(MqttStringPublisher.class.getSimpleName() + "-meter",
-				new DropwizardMeterWrapper(dropwizardMeter));
+		this.cpuGauge = new CpuGauge();
+		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
 
 		// Open the MQTT connection just once
 		MQTT mqtt = new MQTT();
@@ -86,8 +83,9 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 
 	@Override
 	public void invoke(String value) throws Exception {
-		this.meter.markEvent();
-		// this.counter.inc();
+		// updates the CPU core current in use
+		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+
 		// System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
 		System.out.flush();
 

@@ -8,9 +8,12 @@ import net.openhft.affinity.impl.LinuxJNAAffinity;
 
 public class ThreadCpuExample {
 	public static void main(String[] args) {
+		System.out.println("getCpu current: " + LinuxJNAAffinity.INSTANCE.getCpu());
+
 		int nbits = Runtime.getRuntime().availableProcessors();
 		BitSet affinity0 = LinuxJNAAffinity.INSTANCE.getAffinity();
 		System.out.println(affinity0);
+		System.out.println("getCpu current: " + LinuxJNAAffinity.INSTANCE.getCpu());
 
 		BitSet affinity = new BitSet(nbits);
 
@@ -18,7 +21,7 @@ public class ThreadCpuExample {
 		LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
 		BitSet affinity2 = LinuxJNAAffinity.INSTANCE.getAffinity();
 		System.out.println(affinity2);
-		System.out.println("getCpu: " + LinuxJNAAffinity.INSTANCE.getCpu());
+		System.out.println("getCpu changed: " + LinuxJNAAffinity.INSTANCE.getCpu());
 		assertEquals(3, LinuxJNAAffinity.INSTANCE.getCpu());
 		assertEquals(affinity, affinity2);
 

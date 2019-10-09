@@ -27,6 +27,17 @@ import org.fusesource.mqtt.client.QoS;
 import org.fusesource.mqtt.client.Topic;
 import org.sense.flink.util.ValenciaItemType;
 
+/**
+ * Usage:
+ * 
+ * <pre>
+ * java -classpath /home/flink/flink-1.9.0/lib/flink-dist_2.11-1.9.0.jar:/home/felipe/workspace-scala/explore-flink/target/explore-flink.jar org.sense.flink.App -app 32 -offlineData true &
+ * java -classpath /home/flink/flink-1.9.0/lib/flink-dist_2.11-1.9.0.jar:/home/felipe/workspace-scala/explore-flink/target/explore-flink.jar org.sense.flink.App -app 33 -offlineData true &
+ * </pre>
+ * 
+ * @author Felipe Oliveira Gutierrez
+ *
+ */
 public class ValenciaDataProducer extends Thread {
 
 	private static final String VALENCIA_TRAFFIC_JAM_URL = "http://mapas.valencia.es/lanzadera/opendata/Tra-estado-trafico/JSON";

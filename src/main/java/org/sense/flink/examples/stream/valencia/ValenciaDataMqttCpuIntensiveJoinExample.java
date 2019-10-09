@@ -38,7 +38,6 @@ import org.sense.flink.util.ValenciaItemType;
 public class ValenciaDataMqttCpuIntensiveJoinExample {
 
 	private final String topic = "topic-valencia-cpu-intensive";
-	private final String topicParamFrequencyPull = "topic-synthetic-frequency-pull";
 
 	public static void main(String[] args) throws Exception {
 		new ValenciaDataMqttCpuIntensiveJoinExample("127.0.0.1", "127.0.0.1");
