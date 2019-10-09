@@ -17,7 +17,7 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 4,
-  "iteration": 1570023994638,
+  "iteration": 1570629604311,
   "links": [],
   "panels": [
     {
@@ -551,6 +551,99 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "decimals": 0,
+      "description": "This panel requires a customized Gauge in each Flink operator.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "id": 89,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "hideEmpty": false,
+        "hideZero": false,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_operator_cpu",
+          "legendFormat": "{{host}}-{{operator_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU core of each operator",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "decimals": null,
+          "format": "none",
+          "label": "CPU core",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "decimals": null,
+          "format": "none",
+          "label": "CPU core",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "description": "This panel has queries for each CPU core. Hence, if the cluster has more cores available it will be necessary to add queries manually.",
       "fill": 1,
       "fillGradient": 0,
@@ -558,7 +651,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 6
+        "y": 16
       },
       "id": 65,
       "legend": {
@@ -695,7 +788,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 6
+        "y": 16
       },
       "id": 66,
       "legend": {
@@ -832,7 +925,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 16
+        "y": 26
       },
       "id": 70,
       "legend": {
@@ -930,7 +1023,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 16
+        "y": 26
       },
       "id": 71,
       "legend": {
@@ -1028,7 +1121,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 24
+        "y": 34
       },
       "id": 72,
       "legend": {
@@ -1126,7 +1219,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 24
+        "y": 34
       },
       "id": 73,
       "legend": {
@@ -1224,7 +1317,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 42
       },
       "id": 79,
       "legend": {
@@ -1327,7 +1420,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 42
       },
       "id": 80,
       "legend": {
@@ -1429,7 +1522,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 40
+        "y": 50
       },
       "id": 59,
       "legend": {
@@ -1516,7 +1609,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 40
+        "y": 50
       },
       "id": 14,
       "legend": {
@@ -1613,7 +1706,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 48
+        "y": 58
       },
       "id": 75,
       "panels": [],
@@ -1632,7 +1725,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 49
+        "y": 59
       },
       "id": 77,
       "legend": {
@@ -1724,7 +1817,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 49
+        "y": 59
       },
       "id": 78,
       "legend": {
@@ -1817,7 +1910,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 57
+        "y": 67
       },
       "id": 19,
       "legend": {
@@ -1932,7 +2025,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 57
+        "y": 67
       },
       "id": 16,
       "legend": {
@@ -2040,7 +2133,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 67
+        "y": 77
       },
       "id": 30,
       "panels": [],
@@ -2059,7 +2152,7 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 68
+        "y": 78
       },
       "id": 82,
       "legend": {
@@ -2150,7 +2243,7 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 68
+        "y": 78
       },
       "id": 34,
       "legend": {
@@ -2241,7 +2334,7 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 80
+        "y": 90
       },
       "id": 35,
       "legend": {
@@ -2332,7 +2425,7 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 80
+        "y": 90
       },
       "id": 44,
       "legend": {
@@ -2418,7 +2511,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 90
+        "y": 100
       },
       "id": 23,
       "panels": [],
@@ -2437,7 +2530,7 @@
         "h": 16,
         "w": 12,
         "x": 0,
-        "y": 91
+        "y": 101
       },
       "id": 84,
       "legend": {
@@ -2524,7 +2617,7 @@
         "h": 16,
         "w": 12,
         "x": 12,
-        "y": 91
+        "y": 101
       },
       "id": 85,
       "legend": {
@@ -2611,7 +2704,7 @@
         "h": 16,
         "w": 12,
         "x": 0,
-        "y": 107
+        "y": 117
       },
       "id": 87,
       "legend": {
@@ -2698,7 +2791,7 @@
         "h": 16,
         "w": 12,
         "x": 12,
-        "y": 107
+        "y": 117
       },
       "id": 88,
       "legend": {
@@ -2785,7 +2878,7 @@
         "h": 16,
         "w": 12,
         "x": 0,
-        "y": 123
+        "y": 133
       },
       "id": 86,
       "legend": {
@@ -2945,8 +3038,9 @@
       {
         "allValue": null,
         "current": {
-          "text": "ValenciaDataCpuIntensiveJoinExample",
-          "value": "ValenciaDataCpuIntensiveJoinExample"
+          "isNone": true,
+          "text": "None",
+          "value": ""
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -3093,5 +3187,5 @@
   "timezone": "",
   "title": "Flink Metrics",
   "uid": "GPkyky2ik",
-  "version": 89
+  "version": 95
 }
