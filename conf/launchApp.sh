@@ -7,7 +7,7 @@
 #######################################################################
 bold=$(tput bold)
 normal=$(tput sgr0)
-
+green=$(tput setaf 2)
 #######################################################################
 ## FLink variables
 #######################################################################
@@ -23,17 +23,16 @@ FLINK_START_CLUSTER_MESOS=/home/flink/flink-1.9.0/bin/mesos-appmaster.sh
 #######################################################################
 ## Launch Flink cluster
 echo
-echo "${bold}Launching the Flink Standalone cluster:${normal}"
+echo "${green}${bold}Launching the Flink Standalone cluster >>${normal}"
 echo "   $FLINK_START_CLUSTER"
-echo "${bold}Launching the Flink + Mesos cluster:${normal}"
+echo "${green}${bold}Launching the Flink + Mesos cluster >>${normal}"
 echo "   $FLINK_START_CLUSTER_MESOS"
 echo
 #######################################################################
 ## Launch Flink stream application
-echo "${bold}Launching a Flink Stream application >>${normal}"
-echo
+echo " ${bold}${green}Launching a Flink Stream application >>${normal}"
 echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -output [file|mqtt] &"
-echo "CPU intensive application"
+echo "${green} Example: CPU intensive application >>${normal}"
 echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 -parallelism 4 -disableOperatorChaining true -output mqtt &"
 echo
 echo "${bold}description of each parameter:${normal}"
@@ -46,14 +45,16 @@ echo "   ${bold}-output:${normal} 'file' means that the output will be generated
 echo
 #######################################################################
 ## Launch data producers
-echo "${bold}Launching producers${normal}"
-echo "application 32 is a mqtt producer for traffic jam data from Valencia Open-data web portal"
-echo "application 33 is a mqtt producer for noise data from Valencia Open-data web portal"
-echo "intructions of how to change the frequency of producing data will be present when the command is issued"
+echo "${green}${bold}Launching producers >>${normal}"
+echo " application 32 is a mqtt producer for traffic jam data from Valencia Open-data web portal"
+echo " application 33 is a mqtt producer for noise data from Valencia Open-data web portal"
+echo "${green} Example >>${normal}"
 echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 32 -offlineData true -maxCount 100 &"
 echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 33 -offlineData true -maxCount 100 &"
 echo
-echo "${bold}Sending parameters to change the frequency (milliseconds) of synthetic item generators${normal}"
+echo "${green}${bold} Sending parameters to change the frequency (milliseconds) of synthetic item generators >>${normal}"
+echo " Intructions of how to change the frequency of producing data"
+echo "${green} Example >>${normal}"
 echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-traffic-jam-frequency -m '1000'"
 echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-pollution-frequency -m '5000'"
 echo
