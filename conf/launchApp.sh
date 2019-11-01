@@ -31,9 +31,9 @@ echo
 #######################################################################
 ## Launch Flink stream application
 echo " ${bold}${green}Launching a Flink Stream application >>${normal}"
-echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -output [file|mqtt] &"
+echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -pinningPolicy [true|false] -output [file|mqtt] &"
 echo "${green} Example: CPU intensive application >>${normal}"
-echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 -parallelism 4 -disableOperatorChaining true -output mqtt &"
+echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 -parallelism 4 -disableOperatorChaining true -pinningPolicy true -output mqtt &"
 echo
 echo "${bold}description of each parameter:${normal}"
 echo "   ${bold}-app :${normal} which application to deploy. If you don't pass any parameter the jar file will output all applications available."
@@ -41,6 +41,7 @@ echo "   ${bold}-source,-sink:${normal} IP of the source and sink nodes. It mean
 echo "   ${bold}-frequencyWindow:${normal} frequency to compute the window in seconds."
 echo "   ${bold}-parallelism:${normal} degree of parallelism to deploy the application on the cluster. It means the redundante operators will be created in order to guarantee fault tolerance."
 echo "   ${bold}-disableOperatorChaining:${normal} FALSE is the default. TRUE disables fusion optimization for all operators which means that operators will be allocated on different threads (https://ci.apache.org/projects/flink/flink-docs-release-1.9/ops/config.html#configuring-taskmanager-processing-slots)."
+echo "   ${bold}-pinningPolicy:${normal} TRUE enables the strategy to pinning operator' threads to specific CPU cores. FALSE is the deault."
 echo "   ${bold}-output:${normal} 'file' means that the output will be generated in the Flink TaskManagers log files. 'mqtt' means that you have to subscribe to a mqtt channel according to the message showed when the application is deployed."
 echo
 #######################################################################

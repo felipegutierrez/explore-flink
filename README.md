@@ -122,7 +122,7 @@ The CPU intensive stream application is the number `34` and we use the class `or
 	/home/flink/explore-flink/target/explore-flink.jar -app 34 \
 	-source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] \
 	-parallelism [int] -disableOperatorChaining [true|false] \
-	-output [file|mqtt] &
+	-pinningPolicy [true|false] -output [file|mqtt] &
 ```
 Description of each parameter:
  - `-app`: which application to deploy. If you don't pass any parameter the jar file will output all applications available.
@@ -130,6 +130,7 @@ Description of each parameter:
  - `-frequencyWindow`: frequency to compute the window in seconds.
  - `-parallelism`: degree of parallelism to deploy the application on the cluster. It means the redundante operators will be created in order to guarantee fault tolerance.
  - `-disableOperatorChaining`: FALSE is the default. TRUE disables fusion optimization for all operators which means that operators will be allocated on different threads (https://ci.apache.org/projects/flink/flink-docs-release-1.9/ops/config.html#configuring-taskmanager-processing-slots).
+ - `-pinningPolicy`: TRUE enables the strategy to pinning operator' threads to specific CPU cores. FALSE is the deault.
  - `-output`: 'file' means that the output will be generated in the Flink TaskManagers log files. 'mqtt' means that you have to subscribe to a mqtt channel according to the message showed when the application is deployed.
 
 Here is a workable example of calling the CPU intensive stream application on the Flink standalone cluster.
@@ -137,7 +138,8 @@ Here is a workable example of calling the CPU intensive stream application on th
 /home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App \
 	/home/flink/explore-flink/target/explore-flink.jar -app 34 \
 	-source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 \
-	-parallelism 4 -disableOperatorChaining true -output mqtt &
+	-parallelism 4 -disableOperatorChaining true -pinningPolicy true \
+	-output mqtt &
 ```
 The stream application will terminate when it receives the `SHUTDOWN` flag from all the sources that it is consuming data. This example uses 2 data sources (traffic and air pollution data). So, you have to launch both producers with the `-maxCount` parameter otherwise the stream application will not receive the `SHUTDOWN` signal to finish. Note that if you forget to start one of the producers with the `-maxCount` parameter, the stream application will run indefinitely.
 
