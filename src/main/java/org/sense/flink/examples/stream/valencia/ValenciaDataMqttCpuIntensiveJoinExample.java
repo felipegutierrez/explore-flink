@@ -7,6 +7,9 @@ import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_SOURCE;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_STRING_MAP;
 import static org.sense.flink.util.MetricLabels.METRIC_VALENCIA_WATERMARKER_ASSIGNER;
 
+import java.util.concurrent.TimeUnit;
+
+import org.apache.flink.api.common.JobExecutionResult;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -92,7 +95,9 @@ public class ValenciaDataMqttCpuIntensiveJoinExample {
 		}
 
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);
-		env.execute(ValenciaDataMqttCpuIntensiveJoinExample.class.getSimpleName());
+		JobExecutionResult jobExecution = env.execute(ValenciaDataMqttCpuIntensiveJoinExample.class.getSimpleName());
+		System.out.println("Time [seconds] to execute     : " + jobExecution.getNetRuntime(TimeUnit.SECONDS) + " seconds");
+		System.out.println("Time [milliseconds] to execute: " + jobExecution.getNetRuntime(TimeUnit.MILLISECONDS) + " milliseconds");
 		// @formatter:on
 	}
 

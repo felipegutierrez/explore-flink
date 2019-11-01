@@ -44,9 +44,9 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private String host;
 	private String topic;
 	private int port;
-	private boolean running;
 	private QoS qos;
 	private ValenciaItemType valenciaItemType;
+	private boolean running;
 	private boolean collectWithTimestamp;
 	// private transient int cpuCore;
 	private transient CpuGauge cpuGauge;
