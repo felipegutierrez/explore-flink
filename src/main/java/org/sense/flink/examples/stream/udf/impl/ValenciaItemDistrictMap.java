@@ -1,5 +1,6 @@
 package org.sense.flink.examples.stream.udf.impl;
 
+import java.util.BitSet;
 import java.util.List;
 
 import org.apache.flink.api.common.functions.RichMapFunction;
@@ -17,6 +18,16 @@ public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, Valen
 	private static final long serialVersionUID = 624354384779615610L;
 	private SimpleGeographicalPolygons sgp;
 	private transient CpuGauge cpuGauge;
+	private BitSet affinity;
+	private boolean pinningPolicy;
+
+	public ValenciaItemDistrictMap() {
+		this(false);
+	}
+
+	public ValenciaItemDistrictMap(boolean pinningPolicy) {
+		this.pinningPolicy = pinningPolicy;
+	}
 
 	@Override
 	public void open(Configuration parameters) throws Exception {
@@ -24,15 +35,25 @@ public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, Valen
 		this.sgp = new SimpleGeographicalPolygons();
 		this.cpuGauge = new CpuGauge();
 		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+
+		if (this.pinningPolicy) {
+			// listing the cpu cores available
+			int nbits = Runtime.getRuntime().availableProcessors();
+			// pinning operator' thread to a specific cpu core
+			this.affinity = new BitSet(nbits);
+			affinity.set(((int) Thread.currentThread().getId() % nbits));
+			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+		}
 	}
 
 	@Override
 	public ValenciaItem map(ValenciaItem value) throws Exception {
 		// updates the CPU core current in use
 		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+		System.err.println(ValenciaItemDistrictMap.class.getSimpleName() + " thread[" + Thread.currentThread().getId()
+				+ "] core[" + this.cpuGauge.getValue() + "]");
 
 		List<Point> coordinates = value.getCoordinates();
-
 		boolean flag = true;
 		int i = 0;
 		while (flag) {

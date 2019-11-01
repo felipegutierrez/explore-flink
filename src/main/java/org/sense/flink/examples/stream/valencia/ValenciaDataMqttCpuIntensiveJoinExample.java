@@ -43,15 +43,16 @@ public class ValenciaDataMqttCpuIntensiveJoinExample {
 	private final String topic = "topic-valencia-cpu-intensive";
 
 	public static void main(String[] args) throws Exception {
-		new ValenciaDataMqttCpuIntensiveJoinExample("127.0.0.1", "127.0.0.1");
+		new ValenciaDataMqttCpuIntensiveJoinExample("127.0.0.1", "127.0.0.1", true);
 	}
 
-	public ValenciaDataMqttCpuIntensiveJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
-		this(ipAddressSource, ipAddressSink, 30, 4, false, SinkOutputs.PARAMETER_OUTPUT_FILE);
+	public ValenciaDataMqttCpuIntensiveJoinExample(String ipAddressSource, String ipAddressSink, boolean pinningPolicy)
+			throws Exception {
+		this(ipAddressSource, ipAddressSink, 30, 4, false, SinkOutputs.PARAMETER_OUTPUT_FILE, pinningPolicy);
 	}
 
 	public ValenciaDataMqttCpuIntensiveJoinExample(String ipAddressSource, String ipAddressSink, int frequencyWindow,
-			int parallelism, boolean disableOperatorChaining, String output) throws Exception {
+			int parallelism, boolean disableOperatorChaining, String output, boolean pinningPolicy) throws Exception {
 		boolean collectWithTimestamp = false;
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -66,14 +67,14 @@ public class ValenciaDataMqttCpuIntensiveJoinExample {
 		// @formatter:off
 		// Sources -> assign timestamp -> map latitude,longitude to district ID
 		DataStream<ValenciaItem> streamTrafficJam = env
-				.addSource(new MqttValenciaItemConsumer(ipAddressSource, ValenciaItemType.TRAFFIC_JAM, collectWithTimestamp)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
+				.addSource(new MqttValenciaItemConsumer(ipAddressSource, ValenciaItemType.TRAFFIC_JAM, collectWithTimestamp, pinningPolicy)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.assignTimestampsAndWatermarks(new ValenciaItemAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
-				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
+				.map(new ValenciaItemDistrictMap(pinningPolicy)).name(METRIC_VALENCIA_DISTRICT_MAP)
 				;
 		DataStream<ValenciaItem> streamAirPollution = env
-				.addSource(new MqttValenciaItemConsumer(ipAddressSource, ValenciaItemType.AIR_POLLUTION, collectWithTimestamp)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
+				.addSource(new MqttValenciaItemConsumer(ipAddressSource, ValenciaItemType.AIR_POLLUTION, collectWithTimestamp, pinningPolicy)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.assignTimestampsAndWatermarks(new ValenciaItemAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
-				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
+				.map(new ValenciaItemDistrictMap(pinningPolicy)).name(METRIC_VALENCIA_DISTRICT_MAP)
 				;
 
 		// Join -> intensive CPU task -> map to String -> Publish/Print
@@ -81,15 +82,15 @@ public class ValenciaDataMqttCpuIntensiveJoinExample {
 				.where(new ValenciaItemDistrictSelector())
 				.equalTo(new ValenciaItemDistrictSelector())
 				.window(TumblingEventTimeWindows.of(Time.seconds(frequencyWindow)))
-				.apply(new ValenciaItemJoinFunction())
-				.map(new ValenciaIntensiveCpuDistancesMap()).name(METRIC_VALENCIA_CPU_INTENSIVE_MAP)
-				.map(new ValenciaItemEnrichedToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
+				.apply(new ValenciaItemJoinFunction(pinningPolicy))
+				.map(new ValenciaIntensiveCpuDistancesMap(pinningPolicy)).name(METRIC_VALENCIA_CPU_INTENSIVE_MAP)
+				.map(new ValenciaItemEnrichedToStringMap(pinningPolicy)).name(METRIC_VALENCIA_STRING_MAP)
 				;
 
 		if (SinkOutputs.PARAMETER_OUTPUT_FILE.equals(output)) {
 			result.print().name(METRIC_VALENCIA_SINK);	
 		} else if (SinkOutputs.PARAMETER_OUTPUT_MQTT.equals(output)) {
-			result.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK);
+			result.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(METRIC_VALENCIA_SINK);
 		} else {
 			result.print().name(METRIC_VALENCIA_SINK);	
 		}

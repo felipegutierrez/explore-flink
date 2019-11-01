@@ -35,6 +35,7 @@ public class MqttSensorDataSkewedJoinDAG {
 		System.out.println("Consuming values from 2 MQTT topics");
 		System.out.println("Use 'mosquitto_sub -h " + ipAddressSource01 + " -t " + topic + "' in order to consume data from this job.");
 		// @formatter:on
+		boolean pinningPolicy = false;
 
 		// Start streaming from fake data source sensors
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -76,7 +77,7 @@ public class MqttSensorDataSkewedJoinDAG {
 				.apply(new SensorSkewedJoinFunction())
 				.map(new SensorSkewedJoinedMapFunction()).name(SensorSkewedJoinedMapFunction.class.getSimpleName())
 				.setParallelism(4)
-				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(MqttStringPublisher.class.getSimpleName());
+				.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(MqttStringPublisher.class.getSimpleName());
 
 		// @formatter:on
 

@@ -56,6 +56,7 @@ public class ValenciaBloomFilterSemiJoinExample {
 			int frequencyPull, int frequencyWindow, boolean skewedDataInjection, boolean distinct,
 			boolean lookupAproximation, long duration) throws Exception {
 		boolean collectWithTimestamp = false;
+		boolean pinningPolicy = false;
 		long trafficFrequency = Time.seconds(frequencyPull).toMilliseconds();
 		long pollutionFrequency = Time.seconds(frequencyPull).toMilliseconds();
 
@@ -68,12 +69,12 @@ public class ValenciaBloomFilterSemiJoinExample {
 
 		// Sources -> add synthetic data -> filter
 		SingleOutputStreamOperator<ValenciaItem> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, trafficFrequency, collectWithTimestamp, offlineData, skewedDataInjection, duration)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, trafficFrequency, collectWithTimestamp, offlineData, skewedDataInjection, duration, false)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.assignTimestampsAndWatermarks(new ValenciaItemAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				;
 		SingleOutputStreamOperator<ValenciaItem> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, pollutionFrequency, collectWithTimestamp, offlineData, skewedDataInjection, duration)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, pollutionFrequency, collectWithTimestamp, offlineData, skewedDataInjection, duration, false)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.assignTimestampsAndWatermarks(new ValenciaItemAscendingTimestampExtractor()).name(METRIC_VALENCIA_WATERMARKER_ASSIGNER)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.process(new ValenciaItemProcessSideOutput(outputTag)).name(METRIC_VALENCIA_SIDE_OUTPUT)
@@ -97,7 +98,7 @@ public class ValenciaBloomFilterSemiJoinExample {
 				.window(TumblingEventTimeWindows.of(Time.seconds(frequencyWindow)))
 		 		.apply(new TrafficPollutionByDistrictJoinFunction())
 		 		// .print().name(METRIC_VALENCIA_SINK)
-				.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK)
+				.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(METRIC_VALENCIA_SINK)
 				;
 
 		disclaimer(env.getExecutionPlan(), ipAddressSource);

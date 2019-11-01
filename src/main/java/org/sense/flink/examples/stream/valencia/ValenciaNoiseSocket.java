@@ -28,13 +28,14 @@ public class ValenciaNoiseSocket {
 		boolean offlineData = true;
 		boolean collectWithTimestamp = true;
 		boolean skewedDataInjection = true;
+		long frequencyMilliSeconds = Time.seconds(20).toMilliseconds();
 
 		// @formatter:off
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		env.addSource(new ValenciaItemConsumer(ValenciaItemType.NOISE, Time.seconds(20).toMilliseconds(),collectWithTimestamp, offlineData, skewedDataInjection, Long.MAX_VALUE))
-				.name(ValenciaItemConsumer.class.getName())
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.NOISE, frequencyMilliSeconds, collectWithTimestamp, offlineData, skewedDataInjection, Long.MAX_VALUE, false))
+				.name(ValenciaItemConsumer.class.getSimpleName())
 			.print();
 		// @formatter:on
 

@@ -60,6 +60,7 @@ public class ValenciaDataCpuIntensiveJoinExample {
 	public ValenciaDataCpuIntensiveJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
 			int frequencyPull, int frequencyWindow, int parallelism, boolean disableOperatorChaining, String output)
 			throws Exception {
+		boolean pinningPolicy = false;
 		boolean collectWithTimestamp = false;
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -100,14 +101,14 @@ public class ValenciaDataCpuIntensiveJoinExample {
 				.keyBy(new ValenciaItemDistrictSelector())
 				.connect(streamAirPollution.keyBy(new ValenciaItemDistrictSelector()))
 				.process(new ValenciaItemProcessingTimeStdRepartitionJoinCoProcess(Time.seconds(frequencyWindow).toMilliseconds())).name(METRIC_VALENCIA_JOIN)
-				.map(new ValenciaIntensiveCpuDistancesMap()).name(METRIC_VALENCIA_CPU_INTENSIVE_MAP)
-				.map(new ValenciaItemEnrichedToStringMap()).name(METRIC_VALENCIA_STRING_MAP)
+				.map(new ValenciaIntensiveCpuDistancesMap(pinningPolicy)).name(METRIC_VALENCIA_CPU_INTENSIVE_MAP)
+				.map(new ValenciaItemEnrichedToStringMap(pinningPolicy)).name(METRIC_VALENCIA_STRING_MAP)
 				;
 		
 		if (SinkOutputs.PARAMETER_OUTPUT_FILE.equals(output)) {
 			result.print().name(METRIC_VALENCIA_SINK);	
 		} else if (SinkOutputs.PARAMETER_OUTPUT_MQTT.equals(output)) {
-			result.addSink(new MqttStringPublisher(ipAddressSink, topic)).name(METRIC_VALENCIA_SINK);
+			result.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(METRIC_VALENCIA_SINK);
 		} else {
 			result.print().name(METRIC_VALENCIA_SINK);	
 		}

@@ -29,14 +29,14 @@ public class ValenciaPollutionSocket {
 		boolean offlineData = true;
 		boolean collectWithTimestamp = true;
 		boolean skewedDataInjection = true;
+		long frequencyMilliSeconds = Time.seconds(60).toMilliseconds();
 
 		// @formatter:off
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		env.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(60).toMilliseconds(),collectWithTimestamp, offlineData, skewedDataInjection, Long.MAX_VALUE))
-				.name(ValenciaItemConsumer.class.getName())
-			.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, frequencyMilliSeconds, collectWithTimestamp, offlineData, skewedDataInjection, Long.MAX_VALUE, false)).name(ValenciaItemConsumer.class.getSimpleName())
+			.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getSimpleName())
 			.print();
 		// @formatter:off
 

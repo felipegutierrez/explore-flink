@@ -6,10 +6,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
@@ -20,7 +22,10 @@ import org.sense.flink.pojo.Point;
 import org.sense.flink.pojo.ValenciaItem;
 import org.sense.flink.pojo.ValenciaPollution;
 import org.sense.flink.pojo.ValenciaTraffic;
+import org.sense.flink.util.CpuGauge;
 import org.sense.flink.util.ValenciaItemType;
+
+import net.openhft.affinity.impl.LinuxJNAAffinity;
 
 /**
  * <pre>
@@ -67,12 +72,15 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private boolean offlineData;
 	private boolean dataSkewedSyntheticInjection;
 	private boolean useDataSkewedFile;
+	private boolean pinningPolicy = false;
 	private volatile boolean running = true;
+	private transient CpuGauge cpuGauge;
+	private BitSet affinity;
 	// @formatter:on
 
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
 			boolean collectWithTimestamp, boolean offlineData) throws Exception {
-		this(valenciaItemType, frequencyMilliSeconds, collectWithTimestamp, offlineData, false, Long.MAX_VALUE);
+		this(valenciaItemType, frequencyMilliSeconds, collectWithTimestamp, offlineData, false, Long.MAX_VALUE, false);
 	}
 
 	/**
@@ -84,8 +92,8 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	 * @throws Exception
 	 */
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
-			boolean collectWithTimestamp, boolean offlineData, boolean dataSkewedSyntheticInjection, long duration)
-			throws Exception {
+			boolean collectWithTimestamp, boolean offlineData, boolean dataSkewedSyntheticInjection, long duration,
+			boolean pinningPolicy) throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			this.url = new URL(VALENCIA_TRAFFIC_JAM_URL);
 			this.timeoutMillSeconds = Time.minutes(5).toMilliseconds();
@@ -105,14 +113,34 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.dataSkewedSyntheticInjection = dataSkewedSyntheticInjection;
 		this.useDataSkewedFile = false;
 		this.duration = Time.minutes(duration).toMilliseconds();
-		;
 		this.startTime = Calendar.getInstance().getTimeInMillis();
 		this.offsetTime = this.startTime;
+		this.pinningPolicy = pinningPolicy;
+	}
+
+	@Override
+	public void open(Configuration config) {
+		this.cpuGauge = new CpuGauge();
+		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+
+		if (this.pinningPolicy) {
+			// listing the cpu cores available
+			int nbits = Runtime.getRuntime().availableProcessors();
+			// pinning operator' thread to a specific cpu core
+			this.affinity = new BitSet(nbits);
+			affinity.set(((int) Thread.currentThread().getId() % nbits));
+			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+		}
 	}
 
 	@Override
 	public void run(SourceContext<ValenciaItem> ctx) throws Exception {
 		while (running) {
+			// updates the CPU core current in use
+			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+			System.err.println(ValenciaItemConsumer.class.getSimpleName() + " thread[" + Thread.currentThread().getId()
+					+ "] core[" + this.cpuGauge.getValue() + "]");
+
 			// get the data source file to collect data
 			InputStream in = getDataSourceInputStream();
 

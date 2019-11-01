@@ -1,6 +1,7 @@
 package org.sense.flink.examples.stream.udf.impl;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.List;
 
 import org.apache.flink.api.common.functions.RichMapFunction;
@@ -23,17 +24,31 @@ public class ValenciaIntensiveCpuDistancesMap
 	private static final long serialVersionUID = -3613815938544784076L;
 	private SimpleGeographicalPolygons sgp;
 	private transient CpuGauge cpuGauge;
+	private BitSet affinity;
+	private boolean pinningPolicy;
+
+	public ValenciaIntensiveCpuDistancesMap(boolean pinningPolicy) {
+		this.pinningPolicy = pinningPolicy;
+	}
 
 	@Override
 	public void open(Configuration parameters) throws Exception {
 		this.sgp = new SimpleGeographicalPolygons();
 		this.cpuGauge = new CpuGauge();
 		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+
+		if (this.pinningPolicy) {
+			// listing the cpu cores available
+			int nbits = Runtime.getRuntime().availableProcessors();
+			// pinning operator' thread to a specific cpu core
+			this.affinity = new BitSet(nbits);
+			affinity.set(((int) Thread.currentThread().getId() % nbits));
+			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+		}
 	}
 
 	@Override
 	public ValenciaItemEnriched map(Tuple2<ValenciaItem, ValenciaItem> value) throws Exception {
-
 		// updates the CPU core current in use
 		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 

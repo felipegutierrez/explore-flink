@@ -1,5 +1,7 @@
 package org.sense.flink.examples.stream.udf.impl;
 
+import java.util.BitSet;
+
 import org.apache.flink.api.common.functions.RichJoinFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
@@ -12,11 +14,26 @@ public class ValenciaItemJoinFunction
 		extends RichJoinFunction<ValenciaItem, ValenciaItem, Tuple2<ValenciaItem, ValenciaItem>> {
 	private static final long serialVersionUID = -5624248427888414054L;
 	private transient CpuGauge cpuGauge;
+	private BitSet affinity;
+	private boolean pinningPolicy;
+
+	public ValenciaItemJoinFunction(boolean pinningPolicy) {
+		this.pinningPolicy = pinningPolicy;
+	}
 
 	@Override
 	public void open(Configuration config) {
 		this.cpuGauge = new CpuGauge();
 		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+
+		if (this.pinningPolicy) {
+			// listing the cpu cores available
+			int nbits = Runtime.getRuntime().availableProcessors();
+			// pinning operator' thread to a specific cpu core
+			this.affinity = new BitSet(nbits);
+			affinity.set(((int) Thread.currentThread().getId() % nbits));
+			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+		}
 	}
 
 	@Override

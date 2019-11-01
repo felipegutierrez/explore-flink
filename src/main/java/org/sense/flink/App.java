@@ -60,6 +60,7 @@ public class App {
 	private static String PARAMETER_OUTPUT = "-output";
 	private static String PARAMETER_DURATION = "-duration";
 	private static String PARAMETER_MAX_COUNT = "-maxCount";
+	private static String PARAMETER_PINNING_POLICY = "-pinningPolicy";
 
 	public static void main(String[] args) throws Exception {
 
@@ -77,6 +78,7 @@ public class App {
 		boolean optimization = true;
 		boolean lookup = true;
 		boolean disableOperatorChaining = false;
+		boolean pinningPolicy = false;
 
 		if (args != null && args.length > 0) {
 			int size = args.length;
@@ -108,6 +110,9 @@ public class App {
 				} else if (PARAMETER_DISABLE_OPERATOR_CHAINING.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					disableOperatorChaining = Boolean.valueOf(args[i]);
+				} else if (PARAMETER_PINNING_POLICY.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					pinningPolicy = Boolean.valueOf(args[i]);
 				} else if (PARAMETER_FREQUENCY_WINDOW.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					frequencyWindow = Integer.parseInt(args[i]);
@@ -141,19 +146,20 @@ public class App {
 		System.out.println();
 		System.out.println("Parameters chosen >>");
 		System.out.println("Application selected    : " + app);
+		System.out.println("duration[minutes]       : " + duration);
+		System.out.println("maxCount to read source : " + maxCount);
 		System.out.println("ipAddressSource         : " + ipAddressSource);
 		System.out.println("ipAddressSink           : " + ipAddressSink);
 		System.out.println("offlinedata             : " + offlinedata);
-		System.out.println("frequencyPull[seconds]  : " + frequencyPull);
-		System.out.println("frequencyWindow[seconds]: " + frequencyWindow);
 		System.out.println("syntheticData           : " + syntheticData);
-		System.out.println("optimization            : " + optimization);
-		System.out.println("lookup                  : " + lookup);
 		System.out.println("parallelism             : " + parallelism);
 		System.out.println("disableOperatorChaining : " + disableOperatorChaining);
+		System.out.println("frequencyPull[seconds]  : " + frequencyPull);
+		System.out.println("frequencyWindow[seconds]: " + frequencyWindow);
+		System.out.println("optimization            : " + optimization);
+		System.out.println("lookup                  : " + lookup);
+		System.out.println("pinning policy          : " + pinningPolicy);
 		System.out.println("output                  : " + output);
-		System.out.println("duration[minutes]       : " + duration);
-		System.out.println("maxCount to read source : " + maxCount);
 		System.out.println();
 
 		try {
@@ -343,7 +349,7 @@ public class App {
 				break;
 			case 34:
 				new ValenciaDataMqttCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, frequencyWindow,
-						parallelism, disableOperatorChaining, output);
+						parallelism, disableOperatorChaining, output, pinningPolicy);
 				app = 0;
 				break;
 			default:

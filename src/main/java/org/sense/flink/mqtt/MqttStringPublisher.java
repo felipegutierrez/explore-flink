@@ -1,5 +1,6 @@
 package org.sense.flink.mqtt;
 
+import java.util.BitSet;
 import java.util.LinkedList;
 
 import org.apache.flink.configuration.Configuration;
@@ -26,29 +27,30 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 
 	private static final String DEFAUL_HOST = "127.0.0.1";
 	private static final int DEFAUL_PORT = 1883;
-
 	private String topic;
 	private QoS qos;
-
 	private transient CpuGauge cpuGauge;
+	private BitSet affinity;
+	private boolean pinningPolicy;
 
-	public MqttStringPublisher(String topic) {
-		this(DEFAUL_HOST, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
+	public MqttStringPublisher(String topic, boolean pinningPolicy) {
+		this(DEFAUL_HOST, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE, pinningPolicy);
 	}
 
-	public MqttStringPublisher(String host, String topic) {
-		this(host, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE);
+	public MqttStringPublisher(String host, String topic, boolean pinningPolicy) {
+		this(host, DEFAUL_PORT, topic, QoS.AT_LEAST_ONCE, pinningPolicy);
 	}
 
-	public MqttStringPublisher(String host, int port, String topic) {
-		this(host, port, topic, QoS.AT_LEAST_ONCE);
+	public MqttStringPublisher(String host, int port, String topic, boolean pinningPolicy) {
+		this(host, port, topic, QoS.AT_LEAST_ONCE, pinningPolicy);
 	}
 
-	public MqttStringPublisher(String host, int port, String topic, QoS qos) {
+	public MqttStringPublisher(String host, int port, String topic, QoS qos, boolean pinningPolicy) {
 		this.host = host;
 		this.port = port;
 		this.topic = topic;
 		this.qos = qos;
+		this.pinningPolicy = pinningPolicy;
 		disclaimer();
 	}
 
@@ -64,6 +66,15 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 		super.open(config);
 		this.cpuGauge = new CpuGauge();
 		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+
+		if (this.pinningPolicy) {
+			// listing the cpu cores available
+			int nbits = Runtime.getRuntime().availableProcessors();
+			// pinning operator' thread to a specific cpu core
+			this.affinity = new BitSet(nbits);
+			affinity.set(((int) Thread.currentThread().getId() % nbits));
+			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+		}
 
 		// Open the MQTT connection just once
 		MQTT mqtt = new MQTT();

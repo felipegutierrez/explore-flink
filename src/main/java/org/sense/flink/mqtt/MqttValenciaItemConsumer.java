@@ -5,6 +5,7 @@ import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_VALENCIA_POLLUTION;
 import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_VALENCIA_TRAFFIC_JAM;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.List;
 
@@ -50,22 +51,26 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private boolean collectWithTimestamp;
 	// private transient int cpuCore;
 	private transient CpuGauge cpuGauge;
+	private BitSet affinity;
+	private boolean pinningPolicy;
 
-	public MqttValenciaItemConsumer(ValenciaItemType valenciaItemType, boolean collectWithTimestamp) {
-		this(DEFAUL_HOST, DEFAUL_PORT, QoS.AT_LEAST_ONCE, valenciaItemType, collectWithTimestamp);
+	public MqttValenciaItemConsumer(ValenciaItemType valenciaItemType, boolean collectWithTimestamp,
+			boolean pinningPolicy) {
+		this(DEFAUL_HOST, DEFAUL_PORT, QoS.AT_LEAST_ONCE, valenciaItemType, collectWithTimestamp, pinningPolicy);
 	}
 
-	public MqttValenciaItemConsumer(String host, ValenciaItemType valenciaItemType, boolean collectWithTimestamp) {
-		this(host, DEFAUL_PORT, QoS.AT_LEAST_ONCE, valenciaItemType, collectWithTimestamp);
+	public MqttValenciaItemConsumer(String host, ValenciaItemType valenciaItemType, boolean collectWithTimestamp,
+			boolean pinningPolicy) {
+		this(host, DEFAUL_PORT, QoS.AT_LEAST_ONCE, valenciaItemType, collectWithTimestamp, pinningPolicy);
 	}
 
 	public MqttValenciaItemConsumer(String host, int port, ValenciaItemType valenciaItemType,
-			boolean collectWithTimestamp) {
-		this(host, port, QoS.AT_LEAST_ONCE, valenciaItemType, collectWithTimestamp);
+			boolean collectWithTimestamp, boolean pinningPolicy) {
+		this(host, port, QoS.AT_LEAST_ONCE, valenciaItemType, collectWithTimestamp, pinningPolicy);
 	}
 
 	public MqttValenciaItemConsumer(String host, int port, QoS qos, ValenciaItemType valenciaItemType,
-			boolean collectWithTimestamp) {
+			boolean collectWithTimestamp, boolean pinningPolicy) {
 		this.host = host;
 		this.port = port;
 		this.qos = qos;
@@ -81,6 +86,7 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		} else {
 			System.out.println("Wrong topic to consume messages");
 		}
+		this.pinningPolicy = pinningPolicy;
 		this.disclaimer();
 	}
 
@@ -88,12 +94,15 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	public void open(Configuration config) {
 		this.cpuGauge = new CpuGauge();
 		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
-		// getRuntimeContext().getMetricGroup().gauge("cpu", new Gauge<Integer>() {
-		// @Override
-		// public Integer getValue() {
-		// return cpuCore;
-		// }
-		// });
+
+		if (this.pinningPolicy) {
+			// listing the cpu cores available
+			int nbits = Runtime.getRuntime().availableProcessors();
+			// pinning operator' thread to a specific cpu core
+			this.affinity = new BitSet(nbits);
+			affinity.set(((int) Thread.currentThread().getId() % nbits));
+			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+		}
 	}
 
 	private void disclaimer() {
