@@ -118,7 +118,11 @@ We are going to begin with the consumers because the producers will run with a l
 
 The CPU intensive stream application is the number `34` and we use the class `org.sense.flink.App` to call this application. We can set other parameters to start the stream application. For instance, window size, ip of the source and sink, degree of parallelism (it means the numbe of physical instances of each operator running on the cluster), type of the output which can be a file or a MQTT channel. Below is the pattern to call the application and a detail description of each parameter.
 ```
-/home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App /home/flink/explore-flink/target/explore-flink.jar -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -output [file|mqtt] &
+/home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App \
+	/home/flink/explore-flink/target/explore-flink.jar -app 34 \
+	-source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] \
+	-parallelism [int] -disableOperatorChaining [true|false] \
+	-output [file|mqtt] &
 ```
 Description of each parameter:
  - `-app`: which application to deploy. If you don't pass any parameter the jar file will output all applications available.
@@ -130,7 +134,10 @@ Description of each parameter:
 
 Here is a workable example of calling the CPU intensive stream application on the Flink standalone cluster.
 ```
-/home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App /home/flink/explore-flink/target/explore-flink.jar -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 -parallelism 4 -disableOperatorChaining true -output mqtt &
+/home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App \
+	/home/flink/explore-flink/target/explore-flink.jar -app 34 \
+	-source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 \
+	-parallelism 4 -disableOperatorChaining true -output mqtt &
 ```
 The stream application will terminate when it receives the `SHUTDOWN` flag from all the sources that it is consuming data. This example uses 2 data sources (traffic and air pollution data). So, you have to launch both producers with the `-maxCount` parameter otherwise the stream application will not receive the `SHUTDOWN` signal to finish. Note that if you forget to start one of the producers with the `-maxCount` parameter, the stream application will run indefinitely.
 
@@ -138,8 +145,10 @@ The stream application will terminate when it receives the `SHUTDOWN` flag from 
 
 The producer application receives parameters as arguments: `org.sense.flink.App -app [id of the application] -offlineData [true|false] -maxCount [times to read the data source]`. For the examples below we are sending 3 times the data from a offline data file. Once the producer counts 3 times it sends a `SHUTDOWN` signal to the MQTT broker.
 ```
-java -classpath /home/flink/flink-1.9.0/lib/flink-dist_2.11-1.9.0.jar:/home/flink/explore-flink/target/explore-flink.jar org.sense.flink.App -app 32 -offlineData true -maxCount 3 &
-java -classpath /home/flink/flink-1.9.0/lib/flink-dist_2.11-1.9.0.jar:/home/flink/explore-flink/target/explore-flink.jar org.sense.flink.App -app 33 -offlineData true -maxCount 3 &
+java -classpath /home/flink/flink-1.9.0/lib/flink-dist_2.11-1.9.0.jar:/home/flink/explore-flink/target/explore-flink.jar \
+	org.sense.flink.App -app 32 -offlineData true -maxCount 3 &
+java -classpath /home/flink/flink-1.9.0/lib/flink-dist_2.11-1.9.0.jar:/home/flink/explore-flink/target/explore-flink.jar \
+	org.sense.flink.App -app 33 -offlineData true -maxCount 3 &
 ```
 Once you started the producer applications you can change the frequency of producing data in run-time. The frequency is changed by updating the delay between sending data to the MQTT broker. When we start the producer the default delay is 10 thousand milliseconds. It means that every 10 seconds we are sending new data to the broker. The two commands below change the delay to 1 and 5 thousand milliseconds. It means that we are sending every second and five seconds data to the broker.
 ```
