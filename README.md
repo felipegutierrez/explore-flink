@@ -112,6 +112,28 @@ mvn clean package -DskipTests
 
 The producers are detached from the stream application. The purpose of this is to isolate the producer from the consumers. Moreover, we can change the pooling frequency of the producers in run-time. This facilitates to analyse the behaviour of the stream application when there is a workload variation without restart it. The Producers are the applications `32` (traffic data from Valencia Open-data web portal) and `33` (air pollution data from Valencia Open-data web portal). The producers publish data on the MQTT broker and the stream application consumes data from the MQTT broker.
 
+#### Consumers
+
+We are going to begin with the consumers because the producers will run with a limited dataset. So it is better to launch the consumer stream application first and keep it listenning to data from the MQTT broker. 
+
+The CPU intensive stream application is the number `34` and we use the class `org.sense.flink.App` to call this application. We can set other parameters to start the stream application. For instance, window size, ip of the source and sink, degree of parallelism (it means the numbe of physical instances of each operator running on the cluster), type of the output which can be a file or a MQTT channel. Below is the pattern to call the application and a detail description of each parameter.
+```
+/home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App /home/flink/explore-flink/target/explore-flink.jar -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -output [file|mqtt] &
+```
+Description of each parameter:
+ - `-app`: which application to deploy. If you don't pass any parameter the jar file will output all applications available.
+ - `-source` or `-sink`: IP of the source and sink nodes. It means that you can see the output of the application on the machines that hold these IPs.
+ - `-frequencyWindow`: frequency to compute the window in seconds.
+ - `-parallelism`: degree of parallelism to deploy the application on the cluster. It means the redundante operators will be created in order to guarantee fault tolerance.
+ - `-disableOperatorChaining`: FALSE is the default. TRUE disables fusion optimization for all operators which means that operators will be allocated on different threads (https://ci.apache.org/projects/flink/flink-docs-release-1.9/ops/config.html#configuring-taskmanager-processing-slots).
+ - `-output`: 'file' means that the output will be generated in the Flink TaskManagers log files. 'mqtt' means that you have to subscribe to a mqtt channel according to the message showed when the application is deployed.
+
+Here is a workable example of calling the CPU intensive stream application on the Flink standalone cluster.
+```
+/home/flink/flink-1.9.0/bin/flink run -c org.sense.flink.App /home/flink/explore-flink/target/explore-flink.jar -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 -parallelism 4 -disableOperatorChaining true -output mqtt &
+```
+The stream application will terminate when it receives the `SHUTDOWN` flag from all the sources that it is consuming data. This example uses 2 data sources (traffic and air pollution data). So, you have to launch both producers with the `-maxCount` parameter otherwise the stream application will not receive the `SHUTDOWN` signal to finish. Note that if you forget to start one of the producers with the `-maxCount` parameter, the stream application will run indefinitely.
+
 #### Producers
 
 The producer application receives parameters as arguments: `org.sense.flink.App -app [id of the application] -offlineData [true|false] -maxCount [times to read the data source]`. For the examples below we are sending 3 times the data from a offline data file. Once the producer counts 3 times it sends a `SHUTDOWN` signal to the MQTT broker.
@@ -125,10 +147,6 @@ mosquitto_pub -h localhost -p 1883 -t topic-valencia-traffic-jam-frequency -m '1
 mosquitto_pub -h localhost -p 1883 -t topic-valencia-pollution-frequency -m '5000'
 ```
 Note that changing the frequency of sending data to the broker will make the producer finish early if a `-maxCount` parameter was set when the producer has been launched.
-
-#### Consumers
-
-
 
 
 ### Starting the data source project with Apache Edgent

@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.metrics.Gauge;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ArrayNode;
@@ -40,10 +39,12 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private static final long serialVersionUID = -1384636057411239133L;
 	private static final String DEFAUL_HOST = "127.0.0.1";
 	private static final int DEFAUL_PORT = 1883;
+	private static final String SHUTDOWN_SIGNAL = "SHUTDOWN";
 
 	private String host;
-	private int port;
 	private String topic;
+	private int port;
+	private boolean running;
 	private QoS qos;
 	private ValenciaItemType valenciaItemType;
 	private boolean collectWithTimestamp;
@@ -70,6 +71,7 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.qos = qos;
 		this.valenciaItemType = valenciaItemType;
 		this.collectWithTimestamp = collectWithTimestamp;
+		this.running = true;
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			this.topic = TOPIC_VALENCIA_TRAFFIC_JAM;
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
@@ -86,12 +88,12 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	public void open(Configuration config) {
 		this.cpuGauge = new CpuGauge();
 		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
-//		getRuntimeContext().getMetricGroup().gauge("cpu", new Gauge<Integer>() {
-//			@Override
-//			public Integer getValue() {
-//				return cpuCore;
-//			}
-//		});
+		// getRuntimeContext().getMetricGroup().gauge("cpu", new Gauge<Integer>() {
+		// @Override
+		// public Integer getValue() {
+		// return cpuCore;
+		// }
+		// });
 	}
 
 	private void disclaimer() {
@@ -109,7 +111,7 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 		byte[] qoses = blockingConnection.subscribe(new Topic[] { new Topic(topic, qos) });
 
-		while (blockingConnection.isConnected()) {
+		while (running && blockingConnection.isConnected()) {
 			// updates the CPU core current in use
 			// this.cpuCore = LinuxJNAAffinity.INSTANCE.getCpu();
 			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
@@ -117,57 +119,61 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 			Message message = blockingConnection.receive();
 			String payload = new String(message.getPayload());
 			message.ack();
-
-			// convert message to ValenciaItem
-			Date eventTime = new Date();
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode actualObj = mapper.readTree(payload);
-
-			boolean isCRS = actualObj.has("crs");
-			boolean isFeatures = actualObj.has("features");
-			String typeCSR = "";
-
-			if (isCRS) {
-				ObjectNode objectNodeCsr = (ObjectNode) actualObj.get("crs");
-				ObjectNode objectNodeProperties = (ObjectNode) objectNodeCsr.get("properties");
-				typeCSR = objectNodeProperties.get("name").asText();
-				typeCSR = typeCSR.substring(typeCSR.indexOf("EPSG")).replace("::", ":");
+			if (SHUTDOWN_SIGNAL.equals(payload)) {
+				this.cancel();
 			} else {
-				System.out.println("Wrong CoordinateReferenceSystem (CSR) type");
-			}
+				// convert message to ValenciaItem
+				Date eventTime = new Date();
+				ObjectMapper mapper = new ObjectMapper();
+				JsonNode actualObj = mapper.readTree(payload);
 
-			if (isFeatures) {
-				ArrayNode arrayNodeFeatures = (ArrayNode) actualObj.get("features");
-				for (JsonNode jsonNode : arrayNodeFeatures) {
-					JsonNode nodeProperties = jsonNode.get("properties");
-					JsonNode nodeGeometry = jsonNode.get("geometry");
-					ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
+				boolean isCRS = actualObj.has("crs");
+				boolean isFeatures = actualObj.has("features");
+				String typeCSR = "";
 
-					ValenciaItem valenciaItem;
-					List<Point> points = new ArrayList<Point>();
-					if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
-						for (JsonNode coordinates : arrayNodeCoordinates) {
-							ArrayNode xy = (ArrayNode) coordinates;
-							points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));
-						}
-						valenciaItem = new ValenciaTraffic(0L, 0L, "", eventTime, points,
-								nodeProperties.get("estado").asInt());
-					} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-						String p = arrayNodeCoordinates.get(0).asText() + "," + arrayNodeCoordinates.get(1).asText();
-						points = Point.extract(p, typeCSR);
-						valenciaItem = new ValenciaPollution(0L, 0L, "", eventTime, points,
-								nodeProperties.get("mediciones").asText());
-					} else if (valenciaItemType == ValenciaItemType.NOISE) {
-						throw new Exception("ValenciaItemType NOISE is not implemented!");
-					} else {
-						throw new Exception("ValenciaItemType is NULL!");
-					}
-					if (valenciaItem != null) {
-						if (collectWithTimestamp) {
-							ctx.collectWithTimestamp(valenciaItem, eventTime.getTime());
-							// ctx.emitWatermark(new Watermark(eventTime.getTime()));
+				if (isCRS) {
+					ObjectNode objectNodeCsr = (ObjectNode) actualObj.get("crs");
+					ObjectNode objectNodeProperties = (ObjectNode) objectNodeCsr.get("properties");
+					typeCSR = objectNodeProperties.get("name").asText();
+					typeCSR = typeCSR.substring(typeCSR.indexOf("EPSG")).replace("::", ":");
+				} else {
+					System.out.println("Wrong CoordinateReferenceSystem (CSR) type");
+				}
+
+				if (isFeatures) {
+					ArrayNode arrayNodeFeatures = (ArrayNode) actualObj.get("features");
+					for (JsonNode jsonNode : arrayNodeFeatures) {
+						JsonNode nodeProperties = jsonNode.get("properties");
+						JsonNode nodeGeometry = jsonNode.get("geometry");
+						ArrayNode arrayNodeCoordinates = (ArrayNode) nodeGeometry.get("coordinates");
+
+						ValenciaItem valenciaItem;
+						List<Point> points = new ArrayList<Point>();
+						if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
+							for (JsonNode coordinates : arrayNodeCoordinates) {
+								ArrayNode xy = (ArrayNode) coordinates;
+								points.add(new Point(xy.get(0).asDouble(), xy.get(1).asDouble(), typeCSR));
+							}
+							valenciaItem = new ValenciaTraffic(0L, 0L, "", eventTime, points,
+									nodeProperties.get("estado").asInt());
+						} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
+							String p = arrayNodeCoordinates.get(0).asText() + ","
+									+ arrayNodeCoordinates.get(1).asText();
+							points = Point.extract(p, typeCSR);
+							valenciaItem = new ValenciaPollution(0L, 0L, "", eventTime, points,
+									nodeProperties.get("mediciones").asText());
+						} else if (valenciaItemType == ValenciaItemType.NOISE) {
+							throw new Exception("ValenciaItemType NOISE is not implemented!");
 						} else {
-							ctx.collect(valenciaItem);
+							throw new Exception("ValenciaItemType is NULL!");
+						}
+						if (valenciaItem != null) {
+							if (collectWithTimestamp) {
+								ctx.collectWithTimestamp(valenciaItem, eventTime.getTime());
+								// ctx.emitWatermark(new Watermark(eventTime.getTime()));
+							} else {
+								ctx.collect(valenciaItem);
+							}
 						}
 					}
 				}
@@ -178,5 +184,6 @@ public class MqttValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	@Override
 	public void cancel() {
+		this.running = false;
 	}
 }

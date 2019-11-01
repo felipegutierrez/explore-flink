@@ -394,6 +394,7 @@ public class App {
 		System.out.println("31 - Reading values from Valencia Open-data Web Portal and computing the semi-JOIN with Bloom Filter using Flink Data Stream");
 		System.out.println("32 - Mqtt data source of traffic-jam from Valencia Open-data Web Portal");
 		System.out.println("33 - Mqtt data source of pollution from Valencia Open-data Web Portal");
+		System.out.println("34 - CPU intensive computation which consumes data from Valencia Open-data Web Portal");
 		System.out.println();
 		// @formatter:on
 	}
