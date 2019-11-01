@@ -27,7 +27,7 @@ public class ValenciaTrafficJamSocket {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		env.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(20).toMilliseconds(), collectWithTimestamp, offlineData, skewedDataInjection))
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, Time.seconds(20).toMilliseconds(), collectWithTimestamp, offlineData, skewedDataInjection, Long.MAX_VALUE))
 				.name(ValenciaItemConsumer.class.getName())
 			.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
 			.print();

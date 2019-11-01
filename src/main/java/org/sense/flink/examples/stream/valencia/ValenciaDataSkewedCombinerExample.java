@@ -54,11 +54,11 @@ public class ValenciaDataSkewedCombinerExample {
 	}
 
 	public ValenciaDataSkewedCombinerExample(String ipAddressSource, String ipAddressSink) throws Exception {
-		this(ipAddressSource, ipAddressSink, true, 20, 60, true, false);
+		this(ipAddressSource, ipAddressSink, true, 20, 60, true, false, Long.MAX_VALUE);
 	}
 
 	public ValenciaDataSkewedCombinerExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
-			int frequencyPull, int frequencyWindow, boolean skewedDataInjection, boolean optimization)
+			int frequencyPull, int frequencyWindow, boolean skewedDataInjection, boolean optimization, long duration)
 			throws Exception {
 		boolean dynamicCombiner = optimization;
 		boolean collectWithTimestamp = true;
@@ -72,12 +72,12 @@ public class ValenciaDataSkewedCombinerExample {
 		// @formatter:off
 		// Sources -> add synthetic data -> map latitude and longitude to districts in Valencia -> extract the key(district)
 		DataStream<Tuple2<Long , ValenciaItem>> streamTrafficJam = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, trafficFrequency, collectWithTimestamp, offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.TRAFFIC_JAM, trafficFrequency, collectWithTimestamp, offlineData, skewedDataInjection, duration)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.TRAFFIC_JAM)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)
 				;
 		DataStream<Tuple2<Long , ValenciaItem>> streamAirPollution = env
-				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, pollutionFrequency, collectWithTimestamp, offlineData, skewedDataInjection)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
+				.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, pollutionFrequency, collectWithTimestamp, offlineData, skewedDataInjection, duration)).name(METRIC_VALENCIA_SOURCE + "-" + ValenciaItemType.AIR_POLLUTION)
 				.map(new ValenciaItemDistrictMap()).name(METRIC_VALENCIA_DISTRICT_MAP)
 				.map(new ValenciaItemDistrictAsKeyMap()).name(METRIC_VALENCIA_DISTRICT_KEY_MAP)
 				;

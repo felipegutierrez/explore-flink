@@ -59,6 +59,8 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private URL url;
 	private long frequencyMilliSeconds;
 	private long timeoutMillSeconds;
+	private long offsetTime;
+	private long duration;
 	private long startTime;
 	private ValenciaItemType valenciaItemType;
 	private boolean collectWithTimestamp;
@@ -70,7 +72,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
 			boolean collectWithTimestamp, boolean offlineData) throws Exception {
-		this(valenciaItemType, frequencyMilliSeconds, collectWithTimestamp, offlineData, false);
+		this(valenciaItemType, frequencyMilliSeconds, collectWithTimestamp, offlineData, false, Long.MAX_VALUE);
 	}
 
 	/**
@@ -82,7 +84,8 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	 * @throws Exception
 	 */
 	public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
-			boolean collectWithTimestamp, boolean offlineData, boolean dataSkewedSyntheticInjection) throws Exception {
+			boolean collectWithTimestamp, boolean offlineData, boolean dataSkewedSyntheticInjection, long duration)
+			throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			this.url = new URL(VALENCIA_TRAFFIC_JAM_URL);
 			this.timeoutMillSeconds = Time.minutes(5).toMilliseconds();
@@ -101,7 +104,10 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		this.collectWithTimestamp = collectWithTimestamp;
 		this.dataSkewedSyntheticInjection = dataSkewedSyntheticInjection;
 		this.useDataSkewedFile = false;
+		this.duration = Time.minutes(duration).toMilliseconds();
+		;
 		this.startTime = Calendar.getInstance().getTimeInMillis();
+		this.offsetTime = this.startTime;
 	}
 
 	@Override
@@ -112,25 +118,6 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 			if (!offlineData) {
 				in = url.openStream();
-				// @formatter:off
-				// if (realTimeData.exists()) {
-				//if (in != null) {
-					// check if the file is older than 5 minutes
-					// isNew = FileUtils.isFileNewer(realTimeData.getAbsoluteFile(),
-							// Calendar.getInstance().getTimeInMillis() - timeoutMillSeconds);
-				//} else {
-					// createResourceDir();
-					// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
-					// exist!");
-				//}
-				//if (!isNew) {
-					// System.out.println("File [" + realTimeData.getAbsolutePath() + "] does not
-					// exist or it is old!");
-					// System.out.println(realTimeData.getAbsoluteFile().toPath().toString());
-					//InputStream is = url.openStream();
-					//Files.copy(is, realTimeData.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
-				//}
-				// @formatter:on
 			}
 
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
@@ -205,6 +192,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 				e.printStackTrace();
 			} finally {
 				Thread.sleep(this.frequencyMilliSeconds);
+				this.checkDuration();
 			}
 		}
 	}
@@ -251,8 +239,8 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 	private boolean useDataSkewedFile() {
 		if (dataSkewedSyntheticInjection) {
 			long elapsedTime = Calendar.getInstance().getTimeInMillis() - DEFAULT_INTERVAL_CHANGE_DATA_SOURCE;
-			if (elapsedTime >= startTime) {
-				startTime = Calendar.getInstance().getTimeInMillis();
+			if (elapsedTime >= this.offsetTime) {
+				this.offsetTime = Calendar.getInstance().getTimeInMillis();
 				useDataSkewedFile = (useDataSkewedFile ? false : true);
 
 				String msg = "Changed source file. useDataSkewedFile[" + useDataSkewedFile + "] "
@@ -265,11 +253,26 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 
 	@Override
 	public void cancel() {
-		running = false;
+		this.running = false;
+	}
+
+	private void checkDuration() {
+		if (this.duration != Long.MAX_VALUE) {
+			long elapsedTime = Calendar.getInstance().getTimeInMillis() - this.startTime;
+			if (elapsedTime >= this.duration) {
+				this.cancel();
+			}
+		}
 	}
 
 	public static void main(String[] args) {
-		System.out.println(Time.minutes(20).toMilliseconds());
-		System.out.println((1000 * 60 * 20));
+		// System.out.println(Time.minutes(20).toMilliseconds());
+		// System.out.println((1000 * 60 * 20));
+		long max = Long.MAX_VALUE;
+		if (max == Long.MAX_VALUE) {
+			System.out.println("max == Long.MAX_VALUE");
+		} else {
+			System.out.println("max != Long.MAX_VALUE");
+		}
 	}
 }

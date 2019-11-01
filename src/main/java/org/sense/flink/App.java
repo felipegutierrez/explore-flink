@@ -58,6 +58,7 @@ public class App {
 	private static String PARAMETER_PARALLELISM = "-parallelism";
 	private static String PARAMETER_DISABLE_OPERATOR_CHAINING = "-disableOperatorChaining";
 	private static String PARAMETER_OUTPUT = "-output";
+	private static String PARAMETER_DURATION = "-duration";
 
 	public static void main(String[] args) throws Exception {
 
@@ -68,6 +69,7 @@ public class App {
 		int frequencyPull = 10;
 		int frequencyWindow = 30;
 		int parallelism = 0;
+		long duration = Long.MAX_VALUE;
 		boolean offlinedata = false;
 		boolean syntheticData = false;
 		boolean optimization = true;
@@ -116,6 +118,9 @@ public class App {
 				} else if (PARAMETER_PARALLELISM.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					parallelism = Integer.parseInt(args[i]);
+				} else if (PARAMETER_DURATION.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					duration = Integer.parseInt(args[i]);
 				} else if (PARAMETER_OUTPUT.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					if (SinkOutputs.PARAMETER_OUTPUT_FILE.equals(String.valueOf(args[i]))) {
@@ -130,18 +135,19 @@ public class App {
 		}
 		System.out.println();
 		System.out.println("Parameters chosen >>");
-		System.out.println("Application selected: " + app);
-		System.out.println("ipAddressSource: " + ipAddressSource);
-		System.out.println("ipAddressSink: " + ipAddressSink);
-		System.out.println("offlinedata: " + offlinedata);
-		System.out.println("frequencyPull: " + frequencyPull);
-		System.out.println("frequencyWindow: " + frequencyWindow);
-		System.out.println("syntheticData: " + syntheticData);
-		System.out.println("optimization: " + optimization);
-		System.out.println("lookup: " + lookup);
-		System.out.println("parallelism: " + parallelism);
-		System.out.println("disableOperatorChaining: " + disableOperatorChaining);
-		System.out.println("output: " + output);
+		System.out.println("Application selected    : " + app);
+		System.out.println("ipAddressSource         : " + ipAddressSource);
+		System.out.println("ipAddressSink           : " + ipAddressSink);
+		System.out.println("offlinedata             : " + offlinedata);
+		System.out.println("frequencyPull[seconds]  : " + frequencyPull);
+		System.out.println("frequencyWindow[seconds]: " + frequencyWindow);
+		System.out.println("syntheticData           : " + syntheticData);
+		System.out.println("optimization            : " + optimization);
+		System.out.println("lookup                  : " + lookup);
+		System.out.println("parallelism             : " + parallelism);
+		System.out.println("disableOperatorChaining : " + disableOperatorChaining);
+		System.out.println("output                  : " + output);
+		System.out.println("duration[minutes]       : " + duration);
 		System.out.println();
 
 		try {
@@ -285,7 +291,7 @@ public class App {
 				break;
 			case 26:
 				new ValenciaDataSkewedCombinerExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, syntheticData, optimization);
+						frequencyWindow, syntheticData, optimization, duration);
 				app = 0;
 				break;
 			case 27:
@@ -293,12 +299,12 @@ public class App {
 				app = 0;
 				break;
 			case 28:
-				new ValenciaDataSkewedBroadcastJoinExample(ipAddressSource, ipAddressSink);
+				new ValenciaDataSkewedBroadcastJoinExample(ipAddressSource, ipAddressSink, duration);
 				app = 0;
 				break;
 			case 29:
 				new ValenciaBloomFilterLookupJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, syntheticData, optimization, lookup);
+						frequencyWindow, syntheticData, optimization, lookup, duration);
 				app = 0;
 				break;
 			case 30:
@@ -308,7 +314,7 @@ public class App {
 				break;
 			case 31:
 				new ValenciaBloomFilterSemiJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, syntheticData, optimization, lookup);
+						frequencyWindow, syntheticData, optimization, lookup, duration);
 				app = 0;
 				break;
 			case 32:

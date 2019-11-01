@@ -34,7 +34,7 @@ public class ValenciaPollutionSocket {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
-		env.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(60).toMilliseconds(),collectWithTimestamp, offlineData, skewedDataInjection))
+		env.addSource(new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(60).toMilliseconds(),collectWithTimestamp, offlineData, skewedDataInjection, Long.MAX_VALUE))
 				.name(ValenciaItemConsumer.class.getName())
 			.map(new ValenciaItemDistrictMap()).name(ValenciaItemDistrictMap.class.getName())
 			.print();
