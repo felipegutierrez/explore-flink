@@ -108,8 +108,30 @@ or skiping the tests
 ```
 mvn clean package -DskipTests
 ```
+### Executing a CPU intensive stream application
 
-### Starting the data source project
+The producers are detached from the stream application. The purpose of this is to isolate the producer from the consumers. Moreover, we can change the pooling frequency of the producers in run-time. This facilitates to analyse the behaviour of the stream application when there is a workload variation without restart it. The Producers are the applications `32` (traffic data from Valencia Open-data web portal) and `33` (air pollution data from Valencia Open-data web portal). The producers publish data on the MQTT broker and the stream application consumes data from the MQTT broker.
+
+#### Producers
+
+The producer application receives parameters as arguments: `org.sense.flink.App -app [id of the application] -offlineData [true|false] -maxCount [times to read the data source]`. For the examples below we are sending 3 times the data from a offline data file. Once the producer counts 3 times it sends a `SHUTDOWN` signal to the MQTT broker.
+```
+java -classpath /home/flink/flink-1.9.0/lib/flink-dist_2.11-1.9.0.jar:/home/flink/explore-flink/target/explore-flink.jar org.sense.flink.App -app 32 -offlineData true -maxCount 3 &
+java -classpath /home/flink/flink-1.9.0/lib/flink-dist_2.11-1.9.0.jar:/home/flink/explore-flink/target/explore-flink.jar org.sense.flink.App -app 33 -offlineData true -maxCount 3 &
+```
+Once you started the producer applications you can change the frequency of producing data in run-time. The frequency is changed by updating the delay between sending data to the MQTT broker. When we start the producer the default delay is 10 thousand milliseconds. It means that every 10 seconds we are sending new data to the broker. The two commands below change the delay to 1 and 5 thousand milliseconds. It means that we are sending every second and five seconds data to the broker.
+```
+mosquitto_pub -h localhost -p 1883 -t topic-valencia-traffic-jam-frequency -m '1000'
+mosquitto_pub -h localhost -p 1883 -t topic-valencia-pollution-frequency -m '5000'
+```
+Note that changing the frequency of sending data to the broker will make the producer finish early if a `-maxCount` parameter was set when the producer has been launched.
+
+#### Consumers
+
+
+
+
+### Starting the data source project with Apache Edgent
 
 This subsection is useful only if you are aiming to use the data source project with apache Edgend. If you want to use an application which collects data form the internet you can skipt this subsection.
 We need to generate data in order to our Flink application consume and analyse it. Due to it, we are going to use [another project](https://github.com/felipegutierrez/explore-rpi) which is based on Apache Edgent. The command below shows how to start an application which is a data source for our Flink application. It sends data to a MQTT broker and Flink consumes it. We are using the application number `11` which generates data in specific MQTT topics which are consument by the Flink application number `18`.

@@ -59,47 +59,59 @@ public class ValenciaDataProducer extends Thread {
 	private String host;
 	private String topicToPublish;
 	private String topicFrequencyParameter;
+	private long count;
+	private long maxCount;
 	private int port;
 	private int delay = 10000;
 	private boolean running = false;
 	private boolean offlineData;
 
 	public ValenciaDataProducer(ValenciaItemType valenciaItemType, boolean offlineData) throws MalformedURLException {
-		this(valenciaItemType, "localhost", 1883, offlineData);
+		this(valenciaItemType, "localhost", 1883, offlineData, Long.MAX_VALUE);
 	}
 
-	public ValenciaDataProducer(ValenciaItemType valenciaItemType, String host, boolean offlineData)
+	public ValenciaDataProducer(ValenciaItemType valenciaItemType, boolean offlineData, long maxCount)
 			throws MalformedURLException {
-		this(valenciaItemType, host, 1883, offlineData);
+		this(valenciaItemType, "localhost", 1883, offlineData, maxCount);
 	}
 
-	public ValenciaDataProducer(ValenciaItemType valenciaItemType, String host, int port, boolean offlineData)
+	public ValenciaDataProducer(ValenciaItemType valenciaItemType, String host, boolean offlineData, long maxCount)
 			throws MalformedURLException {
-		this.valenciaItemType = valenciaItemType;
-		this.host = host;
-		this.port = port;
-		this.running = true;
-		this.offlineData = offlineData;
-		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
-			this.topicToPublish = TOPIC_VALENCIA_TRAFFIC_JAM;
-			this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_TRAFFIC_JAM;
-			this.url = new URL(VALENCIA_TRAFFIC_JAM_URL);
-		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
-			this.topicToPublish = TOPIC_VALENCIA_POLLUTION;
-			this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_POLLUTION;
-			this.url = new URL(VALENCIA_POLLUTION_URL);
-		} else if (valenciaItemType == ValenciaItemType.NOISE) {
-			this.topicToPublish = TOPIC_VALENCIA_NOISE;
-			this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_NOISE;
-			this.url = new URL(VALENCIA_NOISE_URL);
-		} else {
-			System.out.println("Wrong topic to publish messages");
+		this(valenciaItemType, host, 1883, offlineData, maxCount);
+	}
+
+	public ValenciaDataProducer(ValenciaItemType valenciaItemType, String host, int port, boolean offlineData,
+			long maxCount) throws MalformedURLException {
+		try {
+			this.valenciaItemType = valenciaItemType;
+			this.host = host;
+			this.port = port;
+			this.running = true;
+			this.offlineData = offlineData;
+			this.count = 0L;
+			this.maxCount = maxCount;
+			if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
+				this.topicToPublish = TOPIC_VALENCIA_TRAFFIC_JAM;
+				this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_TRAFFIC_JAM;
+				this.url = new URL(VALENCIA_TRAFFIC_JAM_URL);
+			} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
+				this.topicToPublish = TOPIC_VALENCIA_POLLUTION;
+				this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_POLLUTION;
+				this.url = new URL(VALENCIA_POLLUTION_URL);
+			} else if (valenciaItemType == ValenciaItemType.NOISE) {
+				this.topicToPublish = TOPIC_VALENCIA_NOISE;
+				this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_NOISE;
+				this.url = new URL(VALENCIA_NOISE_URL);
+			} else {
+				System.out.println("Wrong topic to publish messages");
+			}
+			this.disclaimer();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		this.disclaimer();
 	}
 
 	public void connect() throws Exception {
-
 		mqtt = new MQTT();
 		mqtt.setHost(host, port);
 
@@ -108,64 +120,60 @@ public class ValenciaDataProducer extends Thread {
 	}
 
 	public void run() {
-		try {
-			connectionSideParameter = mqtt.callbackConnection();
-			connectionSideParameter.listener(new org.fusesource.mqtt.client.Listener() {
-				public void onConnected() {
-				}
-
-				public void onDisconnected() {
-				}
-
-				public void onFailure(Throwable value) {
-					value.printStackTrace();
-					System.exit(-2);
-				}
-
-				public void onPublish(UTF8Buffer topic, Buffer msg, Runnable ack) {
-					String body = msg.utf8().toString();
-
-					if (isInteger(body)) {
-						System.out.println("Reading new frequency parameter: " + body);
-						delay = Integer.parseInt(body);
-					} else if ("SHUTDOWN".equalsIgnoreCase(body)) {
-						running = false;
-					} else {
-						System.out.println(body);
-					}
-					ack.run();
-				}
-			});
-			connectionSideParameter.connect(new Callback<Void>() {
-				@Override
-				public void onSuccess(Void value) {
-					Topic[] topics = { new Topic(topicFrequencyParameter, QoS.AT_LEAST_ONCE) };
-					connectionSideParameter.subscribe(topics, new Callback<byte[]>() {
-						public void onSuccess(byte[] qoses) {
-						}
-
-						public void onFailure(Throwable value) {
-							value.printStackTrace();
-							System.exit(-2);
-						}
-					});
-				}
-
-				@Override
-				public void onFailure(Throwable value) {
-					value.printStackTrace();
-					System.exit(-2);
-				}
-			});
-
-			// Wait forever..
-			synchronized (ValenciaDataProducer.class) {
-				while (true)
-					ValenciaDataProducer.class.wait();
+		connectionSideParameter = mqtt.callbackConnection();
+		connectionSideParameter.listener(new org.fusesource.mqtt.client.Listener() {
+			public void onConnected() {
 			}
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
+
+			public void onDisconnected() {
+			}
+
+			public void onFailure(Throwable value) {
+				value.printStackTrace();
+				System.exit(-2);
+			}
+
+			public void onPublish(UTF8Buffer topic, Buffer msg, Runnable ack) {
+				String body = msg.utf8().toString();
+
+				if (isInteger(body)) {
+					System.out.println("Reading new frequency parameter: " + body);
+					delay = Integer.parseInt(body);
+				} else if ("SHUTDOWN".equalsIgnoreCase(body)) {
+					running = false;
+				} else {
+					System.out.println(body);
+				}
+				ack.run();
+			}
+		});
+		connectionSideParameter.connect(new Callback<Void>() {
+			@Override
+			public void onSuccess(Void value) {
+				Topic[] topics = { new Topic(topicFrequencyParameter, QoS.AT_LEAST_ONCE) };
+				connectionSideParameter.subscribe(topics, new Callback<byte[]>() {
+					public void onSuccess(byte[] qoses) {
+					}
+
+					public void onFailure(Throwable value) {
+						value.printStackTrace();
+						System.exit(-2);
+					}
+				});
+			}
+
+			@Override
+			public void onFailure(Throwable value) {
+				value.printStackTrace();
+				System.exit(-2);
+			}
+		});
+
+		// Wait forever..
+		// synchronized (ValenciaDataProducer.class) {
+		// while (true)
+		// ValenciaDataProducer.class.wait();
+		// }
 	}
 
 	public void publish() throws Exception {
@@ -187,11 +195,21 @@ public class ValenciaDataProducer extends Thread {
 				queue.removeFirst().await();
 			}
 			Thread.sleep(delay);
+			this.checkEndOfStream();
 		}
 
 		queue.add(connection.publish(topic, new AsciiBuffer("SHUTDOWN"), QoS.AT_LEAST_ONCE, false));
 		while (!queue.isEmpty()) {
 			queue.removeFirst().await();
+		}
+	}
+
+	private void checkEndOfStream() {
+		if (this.maxCount != Long.MAX_VALUE) {
+			this.count++;
+			if (this.count >= this.maxCount) {
+				this.running = false;
+			}
 		}
 	}
 
@@ -281,7 +299,10 @@ public class ValenciaDataProducer extends Thread {
 
 	public static void main(String[] args) throws Exception {
 
-		ValenciaDataProducer producer = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM, false);
+		boolean offlineData = true;
+		ValenciaDataProducer producer = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM, offlineData, 2);
+		// ValenciaDataProducer producer = new
+		// ValenciaDataProducer(ValenciaItemType.AIR_POLLUTION, offlineData, 2);
 		producer.connect();
 		producer.start();
 		producer.publish();

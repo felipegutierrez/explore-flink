@@ -59,6 +59,7 @@ public class App {
 	private static String PARAMETER_DISABLE_OPERATOR_CHAINING = "-disableOperatorChaining";
 	private static String PARAMETER_OUTPUT = "-output";
 	private static String PARAMETER_DURATION = "-duration";
+	private static String PARAMETER_MAX_COUNT = "-maxCount";
 
 	public static void main(String[] args) throws Exception {
 
@@ -70,6 +71,7 @@ public class App {
 		int frequencyWindow = 30;
 		int parallelism = 0;
 		long duration = Long.MAX_VALUE;
+		long maxCount = Long.MAX_VALUE;
 		boolean offlinedata = false;
 		boolean syntheticData = false;
 		boolean optimization = true;
@@ -120,7 +122,10 @@ public class App {
 					parallelism = Integer.parseInt(args[i]);
 				} else if (PARAMETER_DURATION.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
-					duration = Integer.parseInt(args[i]);
+					duration = Long.parseLong(args[i]);
+				} else if (PARAMETER_MAX_COUNT.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					maxCount = Long.parseLong(args[i]);
 				} else if (PARAMETER_OUTPUT.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					if (SinkOutputs.PARAMETER_OUTPUT_FILE.equals(String.valueOf(args[i]))) {
@@ -148,6 +153,7 @@ public class App {
 		System.out.println("disableOperatorChaining : " + disableOperatorChaining);
 		System.out.println("output                  : " + output);
 		System.out.println("duration[minutes]       : " + duration);
+		System.out.println("maxCount to read source : " + maxCount);
 		System.out.println();
 
 		try {
@@ -319,18 +325,20 @@ public class App {
 				break;
 			case 32:
 				ValenciaDataProducer producerTrafficJam = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM,
-						offlinedata);
+						offlinedata, maxCount);
 				producerTrafficJam.connect();
 				producerTrafficJam.start();
 				producerTrafficJam.publish();
+				producerTrafficJam.disconnect();
 				app = 0;
 				break;
 			case 33:
 				ValenciaDataProducer producerPollution = new ValenciaDataProducer(ValenciaItemType.AIR_POLLUTION,
-						offlinedata);
+						offlinedata, maxCount);
 				producerPollution.connect();
 				producerPollution.start();
 				producerPollution.publish();
+				producerPollution.disconnect();
 				app = 0;
 				break;
 			case 34:
