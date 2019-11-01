@@ -21,9 +21,15 @@ FLINK_START_CLUSTER_MESOS=/home/flink/flink-1.9.0/bin/mesos-appmaster.sh
 #######################################################################
 ## Instructions
 #######################################################################
-## Launch data producers
-#######################################################################
+## Launch Flink cluster
 echo
+echo "${bold}Launching the Flink Standalone cluster:${normal}"
+echo "   $FLINK_START_CLUSTER"
+echo "${bold}Launching the Flink + Mesos cluster:${normal}"
+echo "   $FLINK_START_CLUSTER_MESOS"
+echo
+#######################################################################
+## Launch Flink stream application
 echo "${bold}Launching a Flink Stream application >>${normal}"
 echo
 echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -output [file|mqtt] &"
@@ -38,7 +44,8 @@ echo "   ${bold}-parallelism:${normal} degree of parallelism to deploy the appli
 echo "   ${bold}-disableOperatorChaining:${normal} FALSE is the default. TRUE disables fusion optimization for all operators which means that operators will be allocated on different threads (https://ci.apache.org/projects/flink/flink-docs-release-1.9/ops/config.html#configuring-taskmanager-processing-slots)."
 echo "   ${bold}-output:${normal} 'file' means that the output will be generated in the Flink TaskManagers log files. 'mqtt' means that you have to subscribe to a mqtt channel according to the message showed when the application is deployed."
 echo
-
+#######################################################################
+## Launch data producers
 echo "${bold}Launching producers${normal}"
 echo "application 32 is a mqtt producer for traffic jam data from Valencia Open-data web portal"
 echo "application 33 is a mqtt producer for noise data from Valencia Open-data web portal"
@@ -50,30 +57,21 @@ echo "${bold}Sending parameters to change the frequency (milliseconds) of synthe
 echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-traffic-jam-frequency -m '1000'"
 echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-pollution-frequency -m '5000'"
 echo
-echo "${bold}Launching the Flink Standalone cluster:${normal}"
-echo "   $FLINK_START_CLUSTER"
-echo "${bold}Launching the Flink + Mesos cluster:${normal}"
-echo "   $FLINK_START_CLUSTER_MESOS"
-echo
-
-echo
-echo "${bold}Consuming a Flink Stream application output >>${normal}"
+#######################################################################
+## Checking producers
+echo "${bold}Check if the producers are sending data to the MQTT broker >>${normal}"
 echo "You can see on the mqtt broker or on the log output file of the task manager"
 echo "   mosquitto_sub -h 130.239.48.136 -t topic-valencia-cpu-intensive"
 echo
-
+#######################################################################
+## Listing Flink spplication
 echo "${bold}Listing all Flink Stream applications${normal}"
 echo "   $FLINK_CLI list"
 echo
-
+#######################################################################
+## Cancelling Flink application
 echo "${bold}Canceling a Flink Stream application${normal}"
 echo "   $FLINK_CLI cancel APP_ID"
 echo
 
-echo "${bold}Sending parameters to change the frequency of synthetic item generators${normal}"
-echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-traffic-jam-frequency -m '1000'"
-echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-pollution-frequency -m '100'"
 echo
-echo
-
-
