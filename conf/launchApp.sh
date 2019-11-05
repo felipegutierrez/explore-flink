@@ -32,8 +32,12 @@ echo
 ## Launch Flink stream application
 echo " ${bold}${green}Launching a Flink Stream application >>${normal}"
 echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -pinningPolicy [true|false] -output [file|mqtt] &"
-echo "${green} Example: CPU intensive application >>${normal}"
+echo "${green} Example 34: CPU intensive application >>${normal}"
 echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 -parallelism 4 -disableOperatorChaining true -pinningPolicy true -output mqtt &"
+echo "${green} Example 29: Join with lookup using Bloom filter >>${normal}"
+echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 29 -source 130.239.48.136 -sink 130.239.48.136 -offlineData true -frequencyPull 60 -frequencyWindow 10 -parallelism 4 -disableOperatorChaining false -syntheticData false -optimization true -lookup true &"
+echo "${green} Example 31: Semi-join with lookup using Bloom filter >>${normal}"
+echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 31 -source 130.239.48.136 -sink 130.239.48.136 -offlineData true -frequencyPull 60 -frequencyWindow 10 -parallelism 4 -disableOperatorChaining false -syntheticData false -optimization true -lookup true &"
 echo
 echo "${bold}description of each parameter:${normal}"
 echo "   ${bold}-app :${normal} which application to deploy. If you don't pass any parameter the jar file will output all applications available."

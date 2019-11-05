@@ -316,7 +316,8 @@ public class App {
 				break;
 			case 29:
 				new ValenciaBloomFilterLookupJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, syntheticData, optimization, lookup, duration);
+						frequencyWindow, parallelism, disableOperatorChaining, syntheticData, optimization, lookup,
+						duration);
 				app = 0;
 				break;
 			case 30:
@@ -326,7 +327,8 @@ public class App {
 				break;
 			case 31:
 				new ValenciaBloomFilterSemiJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
-						frequencyWindow, syntheticData, optimization, lookup, duration);
+						frequencyWindow, parallelism, disableOperatorChaining, syntheticData, optimization, lookup,
+						duration);
 				app = 0;
 				break;
 			case 32:

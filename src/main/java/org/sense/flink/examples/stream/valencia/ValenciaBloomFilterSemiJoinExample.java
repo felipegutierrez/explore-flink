@@ -34,7 +34,8 @@ import org.sense.flink.util.ValenciaItemType;
  * This is a good command line to start this application:
  * 
  * ./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar 
- * -app 31 -source 192.168.56.1 -sink 192.168.56.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true 
+ * -app 31 -source 192.168.56.1 -sink 192.168.56.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 
+ * -parallelism 4 -disableOperatorChaining false -syntheticData true 
  * -optimization true -lookup true
  * </pre>
  * 
@@ -49,12 +50,12 @@ public class ValenciaBloomFilterSemiJoinExample {
 	}
 
 	public ValenciaBloomFilterSemiJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
-		this(ipAddressSource, ipAddressSink, true, 10, 30, true, true, true, Long.MAX_VALUE);
+		this(ipAddressSource, ipAddressSink, true, 10, 30, 4, false, true, true, true, Long.MAX_VALUE);
 	}
 
 	public ValenciaBloomFilterSemiJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
-			int frequencyPull, int frequencyWindow, boolean skewedDataInjection, boolean distinct,
-			boolean lookupAproximation, long duration) throws Exception {
+			int frequencyPull, int frequencyWindow, int parallelism, boolean disableOperatorChaining,
+			boolean skewedDataInjection, boolean distinct, boolean lookupAproximation, long duration) throws Exception {
 		boolean collectWithTimestamp = false;
 		boolean pinningPolicy = false;
 		long trafficFrequency = Time.seconds(frequencyPull).toMilliseconds();
@@ -62,6 +63,12 @@ public class ValenciaBloomFilterSemiJoinExample {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+		if (parallelism > 0) {
+			env.setParallelism(parallelism);
+		}
+		if (disableOperatorChaining) {
+			env.disableOperatorChaining();
+		}
 
 		// @formatter:off
 		// Creating side outputs

@@ -40,7 +40,8 @@ import org.sense.flink.util.ValenciaItemType;
  * This is a good command line to start this application:
  * 
  * ./bin/flink run -c org.sense.flink.App ../app/explore-flink.jar -app 29 -source 127.0.0.1 -sink 127.0.0.1 
- * -offlineData true -frequencyPull 60 -frequencyWindow 10 -syntheticData [true|false] -optimization [true|false] -lookup [true|false] &
+ * -offlineData true -frequencyPull 60 -frequencyWindow 10 -parallelism 2 -disableOperatorChaining [false|true] 
+ * -syntheticData [true|false] -optimization [true|false] -lookup [true|false] &
  * </pre>
  * 
  * @author Felipe Oliveira Gutierrez
@@ -54,12 +55,13 @@ public class ValenciaBloomFilterLookupJoinExample {
 	}
 
 	public ValenciaBloomFilterLookupJoinExample(String ipAddressSource, String ipAddressSink) throws Exception {
-		this(ipAddressSource, ipAddressSink, true, 10, 60, true, true, true, Long.MAX_VALUE);
+		this(ipAddressSource, ipAddressSink, true, 10, 60, 4, false, true, true, true, Long.MAX_VALUE);
 	}
 
 	public ValenciaBloomFilterLookupJoinExample(String ipAddressSource, String ipAddressSink, boolean offlineData,
-			int frequencyPull, int frequencyWindow, boolean skewedDataInjection, boolean optimization,
-			boolean lookupAproximation, long duration) throws Exception {
+			int frequencyPull, int frequencyWindow, int parallelism, boolean disableOperatorChaining,
+			boolean skewedDataInjection, boolean optimization, boolean lookupAproximation, long duration)
+			throws Exception {
 		boolean collectWithTimestamp = false;
 		boolean pinningPolicy = false;
 		long trafficFrequency = Time.seconds(frequencyPull).toMilliseconds();
@@ -67,6 +69,12 @@ public class ValenciaBloomFilterLookupJoinExample {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
+		if (parallelism > 0) {
+			env.setParallelism(parallelism);
+		}
+		if (disableOperatorChaining) {
+			env.disableOperatorChaining();
+		}
 
 		// @formatter:off
 		// Side outputs
