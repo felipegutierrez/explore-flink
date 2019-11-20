@@ -25,6 +25,8 @@ FLINK_START_CLUSTER_MESOS=/home/flink/flink-1.9.0/bin/mesos-appmaster.sh
 echo
 echo "${green}${bold}Launching the Flink Standalone cluster >>${normal}"
 echo "   $FLINK_START_CLUSTER"
+echo "${green}${bold}Launching the Flink Standalone cluster on 'cgroups' >>${normal}"
+echo "   cgexec -g cpu:cpulimited $FLINK_START_CLUSTER"
 echo "${green}${bold}Launching the Flink + Mesos cluster >>${normal}"
 echo "   $FLINK_START_CLUSTER_MESOS"
 echo
@@ -32,6 +34,9 @@ echo
 ## Launch Flink stream application
 echo " ${bold}${green}Launching a Flink Stream application >>${normal}"
 echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -pinningPolicy [true|false] -output [file|mqtt] &"
+echo " ${bold}${green}Launching a Flink Stream application on 'cgroups' >>${normal}"
+echo "   cgexec -g cpu:cpulimited $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow [seconds] -parallelism [int] -disableOperatorChaining [true|false] -pinningPolicy [true|false] -output [file|mqtt] &"
+echo
 echo "${green} Example 34: CPU intensive application >>${normal}"
 echo "   $FLINK_CLI run -c org.sense.flink.App $FLINK_APP -app 34 -source 130.239.48.136 -sink 130.239.48.136 -frequencyWindow 60 -parallelism 4 -disableOperatorChaining true -pinningPolicy true -output mqtt &"
 echo "${green} Example 29: Join with lookup using Bloom filter >>${normal}"
