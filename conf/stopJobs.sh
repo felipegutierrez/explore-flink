@@ -13,10 +13,10 @@ for k in $(jq -c '.jobs | .[]' jobsID.json); do
 	ID=$(echo $k | jq -c '.id' | sed "s/\"//g")
 	echo "ID: $ID STATUS: $STATUS"
 	if [ "$STATUS" = "RUNNING" ]; then
-		read -p "Are you sure you want to cancel JobID $i? (y/n)" -n 1 -r
+		read -p "Are you sure you want to stop job $i? (y/n)" -n 1 -r
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
-			echo "   ... canceling Job ID $ID"
-			echo `$FLINK_CLI cancel $ID`
+			echo "   ... stoping Job ID $ID"
+			echo `$FLINK_CLI stop -p jobs $ID`
 		fi
 	fi
 done
