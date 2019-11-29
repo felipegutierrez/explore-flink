@@ -61,6 +61,7 @@ public class App {
 	private static String PARAMETER_DURATION = "-duration";
 	private static String PARAMETER_MAX_COUNT = "-maxCount";
 	private static String PARAMETER_PINNING_POLICY = "-pinningPolicy";
+	private static String PARAMETER_SKEWED_DATA = "-skew";
 
 	public static void main(String[] args) throws Exception {
 
@@ -73,12 +74,13 @@ public class App {
 		int parallelism = 0;
 		long duration = Long.MAX_VALUE;
 		long maxCount = Long.MAX_VALUE;
-		boolean offlinedata = false;
+		boolean offlineData = false;
 		boolean syntheticData = false;
 		boolean optimization = true;
 		boolean lookup = true;
 		boolean disableOperatorChaining = false;
 		boolean pinningPolicy = false;
+		boolean skewedData = false;
 
 		if (args != null && args.length > 0) {
 			int size = args.length;
@@ -100,7 +102,7 @@ public class App {
 					}
 				} else if (PARAMETER_OFFLINE_DATA.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
-					offlinedata = Boolean.valueOf(args[i]);
+					offlineData = Boolean.valueOf(args[i]);
 				} else if (PARAMETER_FREQUENCY_PULL.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					frequencyPull = Integer.parseInt(args[i]);
@@ -113,6 +115,9 @@ public class App {
 				} else if (PARAMETER_PINNING_POLICY.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					pinningPolicy = Boolean.valueOf(args[i]);
+				} else if (PARAMETER_SKEWED_DATA.equals(String.valueOf(args[i])) && i + 1 < size) {
+					i++;
+					skewedData = Boolean.valueOf(args[i]);
 				} else if (PARAMETER_FREQUENCY_WINDOW.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					frequencyWindow = Integer.parseInt(args[i]);
@@ -150,8 +155,9 @@ public class App {
 		System.out.println("maxCount to read source : " + maxCount);
 		System.out.println("ipAddressSource         : " + ipAddressSource);
 		System.out.println("ipAddressSink           : " + ipAddressSink);
-		System.out.println("offlinedata             : " + offlinedata);
+		System.out.println("offlinedata             : " + offlineData);
 		System.out.println("syntheticData           : " + syntheticData);
+		System.out.println("skewedData              : " + skewedData);
 		System.out.println("parallelism             : " + parallelism);
 		System.out.println("disableOperatorChaining : " + disableOperatorChaining);
 		System.out.println("frequencyPull[seconds]  : " + frequencyPull);
@@ -302,7 +308,7 @@ public class App {
 				app = 0;
 				break;
 			case 26:
-				new ValenciaDataSkewedCombinerExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
+				new ValenciaDataSkewedCombinerExample(ipAddressSource, ipAddressSink, offlineData, frequencyPull,
 						frequencyWindow, syntheticData, optimization, duration);
 				app = 0;
 				break;
@@ -315,25 +321,25 @@ public class App {
 				app = 0;
 				break;
 			case 29:
-				new ValenciaBloomFilterLookupJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
+				new ValenciaBloomFilterLookupJoinExample(ipAddressSource, ipAddressSink, offlineData, frequencyPull,
 						frequencyWindow, parallelism, disableOperatorChaining, syntheticData, optimization, lookup,
 						duration);
 				app = 0;
 				break;
 			case 30:
-				new ValenciaDataCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
+				new ValenciaDataCpuIntensiveJoinExample(ipAddressSource, ipAddressSink, offlineData, frequencyPull,
 						frequencyWindow, parallelism, disableOperatorChaining, output);
 				app = 0;
 				break;
 			case 31:
-				new ValenciaBloomFilterSemiJoinExample(ipAddressSource, ipAddressSink, offlinedata, frequencyPull,
+				new ValenciaBloomFilterSemiJoinExample(ipAddressSource, ipAddressSink, offlineData, frequencyPull,
 						frequencyWindow, parallelism, disableOperatorChaining, syntheticData, optimization, lookup,
 						duration);
 				app = 0;
 				break;
 			case 32:
 				ValenciaDataProducer producerTrafficJam = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM,
-						offlinedata, maxCount);
+						offlineData, maxCount, skewedData);
 				producerTrafficJam.connect();
 				producerTrafficJam.start();
 				producerTrafficJam.publish();
@@ -342,7 +348,7 @@ public class App {
 				break;
 			case 33:
 				ValenciaDataProducer producerPollution = new ValenciaDataProducer(ValenciaItemType.AIR_POLLUTION,
-						offlinedata, maxCount);
+						offlineData, maxCount, skewedData);
 				producerPollution.connect();
 				producerPollution.start();
 				producerPollution.publish();

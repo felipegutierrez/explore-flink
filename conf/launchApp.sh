@@ -57,7 +57,7 @@ echo
 ## Launch data producers
 echo "${green}${bold}Launching producers >>${normal}"
 echo " application 32 is a mqtt producer for traffic jam data from Valencia Open-data web portal"
-echo " application 33 is a mqtt producer for noise data from Valencia Open-data web portal"
+echo " application 33 is a mqtt producer for air pollution data from Valencia Open-data web portal"
 echo "${green} Example >>${normal}"
 echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 32 -offlineData true -maxCount 100 &"
 echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 33 -offlineData true -maxCount 100 &"
@@ -67,6 +67,20 @@ echo " Intructions of how to change the frequency of producing data"
 echo "${green} Example >>${normal}"
 echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-traffic-jam-frequency -m '1000'"
 echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-pollution-frequency -m '5000'"
+echo
+## Launch skew data producers
+echo "${green}${bold}Launching SKEW producers >>${normal}"
+echo " application 32 is a mqtt producer for skew traffic jam data from Valencia Open-data web portal"
+echo " application 33 is a mqtt producer for skew air pollution data from Valencia Open-data web portal"
+echo "${green} Example >>${normal}"
+echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 32 -offlineData true -skew true &"
+echo "java -classpath ${FLINK_JAR}:${FLINK_APP} org.sense.flink.App -app 33 -offlineData true -skew true &"
+echo
+echo "${green}${bold} Sending parameters to change the frequency (milliseconds) of synthetic item generators >>${normal}"
+echo " Intructions of how to change the frequency of producing data"
+echo "${green} Example >>${normal}"
+echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-skew-traffic-jam-frequency -m '1000'"
+echo "   mosquitto_pub -h localhost -p 1883 -t topic-valencia-skew-pollution-frequency -m '5000'"
 echo
 #######################################################################
 ## Checking producers

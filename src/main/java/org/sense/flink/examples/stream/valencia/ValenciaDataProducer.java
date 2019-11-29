@@ -2,6 +2,9 @@ package org.sense.flink.examples.stream.valencia;
 
 import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_NOISE;
 import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_POLLUTION;
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_SKEW_NOISE;
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_SKEW_POLLUTION;
+import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_SKEW_TRAFFIC_JAM;
 import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_FREQUENCY_VALENCIA_TRAFFIC_JAM;
 import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_VALENCIA_NOISE;
 import static org.sense.flink.util.ValenciaMqttTopics.TOPIC_VALENCIA_POLLUTION;
@@ -46,10 +49,13 @@ public class ValenciaDataProducer extends Thread {
 
 	private static final String VALENCIA_TRAFFIC_JAM_ONLINE_FILE = "/valencia/traffic-jam-state-online.json";
 	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_FILE = "/valencia/traffic-jam-state-offline.json";
+	private static final String VALENCIA_TRAFFIC_JAM_OFFLINE_SKEW_FILE = "/valencia/traffic-jam-state-offline-skewed.json";
 	private static final String VALENCIA_POLLUTION_ONLINE_FILE = "/valencia/air-pollution-online.json";
 	private static final String VALENCIA_POLLUTION_OFFLINE_FILE = "/valencia/air-pollution-offline.json";
+	private static final String VALENCIA_POLLUTION_OFFLINE_SKEW_FILE = "/valencia/air-pollution-offline-skewed.json";
 	private static final String VALENCIA_NOISE_FILE = "/valencia/noise.json";
 	private static final String VALENCIA_NOISE_OFFLINE_FILE = "/valencia/noise-offline.json";
+	private static final String VALENCIA_NOISE_OFFLINE_SKEW_FILE = "/valencia/noise-offline-skewed.json";
 
 	private ValenciaItemType valenciaItemType;
 	private FutureConnection connection;
@@ -65,23 +71,24 @@ public class ValenciaDataProducer extends Thread {
 	private int delay = 10000;
 	private boolean running = false;
 	private boolean offlineData;
+	private boolean skewedData;
 
 	public ValenciaDataProducer(ValenciaItemType valenciaItemType, boolean offlineData) throws MalformedURLException {
-		this(valenciaItemType, "localhost", 1883, offlineData, Long.MAX_VALUE);
+		this(valenciaItemType, "localhost", 1883, offlineData, Long.MAX_VALUE, false);
 	}
 
-	public ValenciaDataProducer(ValenciaItemType valenciaItemType, boolean offlineData, long maxCount)
-			throws MalformedURLException {
-		this(valenciaItemType, "localhost", 1883, offlineData, maxCount);
+	public ValenciaDataProducer(ValenciaItemType valenciaItemType, boolean offlineData, long maxCount,
+			boolean skewedData) throws MalformedURLException {
+		this(valenciaItemType, "localhost", 1883, offlineData, maxCount, skewedData);
 	}
 
-	public ValenciaDataProducer(ValenciaItemType valenciaItemType, String host, boolean offlineData, long maxCount)
-			throws MalformedURLException {
-		this(valenciaItemType, host, 1883, offlineData, maxCount);
+	public ValenciaDataProducer(ValenciaItemType valenciaItemType, String host, boolean offlineData, long maxCount,
+			boolean skewedData) throws MalformedURLException {
+		this(valenciaItemType, host, 1883, offlineData, maxCount, skewedData);
 	}
 
 	public ValenciaDataProducer(ValenciaItemType valenciaItemType, String host, int port, boolean offlineData,
-			long maxCount) throws MalformedURLException {
+			long maxCount, boolean skewedData) throws MalformedURLException {
 		try {
 			this.valenciaItemType = valenciaItemType;
 			this.host = host;
@@ -90,17 +97,30 @@ public class ValenciaDataProducer extends Thread {
 			this.offlineData = offlineData;
 			this.count = 0L;
 			this.maxCount = maxCount;
+			this.skewedData = skewedData;
 			if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 				this.topicToPublish = TOPIC_VALENCIA_TRAFFIC_JAM;
-				this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_TRAFFIC_JAM;
+				if (this.skewedData) {
+					this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_SKEW_TRAFFIC_JAM;
+				} else {
+					this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_TRAFFIC_JAM;
+				}
 				this.url = new URL(VALENCIA_TRAFFIC_JAM_URL);
 			} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 				this.topicToPublish = TOPIC_VALENCIA_POLLUTION;
-				this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_POLLUTION;
+				if (this.skewedData) {
+					this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_SKEW_POLLUTION;
+				} else {
+					this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_POLLUTION;
+				}
 				this.url = new URL(VALENCIA_POLLUTION_URL);
 			} else if (valenciaItemType == ValenciaItemType.NOISE) {
 				this.topicToPublish = TOPIC_VALENCIA_NOISE;
-				this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_NOISE;
+				if (this.skewedData) {
+					this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_SKEW_NOISE;
+				} else {
+					this.topicFrequencyParameter = TOPIC_FREQUENCY_VALENCIA_NOISE;
+				}
 				this.url = new URL(VALENCIA_NOISE_URL);
 			} else {
 				System.out.println("Wrong topic to publish messages");
@@ -240,19 +260,31 @@ public class ValenciaDataProducer extends Thread {
 	private InputStream getDataSourceInputStream() throws Exception {
 		if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
 			if (offlineData) {
-				return getClass().getResourceAsStream(VALENCIA_TRAFFIC_JAM_OFFLINE_FILE);
+				if (skewedData) {
+					return getClass().getResourceAsStream(VALENCIA_TRAFFIC_JAM_OFFLINE_SKEW_FILE);
+				} else {
+					return getClass().getResourceAsStream(VALENCIA_TRAFFIC_JAM_OFFLINE_FILE);
+				}
 			} else {
 				return getClass().getResourceAsStream(VALENCIA_TRAFFIC_JAM_ONLINE_FILE);
 			}
 		} else if (valenciaItemType == ValenciaItemType.AIR_POLLUTION) {
 			if (offlineData) {
-				return getClass().getResourceAsStream(VALENCIA_POLLUTION_OFFLINE_FILE);
+				if (skewedData) {
+					return getClass().getResourceAsStream(VALENCIA_POLLUTION_OFFLINE_SKEW_FILE);
+				} else {
+					return getClass().getResourceAsStream(VALENCIA_POLLUTION_OFFLINE_FILE);
+				}
 			} else {
 				return getClass().getResourceAsStream(VALENCIA_POLLUTION_ONLINE_FILE);
 			}
 		} else if (valenciaItemType == ValenciaItemType.NOISE) {
 			if (offlineData) {
-				return getClass().getResourceAsStream(VALENCIA_NOISE_OFFLINE_FILE);
+				if (skewedData) {
+					return getClass().getResourceAsStream(VALENCIA_NOISE_OFFLINE_SKEW_FILE);
+				} else {
+					return getClass().getResourceAsStream(VALENCIA_NOISE_OFFLINE_FILE);
+				}
 			} else {
 				return getClass().getResourceAsStream(VALENCIA_NOISE_FILE);
 			}
@@ -300,7 +332,7 @@ public class ValenciaDataProducer extends Thread {
 	public static void main(String[] args) throws Exception {
 
 		boolean offlineData = true;
-		ValenciaDataProducer producer = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM, offlineData, 2);
+		ValenciaDataProducer producer = new ValenciaDataProducer(ValenciaItemType.TRAFFIC_JAM, offlineData, 2, false);
 		// ValenciaDataProducer producer = new
 		// ValenciaDataProducer(ValenciaItemType.AIR_POLLUTION, offlineData, 2);
 		producer.connect();
