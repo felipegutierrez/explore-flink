@@ -4,7 +4,7 @@
 
 FLINK_CLI=/home/flink/flink-1.9.0/bin/flink
 
-wget "http://127.0.0.1:8081/jobs/" -O jobsID.json
+wget "http://r03:8081/jobs/" -O jobsID.json
 
 for k in $(jq -c '.jobs | .[]' jobsID.json); do
 	echo "================================"
