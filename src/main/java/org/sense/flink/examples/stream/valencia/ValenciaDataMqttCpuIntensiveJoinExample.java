@@ -97,8 +97,8 @@ public class ValenciaDataMqttCpuIntensiveJoinExample {
 
 		disclaimer(env.getExecutionPlan() ,ipAddressSource);
 		JobExecutionResult jobExecution = env.execute(ValenciaDataMqttCpuIntensiveJoinExample.class.getSimpleName());
-		System.out.println("Time [seconds] to execute     : " + jobExecution.getNetRuntime(TimeUnit.SECONDS) + " seconds");
-		System.out.println("Time [milliseconds] to execute: " + jobExecution.getNetRuntime(TimeUnit.MILLISECONDS) + " milliseconds");
+		// System.out.println("Time [seconds] to execute     : " + jobExecution.getNetRuntime(TimeUnit.SECONDS) + " seconds");
+		// System.out.println("Time [milliseconds] to execute: " + jobExecution.getNetRuntime(TimeUnit.MILLISECONDS) + " milliseconds");
 		// @formatter:on
 	}
 
