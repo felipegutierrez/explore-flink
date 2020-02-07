@@ -4,7 +4,7 @@
 
 FLINK_CLI=/home/flink/flink-1.9.0/bin/flink
 
-wget "http://r03:8081/jobs/" -O jobsID.json
+wget "http://r03.ds.cs.umu.se:8081/jobs/" -O jobsID.json
 
 for k in $(jq -c '.jobs | .[]' jobsID.json); do
 	echo "================================"
@@ -17,12 +17,14 @@ for k in $(jq -c '.jobs | .[]' jobsID.json); do
 		#if [[ $REPLY =~ ^[Yy]$ ]]; then
 		echo "   ... stoping Job ID $ID"
 		echo
-		echo `$FLINK_CLI stop -p jobs $ID`
+		#`$FLINK_CLI stop -p jobs $ID &`
+		`$FLINK_CLI cancel $ID &`
 		echo
 		#fi
 	fi
 done
 
+wait
 rm jobsID.json
 
 
