@@ -17,11 +17,12 @@
   "gnetId": 8966,
   "graphTooltip": 0,
   "id": 18,
-  "iteration": 1581586183452,
+  "iteration": 1583514835378,
   "links": [],
   "panels": [
     {
       "collapsed": false,
+      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -38,7 +39,7 @@
       "colorBackground": true,
       "colorValue": false,
       "colors": [
-        "rgba(245, 54, 54, 0.9)",
+        "rgba(245, 54, 54, 0)",
         "rgb(255, 255, 255)",
         "#1F60C4"
       ],
@@ -94,7 +95,7 @@
         "lineColor": "rgb(31, 120, 193)",
         "show": false
       },
-      "tableColumn": "__name__",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "flink_jobmanager_taskSlotsTotal",
@@ -228,12 +229,30 @@
             "last"
           ],
           "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
             "max": 4,
             "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "index": 0,
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "index": 1,
+                  "value": 80
+                }
+              ]
+            },
             "unit": "none"
           },
-          "mappings": [],
-          "override": {},
+          "overrides": [],
           "thresholds": [
             {
               "color": "green",
@@ -248,8 +267,10 @@
           ],
           "values": false
         },
-        "orientation": "horizontal"
+        "orientation": "horizontal",
+        "showUnfilled": true
       },
+      "pluginVersion": "6.6.2",
       "targets": [
         {
           "expr": "count without(cpu, mode) (node_cpu_seconds_total{mode=\"idle\"})",
@@ -271,6 +292,7 @@
       "cacheTimeout": null,
       "dashLength": 10,
       "dashes": false,
+      "datasource": null,
       "description": "",
       "fill": 1,
       "fillGradient": 0,
@@ -280,6 +302,7 @@
         "x": 12,
         "y": 1
       },
+      "hiddenSeries": false,
       "id": 63,
       "legend": {
         "alignAsTable": true,
@@ -422,7 +445,7 @@
         "lineColor": "rgb(193, 31, 31)",
         "show": false
       },
-      "tableColumn": "__name__",
+      "tableColumn": "",
       "targets": [
         {
           "expr": "flink_jobmanager_numRegisteredTaskManagers",
@@ -533,7 +556,8 @@
       "valueName": "current"
     },
     {
-      "collapsed": true,
+      "collapsed": false,
+      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
@@ -541,1507 +565,1532 @@
         "y": 9
       },
       "id": 57,
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "This panel has queries for each CPU core. Hence, if the cluster has more cores available it will be necessary to add queries manually.",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 10,
-            "w": 12,
-            "x": 0,
-            "y": 10
-          },
-          "id": 65,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_System_CPU_Usage",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_UsageCPU0",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 0",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_UsageCPU1",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 1",
-              "refId": "C"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_UsageCPU2",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 2",
-              "refId": "D"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_UsageCPU3",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 3",
-              "refId": "E"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_UsageCPU4",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 4",
-              "refId": "F"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_UsageCPU5",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 5",
-              "refId": "G"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_UsageCPU6",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 6",
-              "refId": "H"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_UsageCPU7",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 7",
-              "refId": "I"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Job Manager CPU usage per core",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percent",
-              "label": null,
-              "logBase": 1,
-              "max": "100",
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "none",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "This panel has queries for each CPU core. Hence, if the cluster has more cores available it will be necessary to add queries manually.",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 10,
-            "w": 12,
-            "x": 12,
-            "y": 10
-          },
-          "id": 66,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_taskmanager_System_CPU_Usage",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_UsageCPU0",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 0",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_UsageCPU1",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 1",
-              "refId": "C"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_UsageCPU2",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 2",
-              "refId": "D"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_UsageCPU3",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 3",
-              "refId": "E"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_UsageCPU4",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 4",
-              "refId": "F"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_UsageCPU5",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 5",
-              "refId": "G"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_UsageCPU6",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 6",
-              "refId": "H"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_UsageCPU7",
-              "format": "time_series",
-              "legendFormat": "{{host}} - Usage CPU 7",
-              "refId": "I"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Task Manager CPU usage per core",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percent",
-              "label": null,
-              "logBase": 1,
-              "max": "100",
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 20
-          },
-          "id": 70,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_System_CPU_Load1min",
-              "legendFormat": "{{host}} - load 1 minute",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_Load5min",
-              "legendFormat": "{{host}} - load 5 minute",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_Load15min",
-              "legendFormat": "{{host}} - load 15 minute",
-              "refId": "C"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Job Manager CPU load 1, 5, 15 minutes per node",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 20
-          },
-          "id": 71,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_taskmanager_System_CPU_Load1min",
-              "legendFormat": "{{host}} - load 1 minute",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_Load5min",
-              "legendFormat": "{{host}} - load 5 minute",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_Load15min",
-              "legendFormat": "{{host}} - load 15 minute",
-              "refId": "C"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Task Manager CPU load 1, 5, 15 minutes per node",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "This panel shows what the \"top\" linux command line exports to Prometheus and Grafana.",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 28
-          },
-          "id": 72,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_System_CPU_Idle",
-              "legendFormat": "{{host}} - CPU Idle",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_Usage",
-              "legendFormat": "{{host}} - CPU Usage",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_User",
-              "legendFormat": "{{host}} - CPU User",
-              "refId": "C"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Job Manager CPU Idle, Usage, User per node",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percent",
-              "label": null,
-              "logBase": 1,
-              "max": "100",
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "This panel shows what the \"top\" linux command line exports to Prometheus and Grafana.",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 28
-          },
-          "id": 73,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_taskmanager_System_CPU_Idle",
-              "legendFormat": "{{host}} - CPU Idle",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_Usage",
-              "legendFormat": "{{host}} - CPU Usage",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_User",
-              "legendFormat": "{{host}} - CPU User",
-              "refId": "C"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Task Manager CPU Idle, Usage, User per node",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percent",
-              "label": null,
-              "logBase": 1,
-              "max": "100",
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "An interrupt request (or IRQ) is a hardware signal sent to the processor that temporarily stops a running program and allows a special program, an interrupt handler, to run instead.\nIOWait - % of IOWait CPU usage on the machine.\nSys - % of System CPU usage on the machine.\nIrq - % of Irq CPU usage on the machine.\nSoft Irq - % of SoftIrq CPU usage on the machine.",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 36
-          },
-          "id": 79,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_System_CPU_IOWait",
-              "legendFormat": "{{host}} - CPU IO Wait",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_Irq",
-              "legendFormat": "{{host}} - CPU Irq (interrupt request)",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_SoftIrq",
-              "legendFormat": "{{host}} - CPU Soft Irq (soft interrupt request)",
-              "refId": "C"
-            },
-            {
-              "expr": "flink_jobmanager_System_CPU_Sys",
-              "legendFormat": "{{host}} - CPU Sys",
-              "refId": "D"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Job Manager CPU IO Wait, IRQ, Soft IRQ, Sys",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percent",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "An interrupt request (or IRQ) is a hardware signal sent to the processor that temporarily stops a running program and allows a special program, an interrupt handler, to run instead.\nIOWait - % of IOWait CPU usage on the machine.\nSys - % of System CPU usage on the machine.\nIrq - % of Irq CPU usage on the machine.\nSoft Irq - % of SoftIrq CPU usage on the machine.",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 36
-          },
-          "id": 80,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_taskmanager_System_CPU_IOWait",
-              "legendFormat": "{{host}} - CPU IO Wait",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_Irq",
-              "legendFormat": "{{host}} - CPU Irq (interrupt request)",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_SoftIrq",
-              "legendFormat": "{{host}} - CPU Soft Irq (soft interrupt request)",
-              "refId": "C"
-            },
-            {
-              "expr": "flink_taskmanager_System_CPU_Sys",
-              "legendFormat": "{{host}} - CPU Sys",
-              "refId": "D"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Task Manager CPU IO Wait, IRQ, Soft IRQ, Sys",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percent",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": true,
-          "dashLength": 10,
-          "dashes": false,
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 44
-          },
-          "id": 59,
-          "legend": {
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": false,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_taskmanager_Status_JVM_Threads_Count",
-              "legendFormat": "{{host}}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Thread counter on Task Manager's",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "short",
-              "label": "Number of threads",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "Prometheus",
-          "description": "",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 44
-          },
-          "id": 14,
-          "legend": {
-            "alignAsTable": false,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "paceLength": 10,
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_Status_JVM_CPU_Load",
-              "format": "time_series",
-              "instant": false,
-              "interval": "1m",
-              "intervalFactor": 1,
-              "legendFormat": "JobManager ({{host}})",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_taskmanager_Status_JVM_CPU_Load",
-              "format": "time_series",
-              "hide": false,
-              "interval": "1m",
-              "intervalFactor": 1,
-              "legendFormat": "TaskManager ({{host}})",
-              "refId": "B"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "CPU LOAD - Job/Task Managers",
-          "tooltip": {
-            "shared": false,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "percentunit",
-              "label": "CPU usage",
-              "logBase": 1,
-              "max": null,
-              "min": "0",
-              "show": true
-            },
-            {
-              "format": "none",
-              "label": "",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        }
-      ],
+      "panels": [],
       "title": "CPU metrics",
       "type": "row"
     },
     {
-      "collapsed": true,
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "This panel has queries for each CPU core. Hence, if the cluster has more cores available it will be necessary to add queries manually.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 65,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_System_CPU_Usage",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_UsageCPU0",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 0",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_UsageCPU1",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 1",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_UsageCPU2",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 2",
+          "refId": "D"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_UsageCPU3",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 3",
+          "refId": "E"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_UsageCPU4",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 4",
+          "refId": "F"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_UsageCPU5",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 5",
+          "refId": "G"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_UsageCPU6",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 6",
+          "refId": "H"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_UsageCPU7",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 7",
+          "refId": "I"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job Manager CPU usage per core",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "none",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "This panel has queries for each CPU core. Hence, if the cluster has more cores available it will be necessary to add queries manually.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 10
+      },
+      "hiddenSeries": false,
+      "id": 66,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_System_CPU_Usage",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_UsageCPU0",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 0",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_UsageCPU1",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 1",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_UsageCPU2",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 2",
+          "refId": "D"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_UsageCPU3",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 3",
+          "refId": "E"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_UsageCPU4",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 4",
+          "refId": "F"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_UsageCPU5",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 5",
+          "refId": "G"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_UsageCPU6",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 6",
+          "refId": "H"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_UsageCPU7",
+          "format": "time_series",
+          "legendFormat": "{{host}} - Usage CPU 7",
+          "refId": "I"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Task Manager CPU usage per core",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      },
+      "hiddenSeries": false,
+      "id": 70,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_System_CPU_Load1min",
+          "legendFormat": "{{host}} - load 1 minute",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_Load5min",
+          "legendFormat": "{{host}} - load 5 minute",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_Load15min",
+          "legendFormat": "{{host}} - load 15 minute",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job Manager CPU load 1, 5, 15 minutes per node",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "hiddenSeries": false,
+      "id": 71,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_System_CPU_Load1min",
+          "legendFormat": "{{host}} - load 1 minute",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_Load5min",
+          "legendFormat": "{{host}} - load 5 minute",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_Load15min",
+          "legendFormat": "{{host}} - load 15 minute",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Task Manager CPU load 1, 5, 15 minutes per node",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "This panel shows what the \"top\" linux command line exports to Prometheus and Grafana.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 28
+      },
+      "hiddenSeries": false,
+      "id": 72,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_System_CPU_Idle",
+          "legendFormat": "{{host}} - CPU Idle",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_Usage",
+          "legendFormat": "{{host}} - CPU Usage",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_User",
+          "legendFormat": "{{host}} - CPU User",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job Manager CPU Idle, Usage, User per node",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "This panel shows what the \"top\" linux command line exports to Prometheus and Grafana.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 28
+      },
+      "hiddenSeries": false,
+      "id": 73,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_System_CPU_Idle",
+          "legendFormat": "{{host}} - CPU Idle",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_Usage",
+          "legendFormat": "{{host}} - CPU Usage",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_User",
+          "legendFormat": "{{host}} - CPU User",
+          "refId": "C"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Task Manager CPU Idle, Usage, User per node",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": "100",
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "An interrupt request (or IRQ) is a hardware signal sent to the processor that temporarily stops a running program and allows a special program, an interrupt handler, to run instead.\nIOWait - % of IOWait CPU usage on the machine.\nSys - % of System CPU usage on the machine.\nIrq - % of Irq CPU usage on the machine.\nSoft Irq - % of SoftIrq CPU usage on the machine.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 36
+      },
+      "hiddenSeries": false,
+      "id": 79,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_System_CPU_IOWait",
+          "legendFormat": "{{host}} - CPU IO Wait",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_Irq",
+          "legendFormat": "{{host}} - CPU Irq (interrupt request)",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_SoftIrq",
+          "legendFormat": "{{host}} - CPU Soft Irq (soft interrupt request)",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_jobmanager_System_CPU_Sys",
+          "legendFormat": "{{host}} - CPU Sys",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job Manager CPU IO Wait, IRQ, Soft IRQ, Sys",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "An interrupt request (or IRQ) is a hardware signal sent to the processor that temporarily stops a running program and allows a special program, an interrupt handler, to run instead.\nIOWait - % of IOWait CPU usage on the machine.\nSys - % of System CPU usage on the machine.\nIrq - % of Irq CPU usage on the machine.\nSoft Irq - % of SoftIrq CPU usage on the machine.",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 36
+      },
+      "hiddenSeries": false,
+      "id": 80,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_System_CPU_IOWait",
+          "legendFormat": "{{host}} - CPU IO Wait",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_Irq",
+          "legendFormat": "{{host}} - CPU Irq (interrupt request)",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_SoftIrq",
+          "legendFormat": "{{host}} - CPU Soft Irq (soft interrupt request)",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_taskmanager_System_CPU_Sys",
+          "legendFormat": "{{host}} - CPU Sys",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Task Manager CPU IO Wait, IRQ, Soft IRQ, Sys",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percent",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 44
+      },
+      "hiddenSeries": false,
+      "id": 59,
+      "legend": {
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_Status_JVM_Threads_Count",
+          "legendFormat": "{{host}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Thread counter on Task Manager's",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": "Number of threads",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 44
+      },
+      "hiddenSeries": false,
+      "id": 14,
+      "legend": {
+        "alignAsTable": false,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_Status_JVM_CPU_Load",
+          "format": "time_series",
+          "instant": false,
+          "interval": "1m",
+          "intervalFactor": 1,
+          "legendFormat": "JobManager ({{host}})",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_Status_JVM_CPU_Load",
+          "format": "time_series",
+          "hide": false,
+          "interval": "1m",
+          "intervalFactor": 1,
+          "legendFormat": "TaskManager ({{host}})",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "CPU LOAD - Job/Task Managers",
+      "tooltip": {
+        "shared": false,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "label": "CPU usage",
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "none",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 52
       },
       "id": 75,
-      "panels": [
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "Memory total and available at the Job Manager",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 0,
-            "y": 11
-          },
-          "id": 77,
-          "legend": {
-            "avg": false,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_System_Memory_Total",
-              "legendFormat": "{{host}} - Total",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_jobmanager_System_Memory_Available",
-              "legendFormat": "{{host}} - Available",
-              "refId": "B"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Job Manager memory",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "decgbytes",
-              "label": "Giga bytes",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "description": "Memory total and available at the Task Managers",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 11
-          },
-          "id": 78,
-          "legend": {
-            "avg": false,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 1,
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_taskmanager_System_Memory_Total",
-              "legendFormat": "{{host}} - Total",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_taskmanager_System_Memory_Available",
-              "legendFormat": "{{host}} - Available",
-              "refId": "B"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Task Manager memory",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "decgbytes",
-              "label": "Giga bytes",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "Prometheus",
-          "description": "JVM Memory Direct Buffers vs JVM Memory Total Capacity of Direct Buffers",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 10,
-            "w": 12,
-            "x": 0,
-            "y": 19
-          },
-          "id": 19,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "paceLength": 10,
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_Status_JVM_Memory_Direct_MemoryUsed",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "Job Manager ({{host}}) memory used",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_jobmanager_Status_JVM_Memory_Direct_TotalCapacity",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "Job Manager ({{host}}) memory available",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_taskmanager_Status_JVM_Memory_Direct_MemoryUsed",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "Task Manager ({{host}}) memory used",
-              "refId": "C"
-            },
-            {
-              "expr": "flink_taskmanager_Status_JVM_Memory_Direct_TotalCapacity",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "Task Manager ({{host}}) memory available",
-              "refId": "D"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "JobManager and TaskManager Buffers",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "transparent": true,
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "decbytes",
-              "label": "MBytes",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "aliasColors": {},
-          "bars": false,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": "Prometheus",
-          "description": "JVM Memory Heap Used vs JVM Memory Heap Max",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 10,
-            "w": 12,
-            "x": 12,
-            "y": 19
-          },
-          "id": 16,
-          "legend": {
-            "alignAsTable": true,
-            "avg": true,
-            "current": true,
-            "max": true,
-            "min": true,
-            "rightSide": false,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": true,
-          "linewidth": 2,
-          "links": [],
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "paceLength": 10,
-          "percentage": false,
-          "pointradius": 5,
-          "points": false,
-          "renderer": "flot",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_Status_JVM_Memory_Heap_Used",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "JobManager ({{host}}) Used",
-              "refId": "A"
-            },
-            {
-              "expr": "flink_jobmanager_Status_JVM_Memory_Heap_Max",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "JobManager ({{host}}) Available",
-              "refId": "B"
-            },
-            {
-              "expr": "flink_taskmanager_Status_JVM_Memory_Heap_Used",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "TaskManager ({{host}}) Used",
-              "refId": "C"
-            },
-            {
-              "expr": "flink_taskmanager_Status_JVM_Memory_Heap_Max",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "TaskManager ({{host}}) Available",
-              "refId": "D"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "JobManager and TaskManager Heap Memory",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "transparent": true,
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "decbytes",
-              "label": "",
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": false
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        }
-      ],
+      "panels": [],
       "title": "Memory metrics",
       "type": "row"
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Memory total and available at the Job Manager",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 53
+      },
+      "hiddenSeries": false,
+      "id": 77,
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_System_Memory_Total",
+          "legendFormat": "{{host}} - Total",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_jobmanager_System_Memory_Available",
+          "legendFormat": "{{host}} - Available",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job Manager memory",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decgbytes",
+          "label": "Giga bytes",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "Memory total and available at the Task Managers",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 53
+      },
+      "hiddenSeries": false,
+      "id": 78,
+      "legend": {
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_System_Memory_Total",
+          "legendFormat": "{{host}} - Total",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_System_Memory_Available",
+          "legendFormat": "{{host}} - Available",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Task Manager memory",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decgbytes",
+          "label": "Giga bytes",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "JVM Memory Direct Buffers vs JVM Memory Total Capacity of Direct Buffers",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 0,
+        "y": 61
+      },
+      "hiddenSeries": false,
+      "id": 19,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_Status_JVM_Memory_Direct_MemoryUsed",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Job Manager ({{host}}) memory used",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_jobmanager_Status_JVM_Memory_Direct_TotalCapacity",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Job Manager ({{host}}) memory available",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_taskmanager_Status_JVM_Memory_Direct_MemoryUsed",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Task Manager ({{host}}) memory used",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_taskmanager_Status_JVM_Memory_Direct_TotalCapacity",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "Task Manager ({{host}}) memory available",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JobManager and TaskManager Buffers",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": "MBytes",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "Prometheus",
+      "description": "JVM Memory Heap Used vs JVM Memory Heap Max",
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 10,
+        "w": 12,
+        "x": 12,
+        "y": 61
+      },
+      "hiddenSeries": false,
+      "id": 16,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "paceLength": 10,
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_Status_JVM_Memory_Heap_Used",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "JobManager ({{host}}) Used",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_jobmanager_Status_JVM_Memory_Heap_Max",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "JobManager ({{host}}) Available",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_taskmanager_Status_JVM_Memory_Heap_Used",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "TaskManager ({{host}}) Used",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_taskmanager_Status_JVM_Memory_Heap_Max",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "TaskManager ({{host}}) Available",
+          "refId": "D"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "JobManager and TaskManager Heap Memory",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "transparent": true,
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "collapsed": false,
+      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 71
       },
       "id": 30,
       "panels": [],
@@ -2060,8 +2109,9 @@
         "h": 12,
         "w": 12,
         "x": 0,
-        "y": 12
+        "y": 72
       },
+      "hiddenSeries": false,
       "id": 82,
       "legend": {
         "alignAsTable": true,
@@ -2151,8 +2201,9 @@
         "h": 12,
         "w": 12,
         "x": 12,
-        "y": 12
+        "y": 72
       },
+      "hiddenSeries": false,
       "id": 34,
       "legend": {
         "alignAsTable": true,
@@ -2236,14 +2287,15 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fill": 1,
+      "fill": 0,
       "fillGradient": 0,
       "gridPos": {
-        "h": 13,
+        "h": 18,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 84
       },
+      "hiddenSeries": false,
       "id": 86,
       "legend": {
         "alignAsTable": true,
@@ -2271,26 +2323,6 @@
         {
           "alias": "localhost-pre_aggregate-OUT",
           "yaxis": 2
-        },
-        {
-          "alias": "localhost-Source:_source-OUT",
-          "yaxis": 2
-        },
-        {
-          "alias": "localhost-tokenizer-OUT",
-          "yaxis": 2
-        },
-        {
-          "alias": "localhost-sum-OUT",
-          "yaxis": 2
-        },
-        {
-          "alias": "localhost-flat_output-OUT",
-          "yaxis": 2
-        },
-        {
-          "alias": "localhost-Sink:_sink-OUT",
-          "yaxis": 2
         }
       ],
       "spaceLength": 10,
@@ -2298,14 +2330,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond",
+          "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond{operator_name=\"pre_aggregate\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{host}}-{{task_name}}-IN",
           "refId": "A"
         },
         {
-          "expr": "flink_taskmanager_job_task_operator_numRecordsOutPerSecond",
+          "expr": "flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"pre_aggregate\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{host}}-{{task_name}}-OUT",
@@ -2365,8 +2397,9 @@
         "h": 10,
         "w": 12,
         "x": 0,
-        "y": 37
+        "y": 102
       },
+      "hiddenSeries": false,
       "id": 35,
       "legend": {
         "alignAsTable": true,
@@ -2456,8 +2489,9 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 37
+        "y": 102
       },
+      "hiddenSeries": false,
       "id": 44,
       "legend": {
         "alignAsTable": true,
@@ -2542,14 +2576,15 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "Prometheus",
-      "fill": 1,
+      "fill": 0,
       "fillGradient": 0,
       "gridPos": {
-        "h": 12,
+        "h": 18,
         "w": 24,
         "x": 0,
-        "y": 47
+        "y": 112
       },
+      "hiddenSeries": false,
       "id": 87,
       "legend": {
         "alignAsTable": true,
@@ -2575,27 +2610,7 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "alias": "localhost-Source:_source-OUT",
-          "yaxis": 2
-        },
-        {
-          "alias": "localhost-tokenizer-OUT",
-          "yaxis": 2
-        },
-        {
           "alias": "localhost-pre_aggregate-OUT",
-          "yaxis": 2
-        },
-        {
-          "alias": "localhost-sum-OUT",
-          "yaxis": 2
-        },
-        {
-          "alias": "localhost-Sink:_sink-OUT",
-          "yaxis": 2
-        },
-        {
-          "alias": "localhost-flat_output-OUT",
           "yaxis": 2
         }
       ],
@@ -2604,14 +2619,14 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "flink_taskmanager_job_task_numBytesInPerSecond",
+          "expr": "flink_taskmanager_job_task_numBytesInPerSecond{task_name=\"pre_aggregate\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{host}}-{{task_name}}-IN",
           "refId": "A"
         },
         {
-          "expr": "flink_taskmanager_job_task_numBytesOutPerSecond",
+          "expr": "flink_taskmanager_job_task_numBytesOutPerSecond{task_name=\"pre_aggregate\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{host}}-{{task_name}}-OUT",
@@ -2622,7 +2637,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Bytes/sec IN of each operator by Task Manager",
+      "title": "Bytes/sec IN and OUT of each operator by Task Manager",
       "tooltip": {
         "shared": true,
         "sort": 2,
@@ -2661,11 +2676,671 @@
     },
     {
       "collapsed": false,
+      "datasource": null,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 59
+        "y": 130
+      },
+      "id": 89,
+      "panels": [],
+      "title": "Job metrics (latency percentile of each operator)",
+      "type": "row"
+    },
+    {
+      "aliasColors": {
+        "localhost percentile(0.99)": "rgb(10, 4, 0)",
+        "localhost-pre_aggregate-IN": "orange"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "The following chart shows the median latency observed, as well as the 90-th, 95-th, and 99-th percentiles (a 99-th percentile of latency of 50 milliseconds, for example, means that 99% of the elements arrive at the end of the pipeline in less than 50 milliseconds).",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 131
+      },
+      "hiddenSeries": false,
+      "id": 91,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "localhost-pre_aggregate-IN",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{operator_id=\"93352199ce18d8917f20fdf82cedb1b4\",quantile=\"0.99\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{host}} percentile({{quantile}})",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond{operator_name=\"pre_aggregate\"}",
+          "legendFormat": "{{host}}-{{task_name}}-IN",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "99th percentile latency track (default from Flink) & input throughput (records/sec) of the pre-aggregate operator",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "label": "milliseconds",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "records per second",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "localhost percentile(0.99)": "rgb(0, 0, 0)",
+        "localhost-pre_aggregate-OUT": "orange"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "The following chart shows the median latency observed, as well as the 90-th, 95-th, and 99-th percentiles (a 99-th percentile of latency of 50 milliseconds, for example, means that 99% of the elements arrive at the end of the pipeline in less than 50 milliseconds).",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 146
+      },
+      "hiddenSeries": false,
+      "id": 93,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "localhost-pre_aggregate-OUT",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency{operator_id=\"93352199ce18d8917f20fdf82cedb1b4\",quantile=\"0.99\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{host}} percentile({{quantile}})",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"pre_aggregate\"}",
+          "legendFormat": "{{host}}-{{task_name}}-OUT",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "99th percentile latency track (default from Flink) & output throughput (records/sec) of the pre-aggregate operator",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "label": "milliseconds",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "records per second",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "localhost percentile(0.99)": "rgb(10, 4, 0)",
+        "localhost-pre_aggregate-0-quantile:0.99": "rgb(4, 13, 0)",
+        "localhost-pre_aggregate-1-quantile:0.99": "rgb(5, 4, 0)",
+        "localhost-pre_aggregate-2-quantile:0.99": "rgb(0, 6, 8)",
+        "localhost-pre_aggregate-3-quantile:0.99": "rgb(13, 5, 0)",
+        "localhost-pre_aggregate-IN": "orange"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "The following chart shows the median latency observed, as well as the 90-th, 95-th, and 99-th percentiles (a 99-th percentile of latency of 50 milliseconds, for example, means that 99% of the elements arrive at the end of the pipeline in less than 50 milliseconds).",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 161
+      },
+      "hiddenSeries": false,
+      "id": 95,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "localhost-pre_aggregate-IN",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_operator_pre_aggregate_histogram{quantile=\"0.99\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{host}}-{{operator_name}}-{{subtask_index}}-quantile:{{quantile}}",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond{operator_name=\"pre_aggregate\"}",
+          "legendFormat": "{{host}}-{{task_name}}-IN",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "99th percentile latency & input throughput (records/sec) of the pre-aggregate operator",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "label": "milliseconds",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "records per second",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "localhost percentile(0.99)": "rgb(10, 4, 0)",
+        "localhost-pre_aggregate-0-quantile:0.99": "rgb(4, 13, 0)",
+        "localhost-pre_aggregate-1-quantile:0.99": "rgb(5, 4, 0)",
+        "localhost-pre_aggregate-2-quantile:0.99": "rgb(0, 6, 8)",
+        "localhost-pre_aggregate-3-quantile:0.99": "rgb(13, 5, 0)",
+        "localhost-pre_aggregate-IN": "orange",
+        "localhost-pre_aggregate-OUT": "orange"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "The following chart shows the median latency observed, as well as the 90-th, 95-th, and 99-th percentiles (a 99-th percentile of latency of 50 milliseconds, for example, means that 99% of the elements arrive at the end of the pipeline in less than 50 milliseconds).",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 176
+      },
+      "hiddenSeries": false,
+      "id": 96,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "localhost-pre_aggregate-OUT",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_operator_pre_aggregate_histogram{quantile=\"0.99\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{host}}-{{operator_name}}-{{subtask_index}}-quantile:{{quantile}}",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"pre_aggregate\"}",
+          "legendFormat": "{{host}}-{{task_name}}-OUT",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "99th percentile latency & output throughput (records/sec) of the pre-aggregate operator",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "label": "milliseconds",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "records per second",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "localhost": "rgb(0, 0, 0)",
+        "localhost-pre_aggregate-IN": "orange"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 15,
+        "w": 24,
+        "x": 0,
+        "y": 191
+      },
+      "hiddenSeries": false,
+      "id": 94,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": true,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "localhost-pre_aggregate-IN",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_buffers_outPoolUsage{task_name=\"pre_aggregate\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{host}}",
+          "refId": "A"
+        },
+        {
+          "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond{operator_name=\"pre_aggregate\"}",
+          "legendFormat": "{{host}}-{{task_name}}-IN",
+          "refId": "B"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Out Pool Usage & input throughput (records/sec) of the pre-aggregate operator",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "percentunit",
+          "label": "percent",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": "records per second",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "The following chart shows the median latency observed, as well as the 90-th, 95-th, and 99-th percentiles (a 99-th percentile of latency of 50 milliseconds, for example, means that 99% of the elements arrive at the end of the pipeline in less than 50 milliseconds).",
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 13,
+        "w": 24,
+        "x": 0,
+        "y": 206
+      },
+      "hiddenSeries": false,
+      "id": 92,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.6.2",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_latency_source_id_operator_id_operator_subtask_index_latency",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{host}}-{{job_name}}- operator({{operator_id}}) - percentile({{quantile}})",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Histogram for 99th percentile latency of the pre-aggregate operator",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "min": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "label": "milliseconds",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "collapsed": false,
+      "datasource": null,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 219
       },
       "id": 23,
       "panels": [],
@@ -2677,6 +3352,7 @@
       "bars": false,
       "dashLength": 10,
       "dashes": false,
+      "datasource": null,
       "decimals": null,
       "description": "An estimate on the ratio of the output buffers used in the respective local buffer pools.",
       "fill": 1,
@@ -2685,8 +3361,9 @@
         "h": 14,
         "w": 12,
         "x": 0,
-        "y": 60
+        "y": 220
       },
+      "hiddenSeries": false,
       "id": 61,
       "legend": {
         "alignAsTable": true,
@@ -2779,8 +3456,9 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 60
+        "y": 220
       },
+      "hiddenSeries": false,
       "id": 83,
       "legend": {
         "alignAsTable": true,
@@ -2880,8 +3558,9 @@
         "h": 10,
         "w": 12,
         "x": 12,
-        "y": 70
+        "y": 230
       },
+      "hiddenSeries": false,
       "id": 85,
       "legend": {
         "alignAsTable": true,
@@ -2980,8 +3659,9 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 74
+        "y": 234
       },
+      "hiddenSeries": false,
       "id": 84,
       "legend": {
         "avg": true,
@@ -3070,7 +3750,7 @@
     }
   ],
   "refresh": "2m",
-  "schemaVersion": 18,
+  "schemaVersion": 22,
   "style": "dark",
   "tags": [],
   "templating": {
@@ -3078,6 +3758,7 @@
       {
         "allValue": ".*",
         "current": {
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -3103,6 +3784,7 @@
       {
         "allValue": ".*",
         "current": {
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -3128,6 +3810,7 @@
       {
         "allValue": null,
         "current": {
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -3153,9 +3836,8 @@
       {
         "allValue": null,
         "current": {
-          "isNone": true,
-          "text": "None",
-          "value": ""
+          "text": "WordCountPreAggregate",
+          "value": "WordCountPreAggregate"
         },
         "datasource": "Prometheus",
         "definition": "",
@@ -3179,6 +3861,7 @@
       {
         "allValue": null,
         "current": {
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -3204,6 +3887,7 @@
       {
         "allValue": null,
         "current": {
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -3229,6 +3913,7 @@
       {
         "allValue": null,
         "current": {
+          "selected": false,
           "text": "All",
           "value": "$__all"
         },
@@ -3255,6 +3940,7 @@
         "allValue": null,
         "current": {
           "isNone": true,
+          "selected": false,
           "text": "None",
           "value": ""
         },
@@ -3280,7 +3966,7 @@
     ]
   },
   "time": {
-    "from": "now-1h",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -3302,5 +3988,5 @@
   "timezone": "",
   "title": "Flink Metrics - simple version",
   "uid": "GPkyky2ik",
-  "version": 38
+  "version": 107
 }
