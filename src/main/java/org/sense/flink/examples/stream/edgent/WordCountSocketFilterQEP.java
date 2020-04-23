@@ -18,8 +18,10 @@ public class WordCountSocketFilterQEP {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-		DataStream<Tuple2<String, Integer>> dataStream = env.socketTextStream("localhost", 9000)
-				.flatMap(new SplitterFlatMap()).keyBy(0) // select the first value as a key
+		DataStream<Tuple2<String, Integer>> dataStream = env
+				.socketTextStream("localhost", 9000)
+				.flatMap(new SplitterFlatMap()).setBufferTimeout(500)
+				.keyBy(0) // select the first value as a key
 				.sum(1) // reduce to sum all values with same key
 				.filter(word -> word.f1 >= 3) // use simple filter
 		;
