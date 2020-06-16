@@ -2,7 +2,6 @@
   "annotations": {
     "list": [
       {
-        "$$hashKey": "object:57",
         "builtIn": 1,
         "datasource": "-- Grafana --",
         "enable": true,
@@ -17,12 +16,12 @@
   "editable": true,
   "gnetId": 8966,
   "graphTooltip": 0,
-  "id": 18,
-  "iteration": 1589960080117,
+  "id": 6,
+  "iteration": 1591248980822,
   "links": [],
   "panels": [
     {
-      "collapsed": true,
+      "collapsed": false,
       "datasource": null,
       "gridPos": {
         "h": 1,
@@ -31,527 +30,545 @@
         "y": 0
       },
       "id": 68,
-      "panels": [
-        {
-          "cacheTimeout": null,
-          "colorBackground": true,
-          "colorValue": false,
-          "colors": [
-            "rgba(245, 54, 54, 0)",
-            "rgb(255, 255, 255)",
-            "#1F60C4"
-          ],
-          "datasource": "Prometheus",
-          "description": "Total number of task slots on the Flink cluster",
-          "format": "none",
-          "gauge": {
-            "maxValue": null,
-            "minValue": 0,
-            "show": true,
-            "thresholdLabels": false,
-            "thresholdMarkers": false
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 3,
-            "x": 0,
-            "y": 1
-          },
-          "hideTimeOverride": false,
-          "id": 51,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": " slots",
-          "postfixFontSize": "100%",
-          "prefix": "",
-          "prefixFontSize": "100%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": true,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "expr": "flink_jobmanager_taskSlotsTotal",
-              "format": "time_series",
-              "hide": false,
-              "instant": false,
-              "intervalFactor": 1,
-              "legendFormat": "Total task slots",
-              "metric": "flink_jobmanager_taskSlotsTotal",
-              "refId": "A",
-              "step": 20
-            }
-          ],
-          "thresholds": "",
-          "title": "Task slots",
-          "type": "singlestat",
-          "valueFontSize": "100%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "current"
-        },
-        {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(255, 255, 255, 0.89)",
-            "#1F60C4"
-          ],
-          "datasource": "Prometheus",
-          "description": "Available tasks slots on the Flink cluster.",
-          "format": "none",
-          "gauge": {
-            "maxValue": null,
-            "minValue": 0,
-            "show": true,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 3,
-            "x": 3,
-            "y": 1
-          },
-          "hideTimeOverride": false,
-          "id": 53,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": " slots",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(31, 118, 189, 0.18)",
-            "full": false,
-            "lineColor": "rgb(31, 120, 193)",
-            "show": false
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "expr": "flink_jobmanager_taskSlotsAvailable",
-              "format": "time_series",
-              "hide": false,
-              "intervalFactor": 2,
-              "legendFormat": "",
-              "metric": "flink_jobmanager_taskSlotsAvailable",
-              "refId": "A",
-              "step": 20
-            }
-          ],
-          "thresholds": "",
-          "title": "Available task slots",
-          "type": "singlestat",
-          "valueFontSize": "100%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "current"
-        },
-        {
-          "cacheTimeout": null,
-          "datasource": "Prometheus",
-          "description": "The number of CPU cores on each node of the cluster. This panel will be updated only if you start node_exporter \"sudo systemctl [status|start|stop] node_exporter\".",
-          "gridPos": {
-            "h": 8,
-            "w": 6,
-            "x": 6,
-            "y": 1
-          },
-          "hideTimeOverride": false,
-          "id": 81,
-          "links": [],
-          "options": {
-            "displayMode": "lcd",
-            "fieldOptions": {
-              "calcs": [
-                "last"
-              ],
-              "defaults": {
-                "color": {
-                  "mode": "thresholds"
-                },
-                "mappings": [],
-                "max": 4,
-                "min": 0,
-                "thresholds": {
-                  "mode": "absolute",
-                  "steps": [
-                    {
-                      "color": "green",
-                      "index": 0,
-                      "value": null
-                    },
-                    {
-                      "color": "red",
-                      "index": 1,
-                      "value": 80
-                    }
-                  ]
-                },
-                "unit": "none"
-              },
-              "overrides": [],
-              "thresholds": [
-                {
-                  "color": "green",
-                  "index": 0,
-                  "value": null
-                },
-                {
-                  "color": "red",
-                  "index": 1,
-                  "value": 80
-                }
-              ],
-              "values": false
-            },
-            "orientation": "horizontal",
-            "showUnfilled": true
-          },
-          "pluginVersion": "6.7.2",
-          "targets": [
-            {
-              "expr": "count without(cpu, mode) (node_cpu_seconds_total{mode=\"idle\"})",
-              "format": "heatmap",
-              "hide": false,
-              "intervalFactor": 1,
-              "legendFormat": "{{instance}}",
-              "metric": "flink_jobmanager_numRunningJobs",
-              "refId": "A",
-              "step": 20
-            }
-          ],
-          "title": "# CPU cores",
-          "type": "bargauge"
-        },
-        {
-          "aliasColors": {},
-          "bars": true,
-          "cacheTimeout": null,
-          "dashLength": 10,
-          "dashes": false,
-          "datasource": null,
-          "description": "",
-          "fill": 1,
-          "fillGradient": 0,
-          "gridPos": {
-            "h": 8,
-            "w": 12,
-            "x": 12,
-            "y": 1
-          },
-          "hiddenSeries": false,
-          "id": 63,
-          "legend": {
-            "alignAsTable": true,
-            "avg": false,
-            "current": true,
-            "max": true,
-            "min": false,
-            "rightSide": true,
-            "show": true,
-            "total": false,
-            "values": true
-          },
-          "lines": false,
-          "linewidth": 1,
-          "links": [],
-          "nullPointMode": "null",
-          "options": {
-            "dataLinks": []
-          },
-          "percentage": false,
-          "pluginVersion": "6.2.5",
-          "pointradius": 2,
-          "points": false,
-          "renderer": "flot",
-          "repeat": null,
-          "repeatDirection": "v",
-          "seriesOverrides": [],
-          "spaceLength": 10,
-          "stack": false,
-          "steppedLine": false,
-          "targets": [
-            {
-              "expr": "flink_jobmanager_job_uptime",
-              "format": "time_series",
-              "instant": false,
-              "intervalFactor": 1,
-              "legendFormat": "{{job_name}}",
-              "refId": "A"
-            }
-          ],
-          "thresholds": [],
-          "timeFrom": null,
-          "timeRegions": [],
-          "timeShift": null,
-          "title": "Job's elapsed time running",
-          "tooltip": {
-            "shared": true,
-            "sort": 0,
-            "value_type": "individual"
-          },
-          "type": "graph",
-          "xaxis": {
-            "buckets": null,
-            "mode": "time",
-            "name": null,
-            "show": true,
-            "values": []
-          },
-          "yaxes": [
-            {
-              "format": "ms",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            },
-            {
-              "format": "short",
-              "label": null,
-              "logBase": 1,
-              "max": null,
-              "min": null,
-              "show": true
-            }
-          ],
-          "yaxis": {
-            "align": false,
-            "alignLevel": null
-          }
-        },
-        {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(255, 255, 255, 0.89)",
-            "#C4162A"
-          ],
-          "datasource": "Prometheus",
-          "description": "The total number of Task Managers (TM) on the Flink cluster.",
-          "format": "short",
-          "gauge": {
-            "maxValue": null,
-            "minValue": 0,
-            "show": true,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 3,
-            "x": 0,
-            "y": 5
-          },
-          "hideTimeOverride": false,
-          "id": 49,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": " TM(s)",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(251, 129, 76, 0.18)",
-            "full": false,
-            "lineColor": "rgb(193, 31, 31)",
-            "show": false
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "expr": "flink_jobmanager_numRegisteredTaskManagers",
-              "format": "time_series",
-              "instant": false,
-              "intervalFactor": 1,
-              "refId": "B"
-            }
-          ],
-          "thresholds": "",
-          "title": "Task Managers",
-          "type": "singlestat",
-          "valueFontSize": "100%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "current"
-        },
-        {
-          "cacheTimeout": null,
-          "colorBackground": false,
-          "colorValue": false,
-          "colors": [
-            "rgba(245, 54, 54, 0.9)",
-            "rgba(255, 255, 255, 0.89)",
-            "#C4162A"
-          ],
-          "datasource": "Prometheus",
-          "description": "The total number of running jobs on the Flink cluster.",
-          "format": "short",
-          "gauge": {
-            "maxValue": null,
-            "minValue": 0,
-            "show": true,
-            "thresholdLabels": false,
-            "thresholdMarkers": true
-          },
-          "gridPos": {
-            "h": 4,
-            "w": 3,
-            "x": 3,
-            "y": 5
-          },
-          "hideTimeOverride": false,
-          "id": 55,
-          "interval": null,
-          "links": [],
-          "mappingType": 1,
-          "mappingTypes": [
-            {
-              "name": "value to text",
-              "value": 1
-            },
-            {
-              "name": "range to text",
-              "value": 2
-            }
-          ],
-          "maxDataPoints": 100,
-          "nullPointMode": "connected",
-          "nullText": null,
-          "postfix": " job(s)",
-          "postfixFontSize": "50%",
-          "prefix": "",
-          "prefixFontSize": "50%",
-          "rangeMaps": [
-            {
-              "from": "null",
-              "text": "N/A",
-              "to": "null"
-            }
-          ],
-          "sparkline": {
-            "fillColor": "rgba(251, 129, 76, 0.18)",
-            "full": false,
-            "lineColor": "rgb(193, 31, 31)",
-            "show": false
-          },
-          "tableColumn": "",
-          "targets": [
-            {
-              "expr": "flink_jobmanager_numRunningJobs",
-              "format": "time_series",
-              "hide": false,
-              "intervalFactor": 2,
-              "legendFormat": "Running Jobs",
-              "metric": "flink_jobmanager_numRunningJobs",
-              "refId": "A",
-              "step": 20
-            }
-          ],
-          "thresholds": "",
-          "title": "Running Jobs",
-          "type": "singlestat",
-          "valueFontSize": "100%",
-          "valueMaps": [
-            {
-              "op": "=",
-              "text": "N/A",
-              "value": "null"
-            }
-          ],
-          "valueName": "current"
-        }
-      ],
+      "panels": [],
       "title": "Jobs overview",
       "type": "row"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": true,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0)",
+        "rgb(255, 255, 255)",
+        "#1F60C4"
+      ],
+      "datasource": "Prometheus",
+      "description": "Total number of task slots on the Flink cluster",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": null,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": false
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 1
+      },
+      "hideTimeOverride": false,
+      "id": 51,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": " slots",
+      "postfixFontSize": "100%",
+      "prefix": "",
+      "prefixFontSize": "100%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": true,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "Total task slots",
+      "targets": [
+        {
+          "expr": "flink_jobmanager_taskSlotsTotal",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "Total task slots",
+          "metric": "flink_jobmanager_taskSlotsTotal",
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "thresholds": "",
+      "title": "Task slots",
+      "type": "singlestat",
+      "valueFontSize": "100%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(255, 255, 255, 0.89)",
+        "#1F60C4"
+      ],
+      "datasource": "Prometheus",
+      "description": "Available tasks slots on the Flink cluster.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "none",
+      "gauge": {
+        "maxValue": null,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 1
+      },
+      "hideTimeOverride": false,
+      "id": 53,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": " slots",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "flink_jobmanager_taskSlotsAvailable{host=\"130_239_48_136\", instance=\"localhost:9250\", job=\"flink\"}",
+      "targets": [
+        {
+          "expr": "flink_jobmanager_taskSlotsAvailable",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "",
+          "metric": "flink_jobmanager_taskSlotsAvailable",
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "thresholds": "",
+      "title": "Available task slots",
+      "type": "singlestat",
+      "valueFontSize": "100%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "datasource": "Prometheus",
+      "description": "The number of CPU cores on each node of the cluster. This panel will be updated only if you start node_exporter \"sudo systemctl [status|start|stop] node_exporter\".",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "mappings": [],
+          "max": 4,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "hideTimeOverride": false,
+      "id": 81,
+      "links": [],
+      "options": {
+        "displayMode": "lcd",
+        "orientation": "horizontal",
+        "reduceOptions": {
+          "calcs": [
+            "last"
+          ],
+          "values": false
+        },
+        "showUnfilled": true
+      },
+      "pluginVersion": "7.0.0",
+      "targets": [
+        {
+          "expr": "count without(cpu, mode) (node_cpu_seconds_total{mode=\"idle\"})",
+          "format": "heatmap",
+          "hide": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{instance}}",
+          "metric": "flink_jobmanager_numRunningJobs",
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "title": "# CPU cores",
+      "type": "bargauge"
+    },
+    {
+      "aliasColors": {},
+      "bars": true,
+      "cacheTimeout": null,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 1,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 1
+      },
+      "hiddenSeries": false,
+      "id": 63,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": false,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pluginVersion": "6.2.5",
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "repeat": null,
+      "repeatDirection": "v",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_jobmanager_job_uptime",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "{{job_name}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Job's elapsed time running",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "ms",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(255, 255, 255, 0.89)",
+        "#C4162A"
+      ],
+      "datasource": "Prometheus",
+      "description": "The total number of Task Managers (TM) on the Flink cluster.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "short",
+      "gauge": {
+        "maxValue": null,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 5
+      },
+      "hideTimeOverride": false,
+      "id": 49,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": " TM(s)",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(251, 129, 76, 0.18)",
+        "full": false,
+        "lineColor": "rgb(193, 31, 31)",
+        "show": false
+      },
+      "tableColumn": "flink_jobmanager_numRegisteredTaskManagers{host=\"130_239_48_136\", instance=\"localhost:9250\", job=\"flink\"}",
+      "targets": [
+        {
+          "expr": "flink_jobmanager_numRegisteredTaskManagers",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "refId": "B"
+        }
+      ],
+      "thresholds": "",
+      "title": "Task Managers",
+      "type": "singlestat",
+      "valueFontSize": "100%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorValue": false,
+      "colors": [
+        "rgba(245, 54, 54, 0.9)",
+        "rgba(255, 255, 255, 0.89)",
+        "#C4162A"
+      ],
+      "datasource": "Prometheus",
+      "description": "The total number of running jobs on the Flink cluster.",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "format": "short",
+      "gauge": {
+        "maxValue": null,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 5
+      },
+      "hideTimeOverride": false,
+      "id": 55,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": " job(s)",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(251, 129, 76, 0.18)",
+        "full": false,
+        "lineColor": "rgb(193, 31, 31)",
+        "show": false
+      },
+      "tableColumn": "Running Jobs",
+      "targets": [
+        {
+          "expr": "flink_jobmanager_numRunningJobs",
+          "format": "time_series",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "Running Jobs",
+          "metric": "flink_jobmanager_numRunningJobs",
+          "refId": "A",
+          "step": 20
+        }
+      ],
+      "thresholds": "",
+      "title": "Running Jobs",
+      "type": "singlestat",
+      "valueFontSize": "100%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
     },
     {
       "collapsed": true,
@@ -560,7 +577,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 9
       },
       "id": 57,
       "panels": [
@@ -1655,7 +1672,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 2
+        "y": 10
       },
       "id": 75,
       "panels": [
@@ -2090,7 +2107,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 3
+        "y": 11
       },
       "id": 30,
       "panels": [
@@ -2100,13 +2117,19 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
             "h": 12,
             "w": 12,
             "x": 0,
-            "y": 4
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 82,
@@ -2140,8 +2163,9 @@
             {
               "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond",
               "format": "time_series",
+              "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{host}}-{{task_name}}",
+              "legendFormat": "{{host}}-{{task_name}}-{{subtask_index}}",
               "refId": "A"
             }
           ],
@@ -2192,13 +2216,19 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
             "h": 12,
             "w": 12,
             "x": 12,
-            "y": 4
+            "y": 12
           },
           "hiddenSeries": false,
           "id": 34,
@@ -2232,8 +2262,9 @@
             {
               "expr": "flink_taskmanager_job_task_operator_numRecordsOutPerSecond",
               "format": "time_series",
+              "interval": "",
               "intervalFactor": 1,
-              "legendFormat": "{{host}}-{{task_name}}",
+              "legendFormat": "{{host}}-{{task_name}}-{{subtask_index}}",
               "refId": "A"
             }
           ],
@@ -2284,13 +2315,19 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
             "h": 18,
             "w": 24,
             "x": 0,
-            "y": 16
+            "y": 24
           },
           "hiddenSeries": false,
           "id": 86,
@@ -2336,6 +2373,7 @@
             {
               "expr": "flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"pre_aggregate\"}",
               "format": "time_series",
+              "interval": "",
               "intervalFactor": 1,
               "legendFormat": "{{host}}-{{task_name}}-OUT",
               "refId": "B"
@@ -2388,13 +2426,19 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
             "h": 10,
             "w": 12,
             "x": 0,
-            "y": 34
+            "y": 42
           },
           "hiddenSeries": false,
           "id": 35,
@@ -2480,13 +2524,19 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
           "fill": 1,
           "fillGradient": 0,
           "gridPos": {
             "h": 10,
             "w": 12,
             "x": 12,
-            "y": 34
+            "y": 42
           },
           "hiddenSeries": false,
           "id": 44,
@@ -2573,13 +2623,19 @@
           "dashLength": 10,
           "dashes": false,
           "datasource": "Prometheus",
+          "fieldConfig": {
+            "defaults": {
+              "custom": {}
+            },
+            "overrides": []
+          },
           "fill": 0,
           "fillGradient": 0,
           "gridPos": {
             "h": 18,
             "w": 24,
             "x": 0,
-            "y": 44
+            "y": 52
           },
           "hiddenSeries": false,
           "id": 87,
@@ -2682,7 +2738,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 4
+        "y": 12
       },
       "id": 89,
       "panels": [],
@@ -2745,6 +2801,24 @@
         "pre_aggregate[0]-IN": "red",
         "pre_aggregate[0]-OUT": "orange",
         "pre_aggregate[0]-param": "blue",
+        "pre_aggregate[10]-IN": "red",
+        "pre_aggregate[10]-OUT": "orange",
+        "pre_aggregate[10]-param": "blue",
+        "pre_aggregate[11]-IN": "red",
+        "pre_aggregate[11]-OUT": "orange",
+        "pre_aggregate[11]-param": "blue",
+        "pre_aggregate[12]-IN": "red",
+        "pre_aggregate[12]-OUT": "orange",
+        "pre_aggregate[12]-param": "blue",
+        "pre_aggregate[13]-IN": "red",
+        "pre_aggregate[13]-OUT": "orange",
+        "pre_aggregate[13]-param": "blue",
+        "pre_aggregate[14]-IN": "red",
+        "pre_aggregate[14]-OUT": "orange",
+        "pre_aggregate[14]-param": "blue",
+        "pre_aggregate[15]-IN": "red",
+        "pre_aggregate[15]-OUT": "orange",
+        "pre_aggregate[15]-param": "blue",
         "pre_aggregate[1]-IN": "red",
         "pre_aggregate[1]-OUT": "orange",
         "pre_aggregate[1]-param": "blue",
@@ -2765,7 +2839,37 @@
         "pre_aggregate[6]-param": "blue",
         "pre_aggregate[7]-IN": "red",
         "pre_aggregate[7]-OUT": "orange",
-        "pre_aggregate[7]-param": "blue"
+        "pre_aggregate[7]-param": "blue",
+        "pre_aggregate[8]-IN": "red",
+        "pre_aggregate[8]-OUT": "orange",
+        "pre_aggregate[8]-param": "blue",
+        "pre_aggregate[9]-IN": "red",
+        "pre_aggregate[9]-OUT": "orange",
+        "pre_aggregate[9]-param": "blue",
+        "tokenizer____pre_aggregate[0]-IN": "red",
+        "tokenizer____pre_aggregate[0]-OUT": "orange",
+        "tokenizer____pre_aggregate[0]-param": "blue",
+        "tokenizer____pre_aggregate[1]-IN": "red",
+        "tokenizer____pre_aggregate[1]-OUT": "orange",
+        "tokenizer____pre_aggregate[1]-param": "blue",
+        "tokenizer____pre_aggregate[2]-IN": "red",
+        "tokenizer____pre_aggregate[2]-OUT": "orange",
+        "tokenizer____pre_aggregate[2]-param": "blue",
+        "tokenizer____pre_aggregate[3]-IN": "red",
+        "tokenizer____pre_aggregate[3]-OUT": "orange",
+        "tokenizer____pre_aggregate[3]-param": "blue",
+        "tokenizer____pre_aggregate[4]-IN": "red",
+        "tokenizer____pre_aggregate[4]-OUT": "orange",
+        "tokenizer____pre_aggregate[4]-param": "blue",
+        "tokenizer____pre_aggregate[5]-IN": "red",
+        "tokenizer____pre_aggregate[5]-OUT": "orange",
+        "tokenizer____pre_aggregate[5]-param": "blue",
+        "tokenizer____pre_aggregate[6]-IN": "red",
+        "tokenizer____pre_aggregate[6]-OUT": "orange",
+        "tokenizer____pre_aggregate[6]-param": "blue",
+        "tokenizer____pre_aggregate[7]-IN": "red",
+        "tokenizer____pre_aggregate[7]-OUT": "orange",
+        "tokenizer____pre_aggregate[7]-param": "blue"
       },
       "bars": false,
       "dashLength": 10,
@@ -2784,7 +2888,7 @@
         "h": 19,
         "w": 24,
         "x": 0,
-        "y": 5
+        "y": 13
       },
       "hiddenSeries": false,
       "id": 91,
@@ -2792,11 +2896,11 @@
         "alignAsTable": true,
         "avg": false,
         "current": true,
-        "max": true,
-        "min": true,
+        "max": false,
+        "min": false,
         "rightSide": true,
         "show": true,
-        "sideWidth": 250,
+        "sideWidth": null,
         "total": false,
         "values": true
       },
@@ -2813,27 +2917,23 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "$$hashKey": "object:2732",
           "alias": "pre_aggregate[0]-param",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2733",
           "alias": "pre_aggregate[1]-param",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2734",
           "alias": "pre_aggregate[2]-param",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2735",
           "alias": "pre_aggregate[3]-param",
           "yaxis": 2
         },
         {
-          "alias": "pre_aggregate[7]-param",
+          "alias": "pre_aggregate[4]-param",
           "yaxis": 2
         },
         {
@@ -2845,7 +2945,71 @@
           "yaxis": 2
         },
         {
-          "alias": "pre_aggregate[4]-param",
+          "alias": "pre_aggregate[7]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[10]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[11]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[12]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[13]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[14]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[8]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[9]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[15]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate[0]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate[1]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate[2]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate[3]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate[4]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate[6]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate[5]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate[7]-param",
           "yaxis": 2
         }
       ],
@@ -2892,7 +3056,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:930",
           "format": "short",
           "label": "Input and output throughput (rec/sec)",
           "logBase": 1,
@@ -2901,7 +3064,6 @@
           "show": true
         },
         {
-          "$$hashKey": "object:931",
           "format": "short",
           "label": "pre-aggregate parameter K",
           "logBase": 1,
@@ -2979,6 +3141,30 @@
         "pre_aggregate[0]-99": "rgb(0, 0, 0)",
         "pre_aggregate[0]-IN": "red",
         "pre_aggregate[0]-OUT": "orange",
+        "pre_aggregate[10]-50": "green",
+        "pre_aggregate[10]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[10]-IN": "red",
+        "pre_aggregate[10]-OUT": "orange",
+        "pre_aggregate[11]-50": "green",
+        "pre_aggregate[11]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[11]-IN": "red",
+        "pre_aggregate[11]-OUT": "orange",
+        "pre_aggregate[12]-50": "green",
+        "pre_aggregate[12]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[12]-IN": "red",
+        "pre_aggregate[12]-OUT": "orange",
+        "pre_aggregate[13]-50": "green",
+        "pre_aggregate[13]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[13]-IN": "red",
+        "pre_aggregate[13]-OUT": "orange",
+        "pre_aggregate[14]-50": "green",
+        "pre_aggregate[14]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[14]-IN": "red",
+        "pre_aggregate[14]-OUT": "orange",
+        "pre_aggregate[15]-50": "green",
+        "pre_aggregate[15]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[15]-IN": "red",
+        "pre_aggregate[15]-OUT": "orange",
         "pre_aggregate[1]-50": "green",
         "pre_aggregate[1]-99": "rgb(0, 0, 0)",
         "pre_aggregate[1]-IN": "red",
@@ -3005,7 +3191,16 @@
         "pre_aggregate[6]-OUT": "orange",
         "pre_aggregate[7]-50": "green",
         "pre_aggregate[7]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[7]-OUT": "orange"
+        "pre_aggregate[7]-IN": "red",
+        "pre_aggregate[7]-OUT": "orange",
+        "pre_aggregate[8]-50": "green",
+        "pre_aggregate[8]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[8]-IN": "red",
+        "pre_aggregate[8]-OUT": "orange",
+        "pre_aggregate[9]-50": "green",
+        "pre_aggregate[9]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[9]-IN": "red",
+        "pre_aggregate[9]-OUT": "orange"
       },
       "bars": false,
       "dashLength": 10,
@@ -3024,7 +3219,7 @@
         "h": 19,
         "w": 24,
         "x": 0,
-        "y": 24
+        "y": 32
       },
       "hiddenSeries": false,
       "id": 97,
@@ -3033,10 +3228,10 @@
         "avg": false,
         "current": true,
         "max": true,
-        "min": true,
+        "min": false,
         "rightSide": true,
         "show": true,
-        "sideWidth": 250,
+        "sideWidth": 300,
         "total": false,
         "values": true
       },
@@ -3053,42 +3248,34 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
-          "$$hashKey": "object:2830",
           "alias": "pre_aggregate[0]-50",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2831",
           "alias": "pre_aggregate[1]-50",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2832",
           "alias": "pre_aggregate[2]-50",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2833",
           "alias": "pre_aggregate[3]-50",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2834",
           "alias": "pre_aggregate[0]-99",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2835",
           "alias": "pre_aggregate[1]-99",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2836",
           "alias": "pre_aggregate[2]-99",
           "yaxis": 2
         },
         {
-          "$$hashKey": "object:2837",
           "alias": "pre_aggregate[3]-99",
           "yaxis": 2
         },
@@ -3097,11 +3284,11 @@
           "yaxis": 2
         },
         {
-          "alias": "pre_aggregate[5]-50",
+          "alias": "pre_aggregate[6]-50",
           "yaxis": 2
         },
         {
-          "alias": "pre_aggregate[6]-50",
+          "alias": "pre_aggregate[5]-50",
           "yaxis": 2
         },
         {
@@ -3113,15 +3300,79 @@
           "yaxis": 2
         },
         {
-          "alias": "pre_aggregate[5]-99",
-          "yaxis": 2
-        },
-        {
           "alias": "pre_aggregate[6]-99",
           "yaxis": 2
         },
         {
+          "alias": "pre_aggregate[5]-99",
+          "yaxis": 2
+        },
+        {
           "alias": "pre_aggregate[7]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[10]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[11]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[12]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[13]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[14]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[8]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[9]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[15]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[10]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[11]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[12]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[13]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[14]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[8]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[9]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[15]-99",
           "yaxis": 2
         }
       ],
@@ -3182,7 +3433,6 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:712",
           "format": "short",
           "label": "Input and output throughput (rec/sec)",
           "logBase": 1,
@@ -3191,9 +3441,587 @@
           "show": true
         },
         {
-          "$$hashKey": "object:713",
           "format": "ms",
           "label": "Processing latency (sec)",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {
+        "192_168_0_28-pre_aggregate-0-IN": "red",
+        "192_168_0_28-pre_aggregate-0-OUT": "orange",
+        "192_168_0_28-pre_aggregate-0-quantile:0.5": "green",
+        "192_168_0_28-pre_aggregate-0-quantile:0.99": "rgb(0, 0, 0)",
+        "192_168_0_28-pre_aggregate-1-IN": "red",
+        "192_168_0_28-pre_aggregate-1-OUT": "orange",
+        "192_168_0_28-pre_aggregate-1-quantile:0.5": "green",
+        "192_168_0_28-pre_aggregate-1-quantile:0.99": "rgb(0, 0, 0)",
+        "192_168_0_28-pre_aggregate-2-IN": "red",
+        "192_168_0_28-pre_aggregate-2-OUT": "orange",
+        "192_168_0_28-pre_aggregate-2-quantile:0.5": "green",
+        "192_168_0_28-pre_aggregate-2-quantile:0.99": "rgb(0, 0, 0)",
+        "192_168_0_28-pre_aggregate-3-IN": "red",
+        "192_168_0_28-pre_aggregate-3-OUT": "orange",
+        "192_168_0_28-pre_aggregate-3-quantile:0.5": "green",
+        "192_168_0_28-pre_aggregate-3-quantile:0.99": "rgb(0, 0, 0)",
+        "192_168_0_28-tokenizer____pre_aggregate-0-IN": "red",
+        "192_168_0_28-tokenizer____pre_aggregate-0-OUT": "orange",
+        "192_168_0_28-tokenizer____pre_aggregate-1-IN": "red",
+        "192_168_0_28-tokenizer____pre_aggregate-1-OUT": "orange",
+        "192_168_0_28-tokenizer____pre_aggregate-2-IN": "red",
+        "192_168_0_28-tokenizer____pre_aggregate-2-OUT": "orange",
+        "192_168_0_28-tokenizer____pre_aggregate-3-IN": "red",
+        "192_168_0_28-tokenizer____pre_aggregate-3-OUT": "orange",
+        "localhost percentile(0.99)": "rgb(10, 4, 0)",
+        "localhost-pre_aggregate-0-IN": "red",
+        "localhost-pre_aggregate-0-OUT": "orange",
+        "localhost-pre_aggregate-0-quantile:0.5": "green",
+        "localhost-pre_aggregate-0-quantile:0.99": "rgb(4, 13, 0)",
+        "localhost-pre_aggregate-1-IN": "red",
+        "localhost-pre_aggregate-1-OUT": "orange",
+        "localhost-pre_aggregate-1-quantile:0.5": "green",
+        "localhost-pre_aggregate-1-quantile:0.99": "rgb(5, 4, 0)",
+        "localhost-pre_aggregate-2-IN": "red",
+        "localhost-pre_aggregate-2-OUT": "orange",
+        "localhost-pre_aggregate-2-quantile:0.5": "green",
+        "localhost-pre_aggregate-2-quantile:0.99": "rgb(0, 6, 8)",
+        "localhost-pre_aggregate-3-IN": "red",
+        "localhost-pre_aggregate-3-OUT": "orange",
+        "localhost-pre_aggregate-3-quantile:0.5": "green",
+        "localhost-pre_aggregate-3-quantile:0.99": "rgb(13, 5, 0)",
+        "localhost-pre_aggregate-IN": "orange",
+        "localhost-sum-0-IN": "green",
+        "localhost-sum-0-OUT": "blue",
+        "localhost-sum-1-IN": "green",
+        "localhost-sum-1-OUT": "blue",
+        "localhost-sum-2-IN": "green",
+        "localhost-sum-2-OUT": "blue",
+        "localhost-sum-3-IN": "green",
+        "localhost-sum-3-OUT": "blue",
+        "localhost-tokenizer____pre_aggregate-0-IN": "red",
+        "localhost-tokenizer____pre_aggregate-0-OUT": "orange",
+        "localhost-tokenizer____pre_aggregate-1-IN": "red",
+        "localhost-tokenizer____pre_aggregate-1-OUT": "orange",
+        "localhost-tokenizer____pre_aggregate-2-IN": "red",
+        "localhost-tokenizer____pre_aggregate-2-OUT": "orange",
+        "localhost-tokenizer____pre_aggregate-3-IN": "red",
+        "localhost-tokenizer____pre_aggregate-3-OUT": "orange",
+        "pre_aggregate-outPool[0]-99": "#000000",
+        "pre_aggregate-outPool[0]-avg": "green",
+        "pre_aggregate-outPool[10]-99": "#000000",
+        "pre_aggregate-outPool[10]-avg": "green",
+        "pre_aggregate-outPool[11]-99": "#000000",
+        "pre_aggregate-outPool[11]-avg": "green",
+        "pre_aggregate-outPool[12]-99": "#000000",
+        "pre_aggregate-outPool[12]-avg": "green",
+        "pre_aggregate-outPool[13]-99": "#000000",
+        "pre_aggregate-outPool[13]-avg": "green",
+        "pre_aggregate-outPool[14]-99": "#000000",
+        "pre_aggregate-outPool[14]-avg": "green",
+        "pre_aggregate-outPool[15]-99": "#000000",
+        "pre_aggregate-outPool[15]-avg": "green",
+        "pre_aggregate-outPool[1]-99": "#000000",
+        "pre_aggregate-outPool[1]-avg": "green",
+        "pre_aggregate-outPool[2]-99": "#000000",
+        "pre_aggregate-outPool[2]-avg": "green",
+        "pre_aggregate-outPool[3]-99": "#000000",
+        "pre_aggregate-outPool[3]-avg": "green",
+        "pre_aggregate-outPool[4]-99": "#000000",
+        "pre_aggregate-outPool[4]-avg": "green",
+        "pre_aggregate-outPool[5]-99": "#000000",
+        "pre_aggregate-outPool[5]-avg": "green",
+        "pre_aggregate-outPool[6]-99": "#000000",
+        "pre_aggregate-outPool[6]-avg": "green",
+        "pre_aggregate-outPool[7]-99": "#000000",
+        "pre_aggregate-outPool[7]-avg": "green",
+        "pre_aggregate-outPool[8]-99": "#000000",
+        "pre_aggregate-outPool[8]-avg": "green",
+        "pre_aggregate-outPool[9]-99": "#000000",
+        "pre_aggregate-outPool[9]-avg": "green",
+        "pre_aggregate[0]-50": "green",
+        "pre_aggregate[0]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[0]-IN": "red",
+        "pre_aggregate[0]-OUT": "orange",
+        "pre_aggregate[10]-50": "green",
+        "pre_aggregate[10]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[10]-IN": "red",
+        "pre_aggregate[10]-OUT": "orange",
+        "pre_aggregate[11]-50": "green",
+        "pre_aggregate[11]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[11]-IN": "red",
+        "pre_aggregate[11]-OUT": "orange",
+        "pre_aggregate[12]-50": "green",
+        "pre_aggregate[12]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[12]-IN": "red",
+        "pre_aggregate[12]-OUT": "orange",
+        "pre_aggregate[13]-50": "green",
+        "pre_aggregate[13]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[13]-IN": "red",
+        "pre_aggregate[13]-OUT": "orange",
+        "pre_aggregate[14]-50": "green",
+        "pre_aggregate[14]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[14]-IN": "red",
+        "pre_aggregate[14]-OUT": "orange",
+        "pre_aggregate[15]-50": "green",
+        "pre_aggregate[15]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[15]-IN": "red",
+        "pre_aggregate[15]-OUT": "orange",
+        "pre_aggregate[1]-50": "green",
+        "pre_aggregate[1]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[1]-IN": "red",
+        "pre_aggregate[1]-OUT": "orange",
+        "pre_aggregate[2]-50": "green",
+        "pre_aggregate[2]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[2]-IN": "red",
+        "pre_aggregate[2]-OUT": "orange",
+        "pre_aggregate[3]-50": "green",
+        "pre_aggregate[3]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[3]-IN": "red",
+        "pre_aggregate[3]-OUT": "orange",
+        "pre_aggregate[4]-50": "green",
+        "pre_aggregate[4]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[4]-IN": "red",
+        "pre_aggregate[4]-OUT": "orange",
+        "pre_aggregate[5]-50": "green",
+        "pre_aggregate[5]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[5]-IN": "red",
+        "pre_aggregate[5]-OUT": "orange",
+        "pre_aggregate[6]-50": "green",
+        "pre_aggregate[6]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[6]-IN": "red",
+        "pre_aggregate[6]-OUT": "orange",
+        "pre_aggregate[7]-50": "green",
+        "pre_aggregate[7]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[7]-IN": "red",
+        "pre_aggregate[7]-OUT": "orange",
+        "pre_aggregate[8]-50": "green",
+        "pre_aggregate[8]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[8]-IN": "red",
+        "pre_aggregate[8]-OUT": "orange",
+        "pre_aggregate[9]-50": "green",
+        "pre_aggregate[9]-99": "rgb(0, 0, 0)",
+        "pre_aggregate[9]-IN": "red",
+        "pre_aggregate[9]-OUT": "orange",
+        "tokenizer____pre_aggregate-outPool[0]-99": "#000000",
+        "tokenizer____pre_aggregate-outPool[1]-99": "#000000",
+        "tokenizer____pre_aggregate-outPool[2]-99": "#000000",
+        "tokenizer____pre_aggregate-outPool[3]-99": "#000000",
+        "tokenizer____pre_aggregate-outPool[4]-99": "#000000",
+        "tokenizer____pre_aggregate-outPool[5]-99": "#000000",
+        "tokenizer____pre_aggregate-outPool[6]-99": "#000000",
+        "tokenizer____pre_aggregate-outPool[7]-99": "#000000"
+      },
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": null,
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {}
+        },
+        "overrides": []
+      },
+      "fill": 0,
+      "fillGradient": 0,
+      "gridPos": {
+        "h": 19,
+        "w": 24,
+        "x": 0,
+        "y": 51
+      },
+      "hiddenSeries": false,
+      "id": 102,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": true,
+        "min": false,
+        "rightSide": true,
+        "show": true,
+        "sideWidth": 300,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "options": {
+        "dataLinks": []
+      },
+      "percentage": false,
+      "pointradius": 1,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "alias": "pre_aggregate[0]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[1]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[2]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[3]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[0]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[1]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[2]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[3]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[4]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[6]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[5]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[7]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[4]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[6]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[5]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[7]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[10]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[11]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[12]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[13]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[14]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[8]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[9]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[15]-50",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[10]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[11]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[12]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[13]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[14]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[8]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[9]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[15]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[0]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[1]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[2]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[3]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[4]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[5]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[6]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[7]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[0]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[1]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[2]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[3]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[4]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[5]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[6]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[7]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[8]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[9]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[10]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[11]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[12]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[13]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[14]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[15]-avg",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[8]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[9]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[10]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[11]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[12]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[13]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[14]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate-outPool[15]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate-outPool[0]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate-outPool[1]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate-outPool[2]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate-outPool[3]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate-outPool[4]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate-outPool[5]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate-outPool[6]-99",
+          "yaxis": 2
+        },
+        {
+          "alias": "tokenizer____pre_aggregate-outPool[7]-99",
+          "yaxis": 2
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond{operator_name=\"pre_aggregate\"}",
+          "interval": "",
+          "legendFormat": "{{operator_name}}[{{subtask_index}}]-IN",
+          "refId": "C"
+        },
+        {
+          "expr": "flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"pre_aggregate\"}",
+          "interval": "",
+          "legendFormat": "{{operator_name}}[{{subtask_index}}]-OUT",
+          "refId": "D"
+        },
+        {
+          "expr": "flink_taskmanager_job_task_buffers_outPoolUsage{task_name=\"pre_aggregate\"}*100",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{task_name}}-outPool[{{subtask_index}}]-avg",
+          "refId": "B"
+        },
+        {
+          "expr": "flink_taskmanager_job_task_operator_pre_aggregate_outPoolUsage_histogram{quantile=\"0.99\"}",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "{{task_name}}-outPool[{{subtask_index}}]-99",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Pre-aggregation throughput IN/OUT (records/sec) vs. output buffer",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:171",
+          "format": "short",
+          "label": "Input and output throughput (rec/sec)",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:172",
+          "format": "percent",
+          "label": "network output buffer (%)",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -3304,6 +4132,18 @@
         "localhost:9251-tokenizer____pre_aggregate[3]-param": "blue",
         "pre_aggregate-outPool[0]-99": "rgb(0, 0, 0)",
         "pre_aggregate-outPool[0]-avg": "green",
+        "pre_aggregate-outPool[10]-99": "rgb(0, 0, 0)",
+        "pre_aggregate-outPool[10]-avg": "green",
+        "pre_aggregate-outPool[11]-99": "rgb(0, 0, 0)",
+        "pre_aggregate-outPool[11]-avg": "green",
+        "pre_aggregate-outPool[12]-99": "#000000",
+        "pre_aggregate-outPool[12]-avg": "green",
+        "pre_aggregate-outPool[13]-99": "#000000",
+        "pre_aggregate-outPool[13]-avg": "green",
+        "pre_aggregate-outPool[14]-99": "#000000",
+        "pre_aggregate-outPool[14]-avg": "green",
+        "pre_aggregate-outPool[15]-99": "#000000",
+        "pre_aggregate-outPool[15]-avg": "green",
         "pre_aggregate-outPool[1]-99": "rgb(0, 0, 0)",
         "pre_aggregate-outPool[1]-avg": "green",
         "pre_aggregate-outPool[2]-99": "rgb(0, 0, 0)",
@@ -3318,14 +4158,26 @@
         "pre_aggregate-outPool[6]-avg": "green",
         "pre_aggregate-outPool[7]-99": "rgb(0, 0, 0)",
         "pre_aggregate-outPool[7]-avg": "green",
+        "pre_aggregate-outPool[8]-99": "#000000",
+        "pre_aggregate-outPool[8]-avg": "green",
+        "pre_aggregate-outPool[9]-99": "#000000",
+        "pre_aggregate-outPool[9]-avg": "green",
         "pre_aggregate[0]-param": "blue",
+        "pre_aggregate[10]-param": "blue",
+        "pre_aggregate[11]-param": "blue",
+        "pre_aggregate[12]-param": "blue",
+        "pre_aggregate[13]-param": "blue",
+        "pre_aggregate[14]-param": "blue",
+        "pre_aggregate[15]-param": "blue",
         "pre_aggregate[1]-param": "blue",
         "pre_aggregate[2]-param": "blue",
         "pre_aggregate[3]-param": "blue",
         "pre_aggregate[4]-param": "blue",
         "pre_aggregate[5]-param": "blue",
         "pre_aggregate[6]-param": "blue",
-        "pre_aggregate[7]-param": "blue"
+        "pre_aggregate[7]-param": "blue",
+        "pre_aggregate[8]-param": "blue",
+        "pre_aggregate[9]-param": "blue"
       },
       "bars": false,
       "dashLength": 10,
@@ -3344,7 +4196,7 @@
         "h": 19,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 70
       },
       "hiddenSeries": false,
       "id": 101,
@@ -3352,11 +4204,11 @@
         "alignAsTable": true,
         "avg": false,
         "current": true,
-        "max": true,
-        "min": true,
+        "max": false,
+        "min": false,
         "rightSide": true,
         "show": true,
-        "sideWidth": 250,
+        "sideWidth": null,
         "total": false,
         "values": true
       },
@@ -3373,6 +4225,58 @@
       "renderer": "flot",
       "seriesOverrides": [
         {
+          "alias": "pre_aggregate[10]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[11]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[12]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[13]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[14]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[8]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[9]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[15]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[3]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[4]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[5]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[6]-param",
+          "yaxis": 2
+        },
+        {
+          "alias": "pre_aggregate[7]-param",
+          "yaxis": 2
+        },
+        {
           "alias": "pre_aggregate[0]-param",
           "yaxis": 2
         },
@@ -3382,26 +4286,6 @@
         },
         {
           "alias": "pre_aggregate[2]-param",
-          "yaxis": 2
-        },
-        {
-          "alias": "pre_aggregate[3]-param",
-          "yaxis": 2
-        },
-        {
-          "alias": "pre_aggregate[7]-param",
-          "yaxis": 2
-        },
-        {
-          "alias": "pre_aggregate[6]-param",
-          "yaxis": 2
-        },
-        {
-          "alias": "pre_aggregate[5]-param",
-          "yaxis": 2
-        },
-        {
-          "alias": "pre_aggregate[4]-param",
           "yaxis": 2
         }
       ],
@@ -3456,1229 +4340,18 @@
       },
       "yaxes": [
         {
-          "$$hashKey": "object:1332",
+          "$$hashKey": "object:102",
           "format": "percent",
           "label": "Network buffer usage",
           "logBase": 1,
           "max": null,
           "min": null,
           "show": true
-        },
-        {
-          "$$hashKey": "object:1333",
-          "format": "short",
-          "label": "Pre-aggregation parameter K",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {
-        "192_168_0_28-pre_aggregate-0-IN": "red",
-        "192_168_0_28-pre_aggregate-0-OUT": "orange",
-        "192_168_0_28-pre_aggregate-0-quantile:0.5": "green",
-        "192_168_0_28-pre_aggregate-0-quantile:0.99": "rgb(0, 0, 0)",
-        "192_168_0_28-pre_aggregate-1-IN": "red",
-        "192_168_0_28-pre_aggregate-1-OUT": "orange",
-        "192_168_0_28-pre_aggregate-1-quantile:0.5": "green",
-        "192_168_0_28-pre_aggregate-1-quantile:0.99": "rgb(0, 0, 0)",
-        "192_168_0_28-pre_aggregate-2-IN": "red",
-        "192_168_0_28-pre_aggregate-2-OUT": "orange",
-        "192_168_0_28-pre_aggregate-2-quantile:0.5": "green",
-        "192_168_0_28-pre_aggregate-2-quantile:0.99": "rgb(0, 0, 0)",
-        "192_168_0_28-pre_aggregate-3-IN": "red",
-        "192_168_0_28-pre_aggregate-3-OUT": "orange",
-        "192_168_0_28-pre_aggregate-3-quantile:0.5": "green",
-        "192_168_0_28-pre_aggregate-3-quantile:0.99": "rgb(0, 0, 0)",
-        "192_168_0_28-tokenizer____pre_aggregate-0-IN": "red",
-        "192_168_0_28-tokenizer____pre_aggregate-0-OUT": "orange",
-        "192_168_0_28-tokenizer____pre_aggregate-1-IN": "red",
-        "192_168_0_28-tokenizer____pre_aggregate-1-OUT": "orange",
-        "192_168_0_28-tokenizer____pre_aggregate-2-IN": "red",
-        "192_168_0_28-tokenizer____pre_aggregate-2-OUT": "orange",
-        "192_168_0_28-tokenizer____pre_aggregate-3-IN": "red",
-        "192_168_0_28-tokenizer____pre_aggregate-3-OUT": "orange",
-        "localhost percentile(0.99)": "rgb(10, 4, 0)",
-        "localhost-pre_aggregate-0-IN": "red",
-        "localhost-pre_aggregate-0-OUT": "orange",
-        "localhost-pre_aggregate-0-quantile:0.5": "green",
-        "localhost-pre_aggregate-0-quantile:0.99": "rgb(4, 13, 0)",
-        "localhost-pre_aggregate-1-IN": "red",
-        "localhost-pre_aggregate-1-OUT": "orange",
-        "localhost-pre_aggregate-1-quantile:0.5": "green",
-        "localhost-pre_aggregate-1-quantile:0.99": "rgb(5, 4, 0)",
-        "localhost-pre_aggregate-2-IN": "red",
-        "localhost-pre_aggregate-2-OUT": "orange",
-        "localhost-pre_aggregate-2-quantile:0.5": "green",
-        "localhost-pre_aggregate-2-quantile:0.99": "rgb(0, 6, 8)",
-        "localhost-pre_aggregate-3-IN": "red",
-        "localhost-pre_aggregate-3-OUT": "orange",
-        "localhost-pre_aggregate-3-quantile:0.5": "green",
-        "localhost-pre_aggregate-3-quantile:0.99": "rgb(13, 5, 0)",
-        "localhost-pre_aggregate-IN": "orange",
-        "localhost-sum-0-IN": "green",
-        "localhost-sum-0-OUT": "blue",
-        "localhost-sum-1-IN": "green",
-        "localhost-sum-1-OUT": "blue",
-        "localhost-sum-2-IN": "green",
-        "localhost-sum-2-OUT": "blue",
-        "localhost-sum-3-IN": "green",
-        "localhost-sum-3-OUT": "blue",
-        "localhost-tokenizer____pre_aggregate-0-IN": "red",
-        "localhost-tokenizer____pre_aggregate-0-OUT": "orange",
-        "localhost-tokenizer____pre_aggregate-1-IN": "red",
-        "localhost-tokenizer____pre_aggregate-1-OUT": "orange",
-        "localhost-tokenizer____pre_aggregate-2-IN": "red",
-        "localhost-tokenizer____pre_aggregate-2-OUT": "orange",
-        "localhost-tokenizer____pre_aggregate-3-IN": "red",
-        "localhost-tokenizer____pre_aggregate-3-OUT": "orange",
-        "pre_aggregate-outPool[0]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[0]-99-baseline": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[0]-avg": "green",
-        "pre_aggregate-outPool[0]-avg-baseline": "green",
-        "pre_aggregate-outPool[1]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[1]-99-baseline": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[1]-avg": "green",
-        "pre_aggregate-outPool[1]-avg-baseline": "green",
-        "pre_aggregate-outPool[2]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[2]-99-baseline": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[2]-avg": "green",
-        "pre_aggregate-outPool[2]-avg-baseline": "green",
-        "pre_aggregate-outPool[3]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[3]-99-baseline": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[3]-avg": "green",
-        "pre_aggregate-outPool[3]-avg-baseline": "green",
-        "pre_aggregate-outPool[4]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[4]-99-baseline": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[4]-avg": "green",
-        "pre_aggregate-outPool[4]-avg-baseline": "green",
-        "pre_aggregate-outPool[5]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[5]-99-baseline": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[5]-avg": "green",
-        "pre_aggregate-outPool[5]-avg-baseline": "green",
-        "pre_aggregate-outPool[6]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[6]-99-baseline": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[6]-avg": "green",
-        "pre_aggregate-outPool[6]-avg-baseline": "green",
-        "pre_aggregate-outPool[7]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[7]-99-baseline": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[7]-avg": "green",
-        "pre_aggregate-outPool[7]-avg-baseline": "green",
-        "pre_aggregate[0]-50": "green",
-        "pre_aggregate[0]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[0]-IN": "red",
-        "pre_aggregate[0]-IN-baseline": "red",
-        "pre_aggregate[0]-OUT": "orange",
-        "pre_aggregate[0]-OUT-baseline": "orange",
-        "pre_aggregate[1]-50": "green",
-        "pre_aggregate[1]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[1]-IN": "red",
-        "pre_aggregate[1]-IN-baseline": "red",
-        "pre_aggregate[1]-OUT": "orange",
-        "pre_aggregate[1]-OUT-baseline": "orange",
-        "pre_aggregate[2]-50": "green",
-        "pre_aggregate[2]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[2]-IN": "red",
-        "pre_aggregate[2]-IN-baseline": "red",
-        "pre_aggregate[2]-OUT": "orange",
-        "pre_aggregate[2]-OUT-baseline": "orange",
-        "pre_aggregate[3]-50": "green",
-        "pre_aggregate[3]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[3]-IN": "red",
-        "pre_aggregate[3]-IN-baseline": "red",
-        "pre_aggregate[3]-OUT": "orange",
-        "pre_aggregate[3]-OUT-baseline": "orange",
-        "pre_aggregate[4]-IN-baseline": "red",
-        "pre_aggregate[4]-OUT": "orange",
-        "pre_aggregate[4]-OUT-baseline": "orange",
-        "pre_aggregate[5]-IN": "red",
-        "pre_aggregate[5]-IN-baseline": "red",
-        "pre_aggregate[5]-OUT": "orange",
-        "pre_aggregate[5]-OUT-baseline": "orange",
-        "pre_aggregate[6]-IN": "red",
-        "pre_aggregate[6]-IN-baseline": "red",
-        "pre_aggregate[6]-OUT": "orange",
-        "pre_aggregate[6]-OUT-baseline": "orange",
-        "pre_aggregate[7]-IN": "red",
-        "pre_aggregate[7]-IN-baseline": "red",
-        "pre_aggregate[7]-OUT": "orange",
-        "pre_aggregate[7]-OUT-baseline": "orange"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "-- Mixed --",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 19,
-        "w": 24,
-        "x": 0,
-        "y": 62
-      },
-      "hiddenSeries": false,
-      "id": 104,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "max": true,
-        "min": true,
-        "rightSide": true,
-        "show": true,
-        "sideWidth": 250,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 2,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 1,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "$$hashKey": "object:1868",
-          "alias": "pre_aggregate[0]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:1875",
-          "alias": "pre_aggregate[1]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:1880",
-          "alias": "pre_aggregate[2]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:1885",
-          "alias": "pre_aggregate[3]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:1890",
-          "alias": "pre_aggregate[4]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:1895",
-          "alias": "pre_aggregate[5]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:1900",
-          "alias": "pre_aggregate[6]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:1905",
-          "alias": "pre_aggregate[7]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:1924",
-          "alias": "pre_aggregate[0]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:1931",
-          "alias": "pre_aggregate[1]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:1938",
-          "alias": "pre_aggregate[2]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:1943",
-          "alias": "pre_aggregate[3]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:1948",
-          "alias": "pre_aggregate[4]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:1953",
-          "alias": "pre_aggregate[5]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:1958",
-          "alias": "pre_aggregate[6]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:1963",
-          "alias": "pre_aggregate[7]-OUT",
-          "dashes": true
         },
         {
           "$$hashKey": "object:103",
-          "alias": "pre_aggregate-outPool[0]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:104",
-          "alias": "pre_aggregate-outPool[1]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:105",
-          "alias": "pre_aggregate-outPool[2]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:106",
-          "alias": "pre_aggregate-outPool[3]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:107",
-          "alias": "pre_aggregate-outPool[4]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:108",
-          "alias": "pre_aggregate-outPool[5]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:109",
-          "alias": "pre_aggregate-outPool[6]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:110",
-          "alias": "pre_aggregate-outPool[7]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:111",
-          "alias": "pre_aggregate-outPool[0]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:112",
-          "alias": "pre_aggregate-outPool[1]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:113",
-          "alias": "pre_aggregate-outPool[2]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:114",
-          "alias": "pre_aggregate-outPool[3]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:115",
-          "alias": "pre_aggregate-outPool[4]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:116",
-          "alias": "pre_aggregate-outPool[5]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:117",
-          "alias": "pre_aggregate-outPool[6]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:118",
-          "alias": "pre_aggregate-outPool[7]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "data": "",
-          "datasource": "CSVServer",
-          "expr": "flink_taskmanager_job_task_operator_numRecordsInPerSecond{operator_name=\"pre_aggregate\"}",
-          "hide": false,
-          "interval": "",
-          "legendFormat": "{{operator_name}}[{{subtask_index}}]-IN",
-          "refId": "C",
-          "target": "throughput-vs-networkbuffer-100K-baseline.csv",
-          "type": "timeseries"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Baseline comparison - Pre-aggregation throughput IN/OUT (records/sec) vs. Network buffer usage (%)",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:712",
           "format": "short",
-          "label": "Input and output throughput (rec/sec)",
-          "logBase": 1,
-          "max": "5000",
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:713",
-          "format": "percent",
-          "label": "Network output buffer (%)",
-          "logBase": 1,
-          "max": "120",
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {
-        "192.168.56.101:9250-tokenizer____pre_aggregate[0]-IN": "green",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[0]-OUT": "orange",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[0]-param": "rgb(0, 0, 0)",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[1]-IN": "green",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[1]-OUT": "orange",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[1]-param": "rgb(0, 0, 0)",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[2]-IN": "green",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[2]-OUT": "orange",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[2]-param": "rgb(0, 0, 0)",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[3]-IN": "green",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[3]-OUT": "orange",
-        "192.168.56.101:9250-tokenizer____pre_aggregate[3]-param": "rgb(0, 0, 0)",
-        "localhost percentile(0.99)": "rgb(10, 4, 0)",
-        "localhost-pre_aggregate-0-IN": "green",
-        "localhost-pre_aggregate-0-OUT": "orange",
-        "localhost-pre_aggregate-1-IN": "green",
-        "localhost-pre_aggregate-1-OUT": "orange",
-        "localhost-pre_aggregate-2-IN": "green",
-        "localhost-pre_aggregate-2-OUT": "orange",
-        "localhost-pre_aggregate-3-IN": "green",
-        "localhost-pre_aggregate-3-OUT": "orange",
-        "localhost-pre_aggregate-IN": "orange",
-        "localhost-pre_aggregate-OUT": "green",
-        "localhost-sum-0-IN": "red",
-        "localhost-sum-1-IN": "red",
-        "localhost-sum-2-IN": "red",
-        "localhost-sum-3-IN": "red",
-        "localhost:9251-pre_aggregate[0]-IN": "red",
-        "localhost:9251-pre_aggregate[0]-OUT": "orange",
-        "localhost:9251-pre_aggregate[0]-param": "blue",
-        "localhost:9251-pre_aggregate[1]-IN": "red",
-        "localhost:9251-pre_aggregate[1]-OUT": "orange",
-        "localhost:9251-pre_aggregate[1]-param": "blue",
-        "localhost:9251-pre_aggregate[2]-IN": "red",
-        "localhost:9251-pre_aggregate[2]-OUT": "orange",
-        "localhost:9251-pre_aggregate[2]-param": "blue",
-        "localhost:9251-pre_aggregate[3]-IN": "red",
-        "localhost:9251-pre_aggregate[3]-OUT": "orange",
-        "localhost:9251-pre_aggregate[3]-param": "blue",
-        "localhost:9251-tokenizer____pre_aggregate[0]-IN": "red",
-        "localhost:9251-tokenizer____pre_aggregate[0]-OUT": "orange",
-        "localhost:9251-tokenizer____pre_aggregate[0]-param": "blue",
-        "localhost:9251-tokenizer____pre_aggregate[1]-IN": "red",
-        "localhost:9251-tokenizer____pre_aggregate[1]-OUT": "orange",
-        "localhost:9251-tokenizer____pre_aggregate[1]-param": "blue",
-        "localhost:9251-tokenizer____pre_aggregate[2]-IN": "red",
-        "localhost:9251-tokenizer____pre_aggregate[2]-OUT": "orange",
-        "localhost:9251-tokenizer____pre_aggregate[2]-param": "blue",
-        "localhost:9251-tokenizer____pre_aggregate[3]-IN": "red",
-        "localhost:9251-tokenizer____pre_aggregate[3]-OUT": "orange",
-        "localhost:9251-tokenizer____pre_aggregate[3]-param": "blue",
-        "pre_aggregate-outPool[0]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[0]-avg": "green",
-        "pre_aggregate-outPool[1]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[1]-avg": "green",
-        "pre_aggregate-outPool[2]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[2]-avg": "green",
-        "pre_aggregate-outPool[3]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[3]-avg": "green",
-        "pre_aggregate-outPool[4]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[4]-avg": "green",
-        "pre_aggregate-outPool[5]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[5]-avg": "green",
-        "pre_aggregate-outPool[6]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[6]-avg": "green",
-        "pre_aggregate-outPool[7]-99": "rgb(0, 0, 0)",
-        "pre_aggregate-outPool[7]-avg": "green",
-        "pre_aggregate[0]-50": "green",
-        "pre_aggregate[0]-IN": "red",
-        "pre_aggregate[0]-IN-BL": "red",
-        "pre_aggregate[0]-OUT": "orange",
-        "pre_aggregate[0]-OUT-BL": "orange",
-        "pre_aggregate[0]-param": "blue",
-        "pre_aggregate[0]-param-BL": "blue",
-        "pre_aggregate[1]-IN": "red",
-        "pre_aggregate[1]-IN-BL": "red",
-        "pre_aggregate[1]-OUT": "orange",
-        "pre_aggregate[1]-OUT-BL": "orange",
-        "pre_aggregate[1]-param": "blue",
-        "pre_aggregate[1]-param-BL": "blue",
-        "pre_aggregate[2]-IN": "red",
-        "pre_aggregate[2]-IN-BL": "red",
-        "pre_aggregate[2]-OUT": "orange",
-        "pre_aggregate[2]-OUT-BL": "orange",
-        "pre_aggregate[2]-param": "blue",
-        "pre_aggregate[2]-param-BL": "blue",
-        "pre_aggregate[3]-IN": "red",
-        "pre_aggregate[3]-IN-BL": "red",
-        "pre_aggregate[3]-OUT": "orange",
-        "pre_aggregate[3]-OUT-BL": "orange",
-        "pre_aggregate[3]-param": "blue",
-        "pre_aggregate[3]-param-BL": "blue",
-        "pre_aggregate[4]-OUT": "orange",
-        "pre_aggregate[4]-param": "blue",
-        "pre_aggregate[5]-IN": "red",
-        "pre_aggregate[5]-OUT": "orange",
-        "pre_aggregate[5]-param": "blue",
-        "pre_aggregate[6]-IN": "red",
-        "pre_aggregate[6]-OUT": "orange",
-        "pre_aggregate[6]-param": "blue",
-        "pre_aggregate[7]-IN": "red",
-        "pre_aggregate[7]-OUT": "orange",
-        "pre_aggregate[7]-param": "blue"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "-- Mixed --",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 19,
-        "w": 24,
-        "x": 0,
-        "y": 81
-      },
-      "hiddenSeries": false,
-      "id": 102,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "max": true,
-        "min": false,
-        "rightSide": true,
-        "show": true,
-        "sideWidth": 250,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 1,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "$$hashKey": "object:317",
-          "alias": "pre_aggregate[4]-param",
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:318",
-          "alias": "pre_aggregate[5]-param",
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:319",
-          "alias": "pre_aggregate[6]-param",
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:320",
-          "alias": "pre_aggregate[7]-param",
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:430",
-          "alias": "pre_aggregate[0]-param",
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:431",
-          "alias": "pre_aggregate[1]-param",
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:432",
-          "alias": "pre_aggregate[2]-param",
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:433",
-          "alias": "pre_aggregate[3]-param",
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:2032",
-          "alias": "pre_aggregate-outPool[0]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2
-        },
-        {
-          "$$hashKey": "object:2049",
-          "alias": "pre_aggregate-outPool[1]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2
-        },
-        {
-          "$$hashKey": "object:2054",
-          "alias": "pre_aggregate-outPool[2]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2
-        },
-        {
-          "$$hashKey": "object:2059",
-          "alias": "pre_aggregate-outPool[3]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2
-        },
-        {
-          "$$hashKey": "object:2064",
-          "alias": "pre_aggregate-outPool[4]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2
-        },
-        {
-          "$$hashKey": "object:2069",
-          "alias": "pre_aggregate-outPool[5]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2
-        },
-        {
-          "$$hashKey": "object:2074",
-          "alias": "pre_aggregate-outPool[6]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2
-        },
-        {
-          "$$hashKey": "object:2079",
-          "alias": "pre_aggregate-outPool[7]-avg",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2
-        },
-        {
-          "$$hashKey": "object:2178",
-          "alias": "pre_aggregate-outPool[0]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5
-        },
-        {
-          "$$hashKey": "object:2195",
-          "alias": "pre_aggregate-outPool[1]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5
-        },
-        {
-          "$$hashKey": "object:2212",
-          "alias": "pre_aggregate-outPool[2]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5
-        },
-        {
-          "$$hashKey": "object:2229",
-          "alias": "pre_aggregate-outPool[3]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5
-        },
-        {
-          "$$hashKey": "object:2246",
-          "alias": "pre_aggregate-outPool[4]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5
-        },
-        {
-          "$$hashKey": "object:2263",
-          "alias": "pre_aggregate-outPool[5]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5
-        },
-        {
-          "$$hashKey": "object:2280",
-          "alias": "pre_aggregate-outPool[6]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5
-        },
-        {
-          "$$hashKey": "object:2297",
-          "alias": "pre_aggregate-outPool[7]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "data": "",
-          "datasource": "CSVServer",
-          "hide": false,
-          "refId": "C",
-          "target": "netBuffer-vs-parameterK-20K-50K-100K-20K.csv",
-          "type": "timeseries"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Baseline comparison - Pre-aggregation network buffer (%) vs. the parameter K",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:930",
-          "format": "percent",
-          "label": "Network buffer usage",
-          "logBase": 1,
-          "max": "120",
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:931",
-          "format": "short",
-          "label": "autonomous pre-aggregation adjustment",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
-      "aliasColors": {
-        "192_168_0_28-pre_aggregate-0-IN": "red",
-        "192_168_0_28-pre_aggregate-0-OUT": "orange",
-        "192_168_0_28-pre_aggregate-0-quantile:0.5": "green",
-        "192_168_0_28-pre_aggregate-0-quantile:0.99": "rgb(0, 0, 0)",
-        "192_168_0_28-pre_aggregate-1-IN": "red",
-        "192_168_0_28-pre_aggregate-1-OUT": "orange",
-        "192_168_0_28-pre_aggregate-1-quantile:0.5": "green",
-        "192_168_0_28-pre_aggregate-1-quantile:0.99": "rgb(0, 0, 0)",
-        "192_168_0_28-pre_aggregate-2-IN": "red",
-        "192_168_0_28-pre_aggregate-2-OUT": "orange",
-        "192_168_0_28-pre_aggregate-2-quantile:0.5": "green",
-        "192_168_0_28-pre_aggregate-2-quantile:0.99": "rgb(0, 0, 0)",
-        "192_168_0_28-pre_aggregate-3-IN": "red",
-        "192_168_0_28-pre_aggregate-3-OUT": "orange",
-        "192_168_0_28-pre_aggregate-3-quantile:0.5": "green",
-        "192_168_0_28-pre_aggregate-3-quantile:0.99": "rgb(0, 0, 0)",
-        "192_168_0_28-tokenizer____pre_aggregate-0-IN": "red",
-        "192_168_0_28-tokenizer____pre_aggregate-0-OUT": "orange",
-        "192_168_0_28-tokenizer____pre_aggregate-1-IN": "red",
-        "192_168_0_28-tokenizer____pre_aggregate-1-OUT": "orange",
-        "192_168_0_28-tokenizer____pre_aggregate-2-IN": "red",
-        "192_168_0_28-tokenizer____pre_aggregate-2-OUT": "orange",
-        "192_168_0_28-tokenizer____pre_aggregate-3-IN": "red",
-        "192_168_0_28-tokenizer____pre_aggregate-3-OUT": "orange",
-        "localhost percentile(0.99)": "rgb(10, 4, 0)",
-        "localhost-pre_aggregate-0-IN": "red",
-        "localhost-pre_aggregate-0-OUT": "orange",
-        "localhost-pre_aggregate-0-quantile:0.5": "green",
-        "localhost-pre_aggregate-0-quantile:0.99": "rgb(4, 13, 0)",
-        "localhost-pre_aggregate-1-IN": "red",
-        "localhost-pre_aggregate-1-OUT": "orange",
-        "localhost-pre_aggregate-1-quantile:0.5": "green",
-        "localhost-pre_aggregate-1-quantile:0.99": "rgb(5, 4, 0)",
-        "localhost-pre_aggregate-2-IN": "red",
-        "localhost-pre_aggregate-2-OUT": "orange",
-        "localhost-pre_aggregate-2-quantile:0.5": "green",
-        "localhost-pre_aggregate-2-quantile:0.99": "rgb(0, 6, 8)",
-        "localhost-pre_aggregate-3-IN": "red",
-        "localhost-pre_aggregate-3-OUT": "orange",
-        "localhost-pre_aggregate-3-quantile:0.5": "green",
-        "localhost-pre_aggregate-3-quantile:0.99": "rgb(13, 5, 0)",
-        "localhost-pre_aggregate-IN": "orange",
-        "localhost-sum-0-IN": "green",
-        "localhost-sum-0-OUT": "blue",
-        "localhost-sum-1-IN": "green",
-        "localhost-sum-1-OUT": "blue",
-        "localhost-sum-2-IN": "green",
-        "localhost-sum-2-OUT": "blue",
-        "localhost-sum-3-IN": "green",
-        "localhost-sum-3-OUT": "blue",
-        "localhost-tokenizer____pre_aggregate-0-IN": "red",
-        "localhost-tokenizer____pre_aggregate-0-OUT": "orange",
-        "localhost-tokenizer____pre_aggregate-1-IN": "red",
-        "localhost-tokenizer____pre_aggregate-1-OUT": "orange",
-        "localhost-tokenizer____pre_aggregate-2-IN": "red",
-        "localhost-tokenizer____pre_aggregate-2-OUT": "orange",
-        "localhost-tokenizer____pre_aggregate-3-IN": "red",
-        "localhost-tokenizer____pre_aggregate-3-OUT": "orange",
-        "pre_aggregate[0]-50": "green",
-        "pre_aggregate[0]-50-BL": "green",
-        "pre_aggregate[0]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[0]-99-BL": "rgb(0, 0, 0)",
-        "pre_aggregate[0]-IN": "red",
-        "pre_aggregate[0]-IN-BL": "red",
-        "pre_aggregate[0]-OUT": "orange",
-        "pre_aggregate[0]-OUT-BL": "orange",
-        "pre_aggregate[1]-50": "green",
-        "pre_aggregate[1]-50-BL": "green",
-        "pre_aggregate[1]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[1]-99-BL": "rgb(0, 0, 0)",
-        "pre_aggregate[1]-IN": "red",
-        "pre_aggregate[1]-IN-BL": "red",
-        "pre_aggregate[1]-OUT": "orange",
-        "pre_aggregate[1]-OUT-BL": "orange",
-        "pre_aggregate[2]-50": "green",
-        "pre_aggregate[2]-50-BL": "green",
-        "pre_aggregate[2]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[2]-99-BL": "rgb(0, 0, 0)",
-        "pre_aggregate[2]-IN": "red",
-        "pre_aggregate[2]-IN-BL": "red",
-        "pre_aggregate[2]-OUT": "orange",
-        "pre_aggregate[2]-OUT-BL": "orange",
-        "pre_aggregate[3]-50": "green",
-        "pre_aggregate[3]-50-BL": "green",
-        "pre_aggregate[3]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[3]-99-BL": "rgb(0, 0, 0)",
-        "pre_aggregate[3]-IN": "red",
-        "pre_aggregate[3]-IN-BL": "red",
-        "pre_aggregate[3]-OUT": "orange",
-        "pre_aggregate[3]-OUT-BL": "orange",
-        "pre_aggregate[4]-50": "green",
-        "pre_aggregate[4]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[4]-OUT": "orange",
-        "pre_aggregate[5]-50": "green",
-        "pre_aggregate[5]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[5]-IN": "red",
-        "pre_aggregate[5]-OUT": "orange",
-        "pre_aggregate[6]-50": "green",
-        "pre_aggregate[6]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[6]-IN": "red",
-        "pre_aggregate[6]-OUT": "orange",
-        "pre_aggregate[7]-50": "green",
-        "pre_aggregate[7]-99": "rgb(0, 0, 0)",
-        "pre_aggregate[7]-IN": "red",
-        "pre_aggregate[7]-OUT": "orange"
-      },
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "-- Mixed --",
-      "description": "",
-      "fieldConfig": {
-        "defaults": {
-          "custom": {}
-        },
-        "overrides": []
-      },
-      "fill": 0,
-      "fillGradient": 0,
-      "gridPos": {
-        "h": 19,
-        "w": 24,
-        "x": 0,
-        "y": 100
-      },
-      "hiddenSeries": false,
-      "id": 103,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "max": true,
-        "min": true,
-        "rightSide": true,
-        "show": true,
-        "sideWidth": 250,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 2,
-      "links": [],
-      "nullPointMode": "null",
-      "options": {
-        "dataLinks": []
-      },
-      "percentage": false,
-      "pointradius": 1,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [
-        {
-          "$$hashKey": "object:2830",
-          "alias": "pre_aggregate[0]-50",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:2831",
-          "alias": "pre_aggregate[1]-50",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:2832",
-          "alias": "pre_aggregate[2]-50",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:2833",
-          "alias": "pre_aggregate[3]-50",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:2834",
-          "alias": "pre_aggregate[0]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:2835",
-          "alias": "pre_aggregate[1]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:2836",
-          "alias": "pre_aggregate[2]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:2837",
-          "alias": "pre_aggregate[3]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:146",
-          "alias": "pre_aggregate[4]-50",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:147",
-          "alias": "pre_aggregate[5]-50",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:148",
-          "alias": "pre_aggregate[6]-50",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:149",
-          "alias": "pre_aggregate[7]-50",
-          "dashLength": 2,
-          "dashes": true,
-          "spaceLength": 2,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:150",
-          "alias": "pre_aggregate[4]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:151",
-          "alias": "pre_aggregate[5]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:152",
-          "alias": "pre_aggregate[6]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:153",
-          "alias": "pre_aggregate[7]-99",
-          "dashLength": 5,
-          "dashes": true,
-          "spaceLength": 5,
-          "yaxis": 2
-        },
-        {
-          "$$hashKey": "object:396",
-          "alias": "pre_aggregate[0]-IN",
-          "linewidth": 1,
-          "pointradius": 1,
-          "points": true
-        },
-        {
-          "$$hashKey": "object:405",
-          "alias": "pre_aggregate[1]-IN",
-          "points": true
-        },
-        {
-          "$$hashKey": "object:412",
-          "alias": "pre_aggregate[0]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:446",
-          "alias": "pre_aggregate[1]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:453",
-          "alias": "pre_aggregate[2]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:466",
-          "alias": "pre_aggregate[3]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:471",
-          "alias": "pre_aggregate[4]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:476",
-          "alias": "pre_aggregate[5]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:486",
-          "alias": "pre_aggregate[6]-OUT",
-          "dashes": true
-        },
-        {
-          "$$hashKey": "object:491",
-          "alias": "pre_aggregate[7]-OUT",
-          "dashes": true
-        }
-      ],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "data": "",
-          "datasource": "CSVServer",
-          "hide": false,
-          "refId": "E",
-          "target": "throughput-vs-latency-20K-50K-100K-20K.csv",
-          "type": "timeseries"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Baseline comparison - Pre-aggregation throughput IN/OUT (records/sec) vs. processing latency",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "$$hashKey": "object:712",
-          "format": "short",
-          "label": "Input and output throughput (rec/sec)",
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "$$hashKey": "object:713",
-          "format": "ms",
-          "label": "Processing latency (sec)",
+          "label": "Pre-aggregation parameter K",
           "logBase": 1,
           "max": null,
           "min": null,
@@ -4697,7 +4370,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 119
+        "y": 89
       },
       "id": 23,
       "panels": [
@@ -5336,7 +5009,7 @@
     ]
   },
   "time": {
-    "from": "now-25m",
+    "from": "now-3h",
     "to": "now"
   },
   "timepicker": {
@@ -5356,7 +5029,7 @@
     ]
   },
   "timezone": "",
-  "title": "Flink Metrics - simple version",
-  "uid": "GPkyky2ik",
-  "version": 479
+  "title": "Flink Metrics - pre-aggregation operator",
+  "uid": "GPkyky2ij",
+  "version": 119
 }
