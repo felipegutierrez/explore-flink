@@ -15,7 +15,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
 		<scala.binary.version>2.11</scala.binary.version>
-		<flink.version>1.10.0</flink.version>
+		<flink.version>1.10.1</flink.version>
 		<guava.version>18.0</guava.version>
 		<junit.version>4.12</junit.version>
 		<scala.version>2.11.12</scala.version>
@@ -75,6 +75,11 @@
 		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
+			<version>${flink.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.flink</groupId>
+			<artifactId>flink-connector-kafka_${scala.binary.version}</artifactId>
 			<version>${flink.version}</version>
 		</dependency>
 		<dependency>
@@ -153,11 +158,15 @@
 			<artifactId>scala-library</artifactId>
 			<version>${scala.version}</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/net.openhft/affinity -->
 		<dependency>
 			<groupId>net.openhft</groupId>
 			<artifactId>affinity</artifactId>
 			<version>3.1.11</version>
+		</dependency>
+		<dependency>
+			<groupId>io.airlift.tpch</groupId>
+			<artifactId>tpch</artifactId>
+			<version>0.10</version>
 		</dependency>
 	</dependencies>
 	<build>

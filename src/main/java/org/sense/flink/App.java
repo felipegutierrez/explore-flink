@@ -21,7 +21,9 @@ import org.sense.flink.examples.stream.edgent.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.edgent.TemperatureAverageExample;
 import org.sense.flink.examples.stream.edgent.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.edgent.WordCountSocketFilterQEP;
+import org.sense.flink.examples.stream.kafka.KafkaTpcHQuery;
 import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
+import org.sense.flink.examples.stream.tpch.TPCHQuery03;
 import org.sense.flink.examples.stream.twitter.TwitterExample;
 import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterLookupJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterSemiJoinExample;
@@ -360,6 +362,14 @@ public class App {
 						parallelism, disableOperatorChaining, output, pinningPolicy);
 				app = 0;
 				break;
+			case 35:
+				new KafkaTpcHQuery();
+				app = 0;
+				break;
+			case 36:
+				new TPCHQuery03();
+				app = 0;
+				break;
 			default:
 				args = null;
 				System.out.println("No application selected [" + app + "] ");
@@ -409,6 +419,8 @@ public class App {
 		System.out.println("32 - Mqtt data source of traffic-jam from Valencia Open-data Web Portal");
 		System.out.println("33 - Mqtt data source of pollution from Valencia Open-data Web Portal");
 		System.out.println("34 - CPU intensive computation which consumes data from Valencia Open-data Web Portal");
+		System.out.println("35 - Kafka source");
+		System.out.println("36 - TPC-H Benchmark query 03");
 		System.out.println();
 		// @formatter:on
 	}
