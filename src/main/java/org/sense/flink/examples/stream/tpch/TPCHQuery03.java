@@ -5,6 +5,7 @@ import static org.sense.flink.util.MetricLabels.OPERATOR_SOURCE;
 import static org.sense.flink.util.MetricLabels.SINK_DATA_MQTT;
 import static org.sense.flink.util.MetricLabels.SINK_TEXT;
 
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -15,12 +16,11 @@ import java.util.List;
 
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.FilterFunction;
-import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
 import org.apache.flink.shaded.guava18.com.google.common.collect.Iterators;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -31,6 +31,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.sense.flink.examples.stream.tpch.pojo.Customer;
+import org.sense.flink.examples.stream.tpch.pojo.LineItem;
 import org.sense.flink.examples.stream.tpch.pojo.Order;
 
 /**
@@ -58,6 +59,7 @@ public class TPCHQuery03 {
 
 	public TPCHQuery03(String output) throws Exception {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+		env.setStateBackend(new FsStateBackend("file:///tmp/flink/checkpoints"));
 		env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
 		DataStream<Order> orders = env.addSource(new OrdersSource())
@@ -72,20 +74,25 @@ public class TPCHQuery03 {
 		// orders = orders.filter(new OrderFilter());
 
 		// @formatter:off
-		orders
-			.keyBy(new OrderCustomerKeySelector())
-			.timeWindow(Time.seconds(5))
-			.aggregate(new OrderCustomerAggregator(), new OrderProcessWindowFunction())
-			.flatMap(new ShippingPriorityItemFlatMap());
-		// @formatter:on
-
+		DataStream<ShippingPriorityItem> shippingPriorityStream01 = orders
+				.keyBy(new OrderCustomerKeySelector())
+				.timeWindow(Time.seconds(10))
+				.aggregate(new OrderCustomerAggregator(), new OrderProcessWindowFunction());
+		// shippingPriorityStream01.print();
+		DataStream<ShippingPriorityItem> shippingPriorityStream02 = shippingPriorityStream01
+				.keyBy(new ShippingPriorityKeySelector())
+				.timeWindow(Time.seconds(60))
+				.aggregate(new ShippingPriorityItemAggregator(), new ShippingPriorityProcessWindowFunction());
+		shippingPriorityStream02.print();
+		
 		if (output.equalsIgnoreCase(SINK_DATA_MQTT)) {
-			orders.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
+			shippingPriorityStream02.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
 		} else if (output.equalsIgnoreCase(SINK_TEXT)) {
-			orders.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
+			shippingPriorityStream02.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
 		} else {
 			System.out.println("discarding output");
 		}
+		// @formatter:on
 
 		System.out.println("Execution plan >>>\n" + env.getExecutionPlan());
 		env.execute(TPCHQuery03.class.getSimpleName());
@@ -119,7 +126,7 @@ public class TPCHQuery03 {
 	}
 
 	private static class OrderProcessWindowFunction
-			extends ProcessWindowFunction<List<Order>, List<ShippingPriorityItem>, Long, TimeWindow> {
+			extends ProcessWindowFunction<List<Order>, ShippingPriorityItem, Long, TimeWindow> {
 		private static final long serialVersionUID = 1L;
 
 		private ListState<Customer> customerList = null;
@@ -130,36 +137,100 @@ public class TPCHQuery03 {
 			ListStateDescriptor<Customer> customerDescriptor = new ListStateDescriptor<Customer>("customerState",
 					Customer.class);
 			customerList = getRuntimeContext().getListState(customerDescriptor);
-
 		}
 
 		@Override
 		public void process(Long key,
-				ProcessWindowFunction<List<Order>, List<ShippingPriorityItem>, Long, TimeWindow>.Context context,
-				Iterable<List<Order>> input, Collector<List<ShippingPriorityItem>> out) throws Exception {
+				ProcessWindowFunction<List<Order>, ShippingPriorityItem, Long, TimeWindow>.Context context,
+				Iterable<List<Order>> input, Collector<ShippingPriorityItem> out) throws Exception {
 
 			if (customerList != null && Iterators.size(customerList.get().iterator()) == 0) {
 				CustomerSource customerSource = new CustomerSource();
 				List<Customer> customers = customerSource.getCustomers();
 				customerList.addAll(customers);
 			}
-			System.out.println("");
 
-			List<ShippingPriorityItem> listShippingPriorityItem = new ArrayList<ShippingPriorityItem>();
 			for (Customer customer : customerList.get()) {
 				for (Iterator<List<Order>> iterator = input.iterator(); iterator.hasNext();) {
 					List<Order> orders = (List<Order>) iterator.next();
 
 					for (Order order : orders) {
-						if (order.getCustomerKey() != customer.getCustomerKey()) {
-							listShippingPriorityItem.add(new ShippingPriorityItem(order.getOrderKey(), 0.0,
-									OrdersSource.format(order.getOrderDate()), order.getShipPriority()));
+						if (order.getCustomerKey() == customer.getCustomerKey()) {
+							try {
+								out.collect(new ShippingPriorityItem(order.getOrderKey(), 0.0,
+										OrdersSource.format(order.getOrderDate()), order.getShipPriority()));
+							} catch (Exception e) {
+								e.printStackTrace();
+							}
 						}
 					}
 				}
-
 			}
-			out.collect(listShippingPriorityItem);
+		}
+	}
+
+	private static class ShippingPriorityItemAggregator
+			implements AggregateFunction<ShippingPriorityItem, List<ShippingPriorityItem>, List<ShippingPriorityItem>> {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public List<ShippingPriorityItem> createAccumulator() {
+			return new ArrayList<ShippingPriorityItem>();
+		}
+
+		@Override
+		public List<ShippingPriorityItem> add(ShippingPriorityItem value, List<ShippingPriorityItem> accumulator) {
+			accumulator.add(value);
+			return accumulator;
+		}
+
+		@Override
+		public List<ShippingPriorityItem> getResult(List<ShippingPriorityItem> accumulator) {
+			return accumulator;
+		}
+
+		@Override
+		public List<ShippingPriorityItem> merge(List<ShippingPriorityItem> a, List<ShippingPriorityItem> b) {
+			a.addAll(b);
+			return a;
+		}
+	}
+
+	private static class ShippingPriorityProcessWindowFunction
+			extends ProcessWindowFunction<List<ShippingPriorityItem>, ShippingPriorityItem, Long, TimeWindow> {
+		private static final long serialVersionUID = 1L;
+
+		private ListState<LineItem> lineItemList = null;
+
+		@Override
+		public void open(Configuration parameters) throws Exception {
+			super.open(parameters);
+			ListStateDescriptor<LineItem> lineItemDescriptor = new ListStateDescriptor<LineItem>("lineItemState",
+					LineItem.class);
+			lineItemList = getRuntimeContext().getListState(lineItemDescriptor);
+		}
+
+		@Override
+		public void process(Long key,
+				ProcessWindowFunction<List<ShippingPriorityItem>, ShippingPriorityItem, Long, TimeWindow>.Context context,
+				Iterable<List<ShippingPriorityItem>> input, Collector<ShippingPriorityItem> out) throws Exception {
+			if (lineItemList != null && Iterators.size(lineItemList.get().iterator()) == 0) {
+				LineItemSource lineItemSource = new LineItemSource();
+				List<LineItem> lineItems = lineItemSource.getLineItems();
+				lineItemList.addAll(lineItems);
+			}
+
+			for (LineItem lineItem : lineItemList.get()) {
+				for (Iterator<List<ShippingPriorityItem>> iterator = input.iterator(); iterator.hasNext();) {
+					List<ShippingPriorityItem> shippingPriorityItemList = (List<ShippingPriorityItem>) iterator.next();
+
+					for (ShippingPriorityItem shippingPriorityItem : shippingPriorityItemList) {
+						if (shippingPriorityItem.getOrderkey().equals(lineItem.getRowNumber())) {
+							out.collect(shippingPriorityItem);
+						}
+					}
+				}
+			}
 		}
 	}
 
@@ -197,22 +268,6 @@ public class TPCHQuery03 {
 		}
 	}
 
-	private static class ShippingPriorityItemFlatMap implements FlatMapFunction<List<ShippingPriorityItem>, String> {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public void flatMap(List<ShippingPriorityItem> value, Collector<String> out) throws Exception {
-			String result = null;
-			for (ShippingPriorityItem shippingPriorityItem : value) {
-				result += "ShippingPriorityItem [getOrderkey()=" + shippingPriorityItem.getOrderkey()
-						+ ", getRevenue()=" + shippingPriorityItem.getRevenue() + ", getOrderdate()="
-						+ shippingPriorityItem.getOrderdate() + ", getShippriority()="
-						+ shippingPriorityItem.getShippriority() + "]";
-			}
-			out.collect(result);
-		}
-	}
-
 	private static class OrderCustomerKeySelector implements KeySelector<Order, Long> {
 		private static final long serialVersionUID = 1L;
 
@@ -222,38 +277,60 @@ public class TPCHQuery03 {
 		}
 	}
 
-	private static class ShippingPriorityItem extends Tuple4<Long, Double, String, Integer> {
+	private static class ShippingPriorityKeySelector implements KeySelector<ShippingPriorityItem, Long> {
 		private static final long serialVersionUID = 1L;
 
+		@Override
+		public Long getKey(ShippingPriorityItem value) throws Exception {
+			return value.getOrderkey();
+		}
+	}
+
+	private static class ShippingPriorityItem implements Serializable {
+		private static final long serialVersionUID = 1L;
+
+		private Long orderkey;
+		private Double revenue;
+		private String orderdate;
+		private Integer shippriority;
+
 		public ShippingPriorityItem(Long orderkey, Double revenue, String orderdate, Integer shippriority) {
-			this.f0 = orderkey;
-			this.f1 = revenue;
-			this.f2 = orderdate;
-			this.f3 = shippriority;
+			this.orderkey = orderkey;
+			this.revenue = revenue;
+			this.orderdate = orderdate;
+			this.shippriority = shippriority;
 		}
 
 		public Long getOrderkey() {
-			return this.f0;
+			return orderkey;
 		}
 
 		public void setOrderkey(Long orderkey) {
-			this.f0 = orderkey;
+			this.orderkey = orderkey;
 		}
 
 		public Double getRevenue() {
-			return this.f1;
+			return revenue;
 		}
 
 		public void setRevenue(Double revenue) {
-			this.f1 = revenue;
+			this.revenue = revenue;
 		}
 
 		public String getOrderdate() {
-			return this.f2;
+			return orderdate;
+		}
+
+		public void setOrderdate(String orderdate) {
+			this.orderdate = orderdate;
 		}
 
 		public Integer getShippriority() {
-			return this.f3;
+			return shippriority;
+		}
+
+		public void setShippriority(Integer shippriority) {
+			this.shippriority = shippriority;
 		}
 
 		@Override
