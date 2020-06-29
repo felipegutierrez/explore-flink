@@ -144,6 +144,8 @@ public class App {
 						output = SinkOutputs.PARAMETER_OUTPUT_FILE;
 					} else if (SinkOutputs.PARAMETER_OUTPUT_MQTT.equals(String.valueOf(args[i]))) {
 						output = SinkOutputs.PARAMETER_OUTPUT_MQTT;
+					} else if (SinkOutputs.PARAMETER_OUTPUT_LOG.equals(String.valueOf(args[i]))) {
+						output = SinkOutputs.PARAMETER_OUTPUT_LOG;
 					}
 				}
 			}
@@ -367,7 +369,7 @@ public class App {
 				app = 0;
 				break;
 			case 36:
-				new TPCHQuery03();
+				new TPCHQuery03(output, ipAddressSink, disableOperatorChaining, pinningPolicy);
 				app = 0;
 				break;
 			default:
@@ -421,6 +423,7 @@ public class App {
 		System.out.println("34 - CPU intensive computation which consumes data from Valencia Open-data Web Portal");
 		System.out.println("35 - Kafka source");
 		System.out.println("36 - TPC-H Benchmark query 03");
+		System.out.println("37 - TPC-H Benchmark query 10");
 		System.out.println();
 		// @formatter:on
 	}

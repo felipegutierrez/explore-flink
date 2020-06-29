@@ -1,4 +1,4 @@
-package org.sense.flink.examples.stream.tpch;
+package org.sense.flink.examples.stream.tpch.udf;
 
 import static org.sense.flink.util.MetricLabels.TPCH_DATA_COSTUMER;
 
