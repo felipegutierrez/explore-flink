@@ -24,6 +24,7 @@ import org.sense.flink.examples.stream.edgent.WordCountSocketFilterQEP;
 import org.sense.flink.examples.stream.kafka.KafkaTpcHQuery;
 import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
 import org.sense.flink.examples.stream.tpch.TPCHQuery03;
+import org.sense.flink.examples.stream.tpch.TPCHQuery10;
 import org.sense.flink.examples.stream.twitter.TwitterExample;
 import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterLookupJoinExample;
 import org.sense.flink.examples.stream.valencia.ValenciaBloomFilterSemiJoinExample;
@@ -370,6 +371,10 @@ public class App {
 				break;
 			case 36:
 				new TPCHQuery03(output, ipAddressSink, disableOperatorChaining, pinningPolicy);
+				app = 0;
+				break;
+			case 37:
+				new TPCHQuery10(output, ipAddressSink, disableOperatorChaining, pinningPolicy);
 				app = 0;
 				break;
 			default:

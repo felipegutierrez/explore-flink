@@ -5,7 +5,6 @@ import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_FILE;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_LOG;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_MQTT;
 
-import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -21,25 +20,26 @@ import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.functions.RichReduceFunction;
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
-import org.apache.flink.api.java.functions.KeySelector;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.shaded.guava18.com.google.common.collect.Iterators;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import org.sense.flink.examples.stream.tpch.pojo.Customer;
-import org.sense.flink.examples.stream.tpch.pojo.LineItem;
 import org.sense.flink.examples.stream.tpch.pojo.Order;
+import org.sense.flink.examples.stream.tpch.pojo.ShippingPriorityItem;
 import org.sense.flink.examples.stream.tpch.udf.CustomerSource;
-import org.sense.flink.examples.stream.tpch.udf.LineItemSource;
+import org.sense.flink.examples.stream.tpch.udf.OrderCustomerKeySelector;
+import org.sense.flink.examples.stream.tpch.udf.OrderTimestampAndWatermarkAssigner;
 import org.sense.flink.examples.stream.tpch.udf.OrdersSource;
+import org.sense.flink.examples.stream.tpch.udf.ShippingPriority3KeySelector;
+import org.sense.flink.examples.stream.tpch.udf.ShippingPriorityKeySelector;
+import org.sense.flink.examples.stream.tpch.udf.ShippingPriorityProcessWindowFunction;
 import org.sense.flink.mqtt.MqttStringPublisher;
 import org.sense.flink.util.CpuGauge;
 
@@ -67,7 +67,7 @@ public class TPCHQuery03 {
 	}
 
 	public TPCHQuery03() throws Exception {
-		this(PARAMETER_OUTPUT_LOG, "127.0.0.1", false, true);
+		this(PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false);
 	}
 
 	public TPCHQuery03(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy)
@@ -112,7 +112,7 @@ public class TPCHQuery03 {
 		if (output.equalsIgnoreCase(PARAMETER_OUTPUT_MQTT)) {
 			shippingPriorityStream03
 				.map(new ShippingPriorityItemMap(pinningPolicy)).name(ShippingPriorityItemMap.class.getSimpleName()).uid(ShippingPriorityItemMap.class.getSimpleName())
-				.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)) ; // .name(OPERATOR_SINK).uid(OPERATOR_SINK);
+				.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(OPERATOR_SINK).uid(OPERATOR_SINK);
 		} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_LOG)) {
 			shippingPriorityStream03.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
 		} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_FILE)) {
@@ -250,90 +250,6 @@ public class TPCHQuery03 {
 		}
 	}
 
-	private static class ShippingPriorityProcessWindowFunction
-			extends ProcessWindowFunction<List<ShippingPriorityItem>, ShippingPriorityItem, Long, TimeWindow> {
-		private static final long serialVersionUID = 1L;
-
-		private ListState<LineItem> lineItemList = null;
-
-		private transient CpuGauge cpuGauge;
-		private BitSet affinity;
-		private boolean pinningPolicy;
-
-		public ShippingPriorityProcessWindowFunction(boolean pinningPolicy) {
-			this.pinningPolicy = pinningPolicy;
-		}
-
-		@Override
-		public void open(Configuration parameters) throws Exception {
-			super.open(parameters);
-
-			this.cpuGauge = new CpuGauge();
-			getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
-
-			if (this.pinningPolicy) {
-				// listing the cpu cores available
-				int nbits = Runtime.getRuntime().availableProcessors();
-				// pinning operator' thread to a specific cpu core
-				this.affinity = new BitSet(nbits);
-				affinity.set(((int) Thread.currentThread().getId() % nbits));
-				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
-			}
-
-			ListStateDescriptor<LineItem> lineItemDescriptor = new ListStateDescriptor<LineItem>("lineItemState",
-					LineItem.class);
-			lineItemList = getRuntimeContext().getListState(lineItemDescriptor);
-		}
-
-		@Override
-		public void process(Long key,
-				ProcessWindowFunction<List<ShippingPriorityItem>, ShippingPriorityItem, Long, TimeWindow>.Context context,
-				Iterable<List<ShippingPriorityItem>> input, Collector<ShippingPriorityItem> out) throws Exception {
-			// updates the CPU core current in use
-			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
-
-			if (lineItemList != null && Iterators.size(lineItemList.get().iterator()) == 0) {
-				LineItemSource lineItemSource = new LineItemSource();
-				List<LineItem> lineItems = lineItemSource.getLineItems();
-				lineItemList.addAll(lineItems);
-			}
-
-			for (LineItem lineItem : lineItemList.get()) {
-				// System.out.println("LineItem: " + lineItem);
-				for (Iterator<List<ShippingPriorityItem>> iterator = input.iterator(); iterator.hasNext();) {
-					List<ShippingPriorityItem> shippingPriorityItemList = (List<ShippingPriorityItem>) iterator.next();
-
-					for (ShippingPriorityItem shippingPriorityItem : shippingPriorityItemList) {
-						// System.out.println("ShippingPriorityItem: " + shippingPriorityItem);
-						if (shippingPriorityItem.getOrderkey().equals(lineItem.getRowNumber())) {
-							// System.out.println("ShippingPriorityProcessWindowFunction TRUE: " +
-							// shippingPriorityItem);
-							out.collect(shippingPriorityItem);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private static class OrderTimestampAndWatermarkAssigner extends AscendingTimestampExtractor<Order> {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public long extractAscendingTimestamp(Order element) {
-			return element.getTimestamp();
-		}
-	}
-
-	private static class CustomerFilter implements FilterFunction<Customer> {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public boolean filter(Customer c) {
-			return c.getMarketSegment().equals("AUTOMOBILE");
-		}
-	}
-
 	private static class OrderFilter implements FilterFunction<Order> {
 		private static final long serialVersionUID = 1L;
 		private final DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -347,88 +263,6 @@ public class TPCHQuery03 {
 		public boolean filter(Order o) throws ParseException {
 			Date orderDate = new Date(o.getOrderDate());
 			return orderDate.before(date);
-		}
-	}
-
-	private static class OrderCustomerKeySelector implements KeySelector<Order, Long> {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Long getKey(Order value) throws Exception {
-			return value.getCustomerKey();
-		}
-	}
-
-	private static class ShippingPriorityKeySelector implements KeySelector<ShippingPriorityItem, Long> {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Long getKey(ShippingPriorityItem value) throws Exception {
-			return value.getOrderkey();
-		}
-	}
-
-	private static class ShippingPriorityItem implements Serializable {
-		private static final long serialVersionUID = 1L;
-
-		private Long orderkey;
-		private Double revenue;
-		private String orderdate;
-		private Integer shippriority;
-
-		public ShippingPriorityItem(Long orderkey, Double revenue, String orderdate, Integer shippriority) {
-			this.orderkey = orderkey;
-			this.revenue = revenue;
-			this.orderdate = orderdate;
-			this.shippriority = shippriority;
-		}
-
-		public Long getOrderkey() {
-			return orderkey;
-		}
-
-		public void setOrderkey(Long orderkey) {
-			this.orderkey = orderkey;
-		}
-
-		public Double getRevenue() {
-			return revenue;
-		}
-
-		public void setRevenue(Double revenue) {
-			this.revenue = revenue;
-		}
-
-		public String getOrderdate() {
-			return orderdate;
-		}
-
-		public void setOrderdate(String orderdate) {
-			this.orderdate = orderdate;
-		}
-
-		public Integer getShippriority() {
-			return shippriority;
-		}
-
-		public void setShippriority(Integer shippriority) {
-			this.shippriority = shippriority;
-		}
-
-		@Override
-		public String toString() {
-			return "ShippingPriorityItem [getOrderkey()=" + getOrderkey() + ", getRevenue()=" + getRevenue()
-					+ ", getOrderdate()=" + getOrderdate() + ", getShippriority()=" + getShippriority() + "]";
-		}
-	}
-
-	private static class ShippingPriority3KeySelector
-			implements KeySelector<ShippingPriorityItem, Tuple3<Long, String, Integer>> {
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Tuple3<Long, String, Integer> getKey(ShippingPriorityItem value) throws Exception {
-			return Tuple3.of(value.getOrderkey(), value.getOrderdate(), value.getShippriority());
 		}
 	}
 
