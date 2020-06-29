@@ -20,7 +20,7 @@ import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.runtime.state.filesystem.FsStateBackend;
+import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.shaded.guava18.com.google.common.collect.Iterators;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -59,7 +59,7 @@ public class TPCHQuery03 {
 
 	public TPCHQuery03(String output) throws Exception {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		env.setStateBackend(new FsStateBackend("file:///tmp/flink/checkpoints"));
+		env.setStateBackend(new RocksDBStateBackend("file:///tmp/flink/state", true));
 		env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
 		DataStream<Order> orders = env.addSource(new OrdersSource())
@@ -151,14 +151,18 @@ public class TPCHQuery03 {
 			}
 
 			for (Customer customer : customerList.get()) {
+				// System.out.println("Customer: " + customer);
 				for (Iterator<List<Order>> iterator = input.iterator(); iterator.hasNext();) {
 					List<Order> orders = (List<Order>) iterator.next();
 
 					for (Order order : orders) {
+						// System.out.println("Order: " + order);
 						if (order.getCustomerKey() == customer.getCustomerKey()) {
 							try {
-								out.collect(new ShippingPriorityItem(order.getOrderKey(), 0.0,
-										OrdersSource.format(order.getOrderDate()), order.getShipPriority()));
+								ShippingPriorityItem spi = new ShippingPriorityItem(order.getOrderKey(), 0.0,
+										OrdersSource.format(order.getOrderDate()), order.getShipPriority());
+								System.out.println("OrderProcessWindowFunction TRUE: " + spi);
+								out.collect(spi);
 							} catch (Exception e) {
 								e.printStackTrace();
 							}
@@ -221,11 +225,14 @@ public class TPCHQuery03 {
 			}
 
 			for (LineItem lineItem : lineItemList.get()) {
+				// System.out.println("LineItem: " + lineItem);
 				for (Iterator<List<ShippingPriorityItem>> iterator = input.iterator(); iterator.hasNext();) {
 					List<ShippingPriorityItem> shippingPriorityItemList = (List<ShippingPriorityItem>) iterator.next();
 
 					for (ShippingPriorityItem shippingPriorityItem : shippingPriorityItemList) {
+						// System.out.println("ShippingPriorityItem: " + shippingPriorityItem);
 						if (shippingPriorityItem.getOrderkey().equals(lineItem.getRowNumber())) {
+							System.out.println("ShippingPriorityProcessWindowFunction TRUE: " + shippingPriorityItem);
 							out.collect(shippingPriorityItem);
 						}
 					}
