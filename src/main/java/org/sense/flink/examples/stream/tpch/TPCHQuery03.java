@@ -54,6 +54,37 @@ import net.openhft.affinity.impl.LinuxJNAAffinity;
  * 
  * https://docs.deistercloud.com/content/Databases.30/TPCH%20Benchmark.90/Sample%20querys.20.xml
  * 
+ * <p>
+ * This program implements the following SQL equivalent:
+ *
+ * <p>
+ * 
+ * <pre>
+ * {@code
+ * SELECT
+ *      l_orderkey,
+ *      SUM(l_extendedprice*(1-l_discount)) AS revenue,
+ *      o_orderdate,
+ *      o_shippriority
+ * FROM customer,
+ *      orders,
+ *      lineitem
+ * WHERE
+ *      c_mktsegment = '[SEGMENT]'
+ *      AND c_custkey = o_custkey
+ *      AND l_orderkey = o_orderkey
+ *      AND o_orderdate < date '[DATE]'
+ *      AND l_shipdate > date '[DATE]'
+ * GROUP BY
+ *      l_orderkey,
+ *      o_orderdate,
+ *      o_shippriority;
+ * }
+ * </pre>
+ *
+ * <p>
+ * Compared to the original TPC-H query this version does not sort the result by
+ * revenue and orderdate.
  * 
  * @author Felipe Oliveira Gutierrez
  *

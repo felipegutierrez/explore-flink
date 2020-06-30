@@ -12,9 +12,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.flink.api.java.tuple.Tuple5;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.sense.flink.examples.stream.tpch.pojo.Customer;
+import org.sense.flink.examples.stream.tpch.pojo.Nation;
 import org.sense.flink.util.DataRateListener;
 
 public class CustomerSource extends RichSourceFunction<Customer> {
@@ -134,6 +136,29 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 			e.printStackTrace();
 		}
 		return customerList;
+	}
+
+	public List<Tuple5<Integer, String, String, String, Double>> getCustomersWithNation() {
+		NationSource nationSource = new NationSource();
+		List<Nation> nations = nationSource.getNations();
+		List<Customer> customers = getCustomers();
+		List<Tuple5<Integer, String, String, String, Double>> customersWithNation = new ArrayList<Tuple5<Integer, String, String, String, Double>>();
+
+		for (Nation nation : nations) {
+			for (Customer customer : customers) {
+				if (customer.getNationKey() == nation.getNationKey()) {
+					Integer customerRow = (int) customer.getRowNumber();
+					String customerKey = String.valueOf(customer.getCustomerKey());
+					String customerName = customer.getName();
+					String nationName = nation.getName();
+					Double customerAccountBalance = customer.getAccountBalance();
+
+					customersWithNation
+							.add(Tuple5.of(customerRow, customerKey, customerName, nationName, customerAccountBalance));
+				}
+			}
+		}
+		return customersWithNation;
 	}
 
 	public long getEventTime(Customer value) {
