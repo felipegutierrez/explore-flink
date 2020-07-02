@@ -21,7 +21,7 @@ import org.sense.flink.examples.stream.edgent.SensorsReadingMqttJoinQEP;
 import org.sense.flink.examples.stream.edgent.TemperatureAverageExample;
 import org.sense.flink.examples.stream.edgent.WordCountMqttFilterQEP;
 import org.sense.flink.examples.stream.edgent.WordCountSocketFilterQEP;
-import org.sense.flink.examples.stream.kafka.KafkaTpcHQuery;
+import org.sense.flink.examples.stream.kafka.KafkaConsumerQuery;
 import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
 import org.sense.flink.examples.stream.tpch.TPCHQuery03;
 import org.sense.flink.examples.stream.tpch.TPCHQuery10;
@@ -366,7 +366,7 @@ public class App {
 				app = 0;
 				break;
 			case 35:
-				new KafkaTpcHQuery();
+				new KafkaConsumerQuery();
 				app = 0;
 				break;
 			case 36:
