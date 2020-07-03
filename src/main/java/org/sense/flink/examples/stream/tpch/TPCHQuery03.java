@@ -159,6 +159,7 @@ public class TPCHQuery03 {
 		}
 		// @formatter:on
 
+		System.out.println("Stream job: " + TPCHQuery03.class.getSimpleName());
 		System.out.println("Execution plan >>>\n" + env.getExecutionPlan());
 		env.execute(TPCHQuery03.class.getSimpleName());
 	}
