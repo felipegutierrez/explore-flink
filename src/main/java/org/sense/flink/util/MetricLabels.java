@@ -43,7 +43,7 @@ public class MetricLabels {
 	public static final String TPCH_DATA_ORDER = "/home/flink/tpch-dbgen/data/orders.tbl";
 	public static final String TPCH_DATA_COSTUMER = "/home/flink/tpch-dbgen/data/customer.tbl";
 	public static final String TPCH_DATA_NATION = "/home/flink/tpch-dbgen/data/nation.tbl";
-	public static final String ROCKSDB_STATE_DIR_NFS = "file:///nfshome/flink/rocsdb-flink-state";
+	public static final String ROCKSDB_STATE_DIR_NFS = "file:///nfshome/flink/rocksDB-flink-state";
 	public static final String SINK_HOST = "sinkHost";
 	public static final String SINK_PORT = "sinkPort";
 	public static final String SINK = "output";
