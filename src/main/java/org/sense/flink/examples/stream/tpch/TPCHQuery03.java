@@ -1,6 +1,7 @@
 package org.sense.flink.examples.stream.tpch;
 
 import static org.sense.flink.util.MetricLabels.OPERATOR_SINK;
+import static org.sense.flink.util.MetricLabels.ROCKSDB_STATE_DIR_NFS;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_FILE;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_LOG;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_MQTT;
@@ -98,13 +99,18 @@ public class TPCHQuery03 {
 	}
 
 	public TPCHQuery03() throws Exception {
-		this(PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false);
+		this("file:///tmp/flink/state", PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false);
 	}
 
 	public TPCHQuery03(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy)
 			throws Exception {
+		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy);
+	}
+
+	public TPCHQuery03(String stateDir, String output, String ipAddressSink, boolean disableOperatorChaining,
+			boolean pinningPolicy) throws Exception {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		env.setStateBackend(new RocksDBStateBackend("file:///tmp/flink/state", true));
+		env.setStateBackend(new RocksDBStateBackend(stateDir, true));
 		env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
 		if (disableOperatorChaining) {

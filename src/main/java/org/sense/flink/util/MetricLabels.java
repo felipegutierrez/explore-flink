@@ -30,6 +30,7 @@ public class MetricLabels {
 	public final static String METRIC_VALENCIA_WATERMARKER_ASSIGNER = "ValenciaWatermarkerAssigner";
 	public final static String METRIC_VALENCIA_CPU_INTENSIVE_MAP = "ValenciaIntensiveCpu";
 
+	
 	/** operator names and other parameters for the TPC-H Benchmark */
 	public static final String OPERATOR_SOURCE = "source";
 	public static final String OPERATOR_TOKENIZER = "tokenizer";
@@ -42,6 +43,7 @@ public class MetricLabels {
 	public static final String TPCH_DATA_ORDER = "/home/flink/tpch-dbgen/data/orders.tbl";
 	public static final String TPCH_DATA_COSTUMER = "/home/flink/tpch-dbgen/data/customer.tbl";
 	public static final String TPCH_DATA_NATION = "/home/flink/tpch-dbgen/data/nation.tbl";
+	public static final String ROCKSDB_STATE_DIR_NFS = "file:///nfshome/flink";
 	public static final String SINK_HOST = "sinkHost";
 	public static final String SINK_PORT = "sinkPort";
 	public static final String SINK = "output";
