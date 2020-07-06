@@ -124,8 +124,7 @@ public class TPCHQuery10 {
 					.keyBy(0).sum(1).name(OPERATOR_REDUCER).uid(OPERATOR_REDUCER);
 
 			// join customer with nation (custkey, name, address, nationname, acctbal)
-			// join customer (with nation) with revenue (custkey, name, address, nationname,
-			// acctbal, revenue)
+			// join customer (with nation) with revenue (custkey, name, address, nationname, acctbal, revenue)
 			DataStream<Tuple6<Integer, String, String, String, Double, Double>> result = revenueByCustomerSum
 					.keyBy(0)
 					.process(new JoinCustomerWithRevenueKeyedProcessFunction(pinningPolicy)).name(JoinCustomerWithRevenueKeyedProcessFunction.class.getSimpleName()).uid(JoinCustomerWithRevenueKeyedProcessFunction.class.getSimpleName());

@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.sense.flink.examples.stream.tpch.pojo.LineItem;
@@ -133,6 +134,44 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 
 			while (r.ready() && (line = r.readLine()) != null) {
 				lineItemsList.add(getLineItem(line));
+			}
+		} catch (NumberFormatException nfe) {
+			throw new RuntimeException("Invalid record: " + line, nfe);
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid record: " + line, e);
+		} finally {
+
+		}
+		try {
+			r.close();
+			r = null;
+			s.close();
+			s = null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return lineItemsList;
+	}
+
+	public List<Tuple2<Integer, Double>> getLineItemsRevenueByOrderKey() {
+		String line = null;
+		InputStream s = null;
+		BufferedReader r = null;
+		List<Tuple2<Integer, Double>> lineItemsList = new ArrayList<Tuple2<Integer, Double>>();
+		try {
+			s = new FileInputStream(TPCH_DATA_LINE_ITEM);
+			r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
+
+			while (r.ready() && (line = r.readLine()) != null) {
+
+				LineItem lineItem = getLineItem(line);
+
+				// LineItem: compute revenue and project out return flag
+				// revenue per item = l_extendedprice * (1 - l_discount)
+				Double revenue = lineItem.getExtendedPrice() * (1 - lineItem.getDiscount());
+				Integer orderKey = (int) lineItem.getOrderKey();
+
+				lineItemsList.add(Tuple2.of(orderKey, revenue));
 			}
 		} catch (NumberFormatException nfe) {
 			throw new RuntimeException("Invalid record: " + line, nfe);
