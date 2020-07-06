@@ -93,8 +93,7 @@ public class TPCHQuery03 {
 
 			// RocksDB state backend
 			RocksDBStateBackend stateBackend = new RocksDBStateBackend(stateDir, true);
-
-			stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED_HIGH_MEM);
+			stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED);
 			env.setStateBackend(stateBackend);
 
 			if (disableOperatorChaining) {
