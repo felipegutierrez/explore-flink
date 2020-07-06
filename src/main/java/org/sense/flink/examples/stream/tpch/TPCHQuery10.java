@@ -13,13 +13,12 @@ import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.time.Time;
 import org.sense.flink.examples.stream.tpch.pojo.Order;
 import org.sense.flink.examples.stream.tpch.udf.JoinCustomerWithRevenueKeyedProcessFunction;
 import org.sense.flink.examples.stream.tpch.udf.OrderKeySelector;
+import org.sense.flink.examples.stream.tpch.udf.OrderKeyedByProcessFunction;
 import org.sense.flink.examples.stream.tpch.udf.OrderTimestampAndWatermarkAssigner;
 import org.sense.flink.examples.stream.tpch.udf.OrdersSource;
-import org.sense.flink.examples.stream.tpch.udf.RevenueByCustomerProcessWindow;
 import org.sense.flink.examples.stream.tpch.udf.Tuple6ToStringMap;
 import org.sense.flink.mqtt.MqttStringPublisher;
 
@@ -111,8 +110,7 @@ public class TPCHQuery10 {
 		// join orders with lineitems: (custkey, revenue)
 		DataStream<Tuple2<Integer, Double>> revenueByCustomer = orders
 				.keyBy(new OrderKeySelector())
-				.timeWindow(Time.seconds(10))
-				.process(new RevenueByCustomerProcessWindow(pinningPolicy)).name(RevenueByCustomerProcessWindow.class.getSimpleName()).uid(RevenueByCustomerProcessWindow.class.getSimpleName());
+				.process(new OrderKeyedByProcessFunction(pinningPolicy)).name(OrderKeyedByProcessFunction.class.getSimpleName()).uid(OrderKeyedByProcessFunction.class.getSimpleName());
 
 		// sum the revenue by customers
 		DataStream<Tuple2<Integer, Double>> revenueByCustomerSum = revenueByCustomer
@@ -123,7 +121,7 @@ public class TPCHQuery10 {
 		// join customer (with nation) with revenue (custkey, name, address, nationname, acctbal, revenue)
 		DataStream<Tuple6<Integer, String, String, String, Double, Double>> result = revenueByCustomerSum
 				.keyBy(0)
-				.process(new JoinCustomerWithRevenueKeyedProcessFunction(pinningPolicy));
+				.process(new JoinCustomerWithRevenueKeyedProcessFunction(pinningPolicy)).name(JoinCustomerWithRevenueKeyedProcessFunction.class.getSimpleName()).uid(JoinCustomerWithRevenueKeyedProcessFunction.class.getSimpleName());
 
 		// emit result
 		if (output.equalsIgnoreCase(PARAMETER_OUTPUT_MQTT)) {

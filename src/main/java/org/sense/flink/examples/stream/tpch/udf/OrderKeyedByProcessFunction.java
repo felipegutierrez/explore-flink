@@ -1,24 +1,22 @@
 package org.sense.flink.examples.stream.tpch.udf;
 
 import java.util.BitSet;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.flink.api.common.state.ListState;
 import org.apache.flink.api.common.state.ListStateDescriptor;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.shaded.guava18.com.google.common.collect.Iterators;
-import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 import org.sense.flink.examples.stream.tpch.pojo.LineItem;
-import org.sense.flink.examples.stream.tpch.pojo.ShippingPriorityItem;
+import org.sense.flink.examples.stream.tpch.pojo.Order;
 import org.sense.flink.util.CpuGauge;
 
 import net.openhft.affinity.impl.LinuxJNAAffinity;
 
-public class ShippingPriorityProcessWindowFunction
-		extends ProcessWindowFunction<List<ShippingPriorityItem>, ShippingPriorityItem, Long, TimeWindow> {
+public class OrderKeyedByProcessFunction extends KeyedProcessFunction<Long, Order, Tuple2<Integer, Double>> {
 	private static final long serialVersionUID = 1L;
 
 	private ListState<LineItem> lineItemList = null;
@@ -26,7 +24,7 @@ public class ShippingPriorityProcessWindowFunction
 	private BitSet affinity;
 	private boolean pinningPolicy;
 
-	public ShippingPriorityProcessWindowFunction(boolean pinningPolicy) {
+	public OrderKeyedByProcessFunction(boolean pinningPolicy) {
 		this.pinningPolicy = pinningPolicy;
 	}
 
@@ -52,9 +50,8 @@ public class ShippingPriorityProcessWindowFunction
 	}
 
 	@Override
-	public void process(Long key,
-			ProcessWindowFunction<List<ShippingPriorityItem>, ShippingPriorityItem, Long, TimeWindow>.Context context,
-			Iterable<List<ShippingPriorityItem>> input, Collector<ShippingPriorityItem> out) throws Exception {
+	public void processElement(Order order, KeyedProcessFunction<Long, Order, Tuple2<Integer, Double>>.Context context,
+			Collector<Tuple2<Integer, Double>> out) throws Exception {
 		// updates the CPU core current in use
 		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
@@ -66,17 +63,12 @@ public class ShippingPriorityProcessWindowFunction
 
 		for (LineItem lineItem : lineItemList.get()) {
 			// System.out.println("LineItem: " + lineItem);
-			for (Iterator<List<ShippingPriorityItem>> iterator = input.iterator(); iterator.hasNext();) {
-				List<ShippingPriorityItem> shippingPriorityItemList = (List<ShippingPriorityItem>) iterator.next();
-
-				for (ShippingPriorityItem shippingPriorityItem : shippingPriorityItemList) {
-					// System.out.println("ShippingPriorityItem: " + shippingPriorityItem);
-					if (shippingPriorityItem.getOrderkey().equals(lineItem.getRowNumber())) {
-						// System.out.println("ShippingPriorityProcessWindowFunction TRUE: " +
-						// shippingPriorityItem);
-						out.collect(shippingPriorityItem);
-					}
-				}
+			if (order != null && order.getOrderKey() == lineItem.getOrderKey()) {
+				// LineItem: compute revenue and project out return flag
+				// revenue per item = l_extendedprice * (1 - l_discount)
+				Double revenue = lineItem.getExtendedPrice() * (1 - lineItem.getDiscount());
+				Integer customerKey = (int) order.getCustomerKey();
+				out.collect(Tuple2.of(customerKey, revenue));
 			}
 		}
 	}
