@@ -64,7 +64,7 @@ public class App {
 	private static String PARAMETER_DURATION = "-duration";
 	private static String PARAMETER_MAX_COUNT = "-maxCount";
 	private static String PARAMETER_PINNING_POLICY = "-pinningPolicy";
-	private static String PARAMETER_ROCKSDB_PREDEFINED_OPTION = "-rocksDBpreOpt";
+	private static String PARAMETER_ROCKSDB_BACKEND = "-rocksDB";
 	private static String PARAMETER_SKEWED_DATA = "-skew";
 
 	public static void main(String[] args) throws Exception {
@@ -85,7 +85,7 @@ public class App {
 		boolean disableOperatorChaining = false;
 		boolean pinningPolicy = false;
 		boolean skewedData = false;
-		boolean predefinedOptionsRocksDB = false;
+		boolean rocksDB = false;
 
 		if (args != null && args.length > 0) {
 			int size = args.length;
@@ -120,9 +120,9 @@ public class App {
 				} else if (PARAMETER_PINNING_POLICY.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					pinningPolicy = Boolean.valueOf(args[i]);
-				} else if (PARAMETER_ROCKSDB_PREDEFINED_OPTION.equals(String.valueOf(args[i])) && i + 1 < size) {
+				} else if (PARAMETER_ROCKSDB_BACKEND.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
-					predefinedOptionsRocksDB = Boolean.valueOf(args[i]);
+					rocksDB = Boolean.valueOf(args[i]);
 				} else if (PARAMETER_SKEWED_DATA.equals(String.valueOf(args[i])) && i + 1 < size) {
 					i++;
 					skewedData = Boolean.valueOf(args[i]);
@@ -175,7 +175,7 @@ public class App {
 		System.out.println("optimization            : " + optimization);
 		System.out.println("lookup                  : " + lookup);
 		System.out.println("pinning policy          : " + pinningPolicy);
-		System.out.println("RocksDB predefined opt  : " + predefinedOptionsRocksDB);
+		System.out.println("RocksDB back-end state  : " + rocksDB);
 		System.out.println("output                  : " + output);
 		System.out.println();
 
@@ -376,13 +376,11 @@ public class App {
 				app = 0;
 				break;
 			case 36:
-				new TPCHQuery03(output, ipAddressSink, disableOperatorChaining, pinningPolicy,
-						predefinedOptionsRocksDB);
+				new TPCHQuery03(output, ipAddressSink, disableOperatorChaining, pinningPolicy, rocksDB);
 				app = 0;
 				break;
 			case 37:
-				new TPCHQuery10(output, ipAddressSink, disableOperatorChaining, pinningPolicy,
-						predefinedOptionsRocksDB);
+				new TPCHQuery10(output, ipAddressSink, disableOperatorChaining, pinningPolicy, rocksDB);
 				app = 0;
 				break;
 			default:

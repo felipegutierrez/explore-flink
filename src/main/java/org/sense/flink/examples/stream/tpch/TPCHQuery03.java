@@ -86,24 +86,22 @@ public class TPCHQuery03 {
 	}
 
 	public TPCHQuery03(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy,
-			boolean predefinedOptionsRocksDB) {
-		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy,
-				predefinedOptionsRocksDB);
+			boolean rocksDB) {
+		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy, rocksDB);
 	}
 
 	public TPCHQuery03(String stateDir, String output, String ipAddressSink, boolean disableOperatorChaining,
-			boolean pinningPolicy, boolean predefinedOptionsRocksDB) {
+			boolean pinningPolicy, boolean rocksDB) {
 		try {
 			StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 			env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
-			// RocksDB state back-end
-			RocksDBStateBackend stateBackend = new RocksDBStateBackend(stateDir, true);
-			if (predefinedOptionsRocksDB) {
+			if (rocksDB) {
+				// RocksDB state back-end
+				RocksDBStateBackend stateBackend = new RocksDBStateBackend(stateDir, true);
 				stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED);
-				// stateBackend.getMemoryConfiguration().setFixedMemoryPerSlot(totalMemoryPerSlotStr);
+				env.setStateBackend(stateBackend);
 			}
-			env.setStateBackend(stateBackend);
 
 			if (disableOperatorChaining) {
 				env.disableOperatorChaining();
