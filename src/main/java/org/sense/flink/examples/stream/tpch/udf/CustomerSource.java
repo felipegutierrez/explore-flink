@@ -138,6 +138,37 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 		return customerList;
 	}
 
+	public List<Long> getCustomersKeys() {
+		String line = null;
+		InputStream s = null;
+		BufferedReader r = null;
+		List<Long> customerKeyList = new ArrayList<Long>();
+		try {
+			s = new FileInputStream(TPCH_DATA_COSTUMER);
+			r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
+
+			while (r.ready() && (line = r.readLine()) != null) {
+				Customer customer = getCustomerItem(line);
+				customerKeyList.add(customer.getCustomerKey());
+			}
+		} catch (NumberFormatException nfe) {
+			throw new RuntimeException("Invalid record: " + line, nfe);
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid record: " + line, e);
+		} finally {
+
+		}
+		try {
+			r.close();
+			r = null;
+			s.close();
+			s = null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return customerKeyList;
+	}
+
 	public List<Tuple5<Integer, String, String, String, Double>> getCustomersWithNation() {
 		NationSource nationSource = new NationSource();
 		List<Nation> nations = nationSource.getNations();

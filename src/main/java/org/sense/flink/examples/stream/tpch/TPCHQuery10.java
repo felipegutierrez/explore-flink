@@ -110,7 +110,6 @@ public class TPCHQuery10 {
 			// @formatter:off
 			DataStream<Order> orders = env
 					.addSource(new OrdersSource()).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
-			// .assignTimestampsAndWatermarks(new OrderTimestampAndWatermarkAssigner());
 
 			// orders filtered by year: (orderkey, custkey)
 

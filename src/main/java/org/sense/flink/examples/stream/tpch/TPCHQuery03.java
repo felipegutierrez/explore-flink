@@ -102,9 +102,8 @@ public class TPCHQuery03 {
 			}
 
 			// @formatter:off
-			DataStream<Order> orders = env.addSource(new OrdersSource()).name(OrdersSource.class.getSimpleName())
-					.uid(OrdersSource.class.getSimpleName());
-			// .assignTimestampsAndWatermarks(new OrderTimestampAndWatermarkAssigner());
+			DataStream<Order> orders = env
+					.addSource(new OrdersSource()).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
 
 			// Filter market segment "AUTOMOBILE"
 			// customers = customers.filter(new CustomerFilter());
@@ -120,9 +119,7 @@ public class TPCHQuery03 {
 			// Join the last join result with Lineitems
 			DataStream<ShippingPriorityItem> shippingPriorityStream02 = shippingPriorityStream01
 					.keyBy(new ShippingPriorityKeySelector())
-					.process(new ShippingPriorityKeyedProcessFunction(pinningPolicy))
-					.name(ShippingPriorityKeyedProcessFunction.class.getSimpleName())
-					.uid(ShippingPriorityKeyedProcessFunction.class.getSimpleName());
+					.process(new ShippingPriorityKeyedProcessFunction(pinningPolicy)).name(ShippingPriorityKeyedProcessFunction.class.getSimpleName()).uid(ShippingPriorityKeyedProcessFunction.class.getSimpleName());
 
 			// Group by l_orderkey, o_orderdate and o_shippriority and compute revenue sum
 			DataStream<ShippingPriorityItem> shippingPriorityStream03 = shippingPriorityStream02
