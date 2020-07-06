@@ -6,6 +6,7 @@ import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_FILE;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_LOG;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_MQTT;
 
+import org.apache.flink.contrib.streaming.state.PredefinedOptions;
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -87,8 +88,12 @@ public class TPCHQuery03 {
 	public TPCHQuery03(String stateDir, String output, String ipAddressSink, boolean disableOperatorChaining,
 			boolean pinningPolicy) throws Exception {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		env.setStateBackend(new RocksDBStateBackend(stateDir, true));
 		env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+
+		// RocksDB state backend
+		RocksDBStateBackend stateBackend = new RocksDBStateBackend(stateDir, true);
+		stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED_HIGH_MEM);
+		env.setStateBackend(stateBackend);
 
 		if (disableOperatorChaining) {
 			env.disableOperatorChaining();
