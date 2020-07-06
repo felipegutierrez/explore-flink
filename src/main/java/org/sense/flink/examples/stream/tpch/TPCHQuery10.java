@@ -7,6 +7,8 @@ import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_FILE;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_LOG;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_MQTT;
 
+import java.io.IOException;
+
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
 import org.apache.flink.contrib.streaming.state.PredefinedOptions;
@@ -18,7 +20,6 @@ import org.sense.flink.examples.stream.tpch.pojo.Order;
 import org.sense.flink.examples.stream.tpch.udf.JoinCustomerWithRevenueKeyedProcessFunction;
 import org.sense.flink.examples.stream.tpch.udf.OrderKeySelector;
 import org.sense.flink.examples.stream.tpch.udf.OrderKeyedByProcessFunction;
-import org.sense.flink.examples.stream.tpch.udf.OrderTimestampAndWatermarkAssigner;
 import org.sense.flink.examples.stream.tpch.udf.OrdersSource;
 import org.sense.flink.examples.stream.tpch.udf.Tuple6ToStringMap;
 import org.sense.flink.mqtt.MqttStringPublisher;
@@ -82,70 +83,74 @@ public class TPCHQuery10 {
 		new TPCHQuery10();
 	}
 
-	public TPCHQuery10() throws Exception {
+	public TPCHQuery10() {
 		this("file:///tmp/flink/state", PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false);
 	}
 
-	public TPCHQuery10(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy)
-			throws Exception {
+	public TPCHQuery10(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy) {
 		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy);
 	}
 
 	public TPCHQuery10(String stateDir, String output, String ipAddressSink, boolean disableOperatorChaining,
-			boolean pinningPolicy) throws Exception {
-		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		
-		env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+			boolean pinningPolicy) {
+		try {
+			StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-		// RocksDB state backend
-		RocksDBStateBackend stateBackend = new RocksDBStateBackend(stateDir, true);
-		stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED_HIGH_MEM);
-		env.setStateBackend(stateBackend);
-		
+			env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
-		if (disableOperatorChaining) {
-			env.disableOperatorChaining();
+			// RocksDB state backend
+			RocksDBStateBackend stateBackend = new RocksDBStateBackend(stateDir, true);
+			stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED_HIGH_MEM);
+			env.setStateBackend(stateBackend);
+
+			if (disableOperatorChaining) {
+				env.disableOperatorChaining();
+			}
+
+			// @formatter:off
+			DataStream<Order> orders = env
+					.addSource(new OrdersSource()).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
+			// .assignTimestampsAndWatermarks(new OrderTimestampAndWatermarkAssigner());
+
+			// orders filtered by year: (orderkey, custkey)
+
+			// join orders with lineitems: (custkey, revenue)
+			DataStream<Tuple2<Integer, Double>> revenueByCustomer = orders
+					.keyBy(new OrderKeySelector())
+					.process(new OrderKeyedByProcessFunction(pinningPolicy)).name(OrderKeyedByProcessFunction.class.getSimpleName()).uid(OrderKeyedByProcessFunction.class.getSimpleName());
+
+			// sum the revenue by customers
+			DataStream<Tuple2<Integer, Double>> revenueByCustomerSum = revenueByCustomer
+					.keyBy(0).sum(1).name(OPERATOR_REDUCER).uid(OPERATOR_REDUCER);
+
+			// join customer with nation (custkey, name, address, nationname, acctbal)
+			// join customer (with nation) with revenue (custkey, name, address, nationname,
+			// acctbal, revenue)
+			DataStream<Tuple6<Integer, String, String, String, Double, Double>> result = revenueByCustomerSum
+					.keyBy(0)
+					.process(new JoinCustomerWithRevenueKeyedProcessFunction(pinningPolicy)).name(JoinCustomerWithRevenueKeyedProcessFunction.class.getSimpleName()).uid(JoinCustomerWithRevenueKeyedProcessFunction.class.getSimpleName());
+
+			// emit result
+			if (output.equalsIgnoreCase(PARAMETER_OUTPUT_MQTT)) {
+				result
+					.map(new Tuple6ToStringMap(pinningPolicy)).name(Tuple6ToStringMap.class.getSimpleName()).uid(Tuple6ToStringMap.class.getSimpleName())
+					.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(OPERATOR_SINK).uid(OPERATOR_SINK);
+			} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_LOG)) {
+				result.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
+			} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_FILE)) {
+				result.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
+			} else {
+				System.out.println("discarding output");
+			}
+			// @formatter:on
+
+			System.out.println("Stream job: " + TPCHQuery10.class.getSimpleName());
+			System.out.println("Execution plan >>>\n" + env.getExecutionPlan());
+			env.execute(TPCHQuery10.class.getSimpleName());
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		// @formatter:off
-		DataStream<Order> orders = env
-				.addSource(new OrdersSource()).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName())
-				.assignTimestampsAndWatermarks(new OrderTimestampAndWatermarkAssigner());
-
-		// orders filtered by year: (orderkey, custkey)
-
-		// join orders with lineitems: (custkey, revenue)
-		DataStream<Tuple2<Integer, Double>> revenueByCustomer = orders
-				.keyBy(new OrderKeySelector())
-				.process(new OrderKeyedByProcessFunction(pinningPolicy)).name(OrderKeyedByProcessFunction.class.getSimpleName()).uid(OrderKeyedByProcessFunction.class.getSimpleName());
-
-		// sum the revenue by customers
-		DataStream<Tuple2<Integer, Double>> revenueByCustomerSum = revenueByCustomer
-				.keyBy(0)
-				.sum(1).name(OPERATOR_REDUCER).uid(OPERATOR_REDUCER);
-
-		// join customer with nation (custkey, name, address, nationname, acctbal)
-		// join customer (with nation) with revenue (custkey, name, address, nationname, acctbal, revenue)
-		DataStream<Tuple6<Integer, String, String, String, Double, Double>> result = revenueByCustomerSum
-				.keyBy(0)
-				.process(new JoinCustomerWithRevenueKeyedProcessFunction(pinningPolicy)).name(JoinCustomerWithRevenueKeyedProcessFunction.class.getSimpleName()).uid(JoinCustomerWithRevenueKeyedProcessFunction.class.getSimpleName());
-
-		// emit result
-		if (output.equalsIgnoreCase(PARAMETER_OUTPUT_MQTT)) {
-			result
-			.map(new Tuple6ToStringMap(pinningPolicy)).name(Tuple6ToStringMap.class.getSimpleName()).uid(Tuple6ToStringMap.class.getSimpleName())
-			.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(OPERATOR_SINK).uid(OPERATOR_SINK);
-		} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_LOG)) {
-			result.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
-		} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_FILE)) {
-			result.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
-		} else {
-			System.out.println("discarding output");
-		}
-		// @formatter:on
-
-		System.out.println("Stream job: " + TPCHQuery10.class.getSimpleName());
-		System.out.println("Execution plan >>>\n" + env.getExecutionPlan());
-		env.execute(TPCHQuery10.class.getSimpleName());
 	}
 }
