@@ -78,22 +78,31 @@ public class TPCHQuery03 {
 	}
 
 	public TPCHQuery03() {
-		this("file:///tmp/flink/state", PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false);
+		this("file:///tmp/flink/state", PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, false);
 	}
 
 	public TPCHQuery03(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy) {
-		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy);
+		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy, false);
+	}
+
+	public TPCHQuery03(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy,
+			boolean predefinedOptionsRocksDB) {
+		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy,
+				predefinedOptionsRocksDB);
 	}
 
 	public TPCHQuery03(String stateDir, String output, String ipAddressSink, boolean disableOperatorChaining,
-			boolean pinningPolicy) {
+			boolean pinningPolicy, boolean predefinedOptionsRocksDB) {
 		try {
 			StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 			env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
-			// RocksDB state backend
+			// RocksDB state back-end
 			RocksDBStateBackend stateBackend = new RocksDBStateBackend(stateDir, true);
-			stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED);
+			if (predefinedOptionsRocksDB) {
+				stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED);
+				// stateBackend.getMemoryConfiguration().setFixedMemoryPerSlot(totalMemoryPerSlotStr);
+			}
 			env.setStateBackend(stateBackend);
 
 			if (disableOperatorChaining) {

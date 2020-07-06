@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.flink.api.java.tuple.Tuple2;
@@ -68,7 +69,7 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 			while (reader.ready() && (line = reader.readLine()) != null) {
 				startTime = System.nanoTime();
 				lineItem = getLineItem(line);
-				sourceContext.collectWithTimestamp(lineItem, getEventTime(lineItem));
+				sourceContext.collectWithTimestamp(lineItem, new Date().getTime());
 
 				// sleep in nanoseconds to have a reproducible data rate for the data source
 				this.dataRateListener.busySleep(startTime);
@@ -117,10 +118,6 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 			throw new RuntimeException("Invalid record: " + line, e);
 		}
 		return lineItem;
-	}
-
-	public long getEventTime(LineItem value) {
-		return value.getTimestamp();
 	}
 
 	public List<LineItem> getLineItems() {
