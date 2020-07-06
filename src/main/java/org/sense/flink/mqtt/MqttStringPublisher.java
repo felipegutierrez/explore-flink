@@ -93,35 +93,39 @@ public class MqttStringPublisher extends RichSinkFunction<String> {
 	}
 
 	@Override
-	public void invoke(String value) throws Exception {
-		// updates the CPU core current in use
-		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+	public void invoke(String value) {
+		try {
+			// updates the CPU core current in use
+			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-		// System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
-		System.out.flush();
+			// System.out.println(PrinterSink.class.getSimpleName() + ": " + value);
+			System.out.flush();
 
-		int size = value.toString().length();
-		String DATA = value.toString();
-		String body = "";
-		for (int i = 0; i < size; i++) {
-			body += DATA.charAt(i % DATA.length());
-		}
-		Buffer msg = new AsciiBuffer(body);
+			int size = value.toString().length();
+			String DATA = value.toString();
+			String body = "";
+			for (int i = 0; i < size; i++) {
+				body += DATA.charAt(i % DATA.length());
+			}
+			Buffer msg = new AsciiBuffer(body);
 
-		final LinkedList<Future<Void>> queue = new LinkedList<Future<Void>>();
-		UTF8Buffer topic = new UTF8Buffer(this.topic);
+			final LinkedList<Future<Void>> queue = new LinkedList<Future<Void>>();
+			UTF8Buffer topic = new UTF8Buffer(this.topic);
 
-		// Send the publish without waiting for it to complete. This allows us
-		// to send multiple message without blocking..
-		queue.add(connection.publish(topic, msg, this.qos, false));
-		// Eventually we start waiting for old publish futures to complete
-		// so that we don't create a large in memory buffer of outgoing message.s
-		if (queue.size() >= 1000) {
-			queue.removeFirst().await();
-		}
+			// Send the publish without waiting for it to complete. This allows us
+			// to send multiple message without blocking..
+			queue.add(connection.publish(topic, msg, this.qos, false));
+			// Eventually we start waiting for old publish futures to complete
+			// so that we don't create a large in memory buffer of outgoing message.s
+			if (queue.size() >= 1000) {
+				queue.removeFirst().await();
+			}
 
-		while (!queue.isEmpty()) {
-			queue.removeFirst().await();
+			while (!queue.isEmpty()) {
+				queue.removeFirst().await();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

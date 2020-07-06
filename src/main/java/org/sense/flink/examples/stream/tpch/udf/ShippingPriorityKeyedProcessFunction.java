@@ -31,48 +31,56 @@ public class ShippingPriorityKeyedProcessFunction
 	}
 
 	@Override
-	public void open(Configuration parameters) throws Exception {
-		super.open(parameters);
+	public void open(Configuration parameters) {
+		try {
+			super.open(parameters);
 
-		this.cpuGauge = new CpuGauge();
-		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+			this.cpuGauge = new CpuGauge();
+			getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
 
-		if (this.pinningPolicy) {
-			// listing the cpu cores available
-			int nbits = Runtime.getRuntime().availableProcessors();
-			// pinning operator' thread to a specific cpu core
-			this.affinity = new BitSet(nbits);
-			affinity.set(((int) Thread.currentThread().getId() % nbits));
-			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+			if (this.pinningPolicy) {
+				// listing the cpu cores available
+				int nbits = Runtime.getRuntime().availableProcessors();
+				// pinning operator' thread to a specific cpu core
+				this.affinity = new BitSet(nbits);
+				affinity.set(((int) Thread.currentThread().getId() % nbits));
+				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+			}
+
+			ListStateDescriptor<Tuple2<Integer, Double>> lineItemDescriptor = new ListStateDescriptor<>("lineItemState",
+					TypeInformation.of(new TypeHint<Tuple2<Integer, Double>>() {
+					}));
+			lineItemList = getRuntimeContext().getListState(lineItemDescriptor);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		ListStateDescriptor<Tuple2<Integer, Double>> lineItemDescriptor = new ListStateDescriptor<>("lineItemState",
-				TypeInformation.of(new TypeHint<Tuple2<Integer, Double>>() {
-				}));
-		lineItemList = getRuntimeContext().getListState(lineItemDescriptor);
 	}
 
 	@Override
 	public void processElement(ShippingPriorityItem shippingPriorityItem,
 			KeyedProcessFunction<Long, ShippingPriorityItem, ShippingPriorityItem>.Context context,
-			Collector<ShippingPriorityItem> out) throws Exception {
-		// updates the CPU core current in use
-		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+			Collector<ShippingPriorityItem> out) {
+		try {
+			// updates the CPU core current in use
+			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-		if (lineItemList != null && Iterators.size(lineItemList.get().iterator()) == 0) {
-			LineItemSource lineItemSource = new LineItemSource();
-			List<Tuple2<Integer, Double>> lineItems = lineItemSource.getLineItemsRevenueByOrderKey();
-			lineItemList.addAll(lineItems);
-		}
-
-		for (Tuple2<Integer, Double> lineItem : lineItemList.get()) {
-			// System.out.println("LineItem: " + lineItem + " ShippingPriorityItem: " +
-			// shippingPriorityItem);
-			if (shippingPriorityItem != null
-					&& (lineItem.f0.longValue() == shippingPriorityItem.getOrderkey().longValue())) {
-				shippingPriorityItem.setRevenue(lineItem.f1);
-				out.collect(shippingPriorityItem);
+			if (lineItemList != null && Iterators.size(lineItemList.get().iterator()) == 0) {
+				LineItemSource lineItemSource = new LineItemSource();
+				List<Tuple2<Integer, Double>> lineItems = lineItemSource.getLineItemsRevenueByOrderKey();
+				lineItemList.addAll(lineItems);
 			}
+
+			for (Tuple2<Integer, Double> lineItem : lineItemList.get()) {
+				// System.out.println("LineItem: " + lineItem + " ShippingPriorityItem: " +
+				// shippingPriorityItem);
+				if (shippingPriorityItem != null
+						&& (lineItem.f0.longValue() == shippingPriorityItem.getOrderkey().longValue())) {
+					shippingPriorityItem.setRevenue(lineItem.f1);
+					out.collect(shippingPriorityItem);
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

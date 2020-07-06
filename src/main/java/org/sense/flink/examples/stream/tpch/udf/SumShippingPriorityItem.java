@@ -21,29 +21,38 @@ public class SumShippingPriorityItem extends RichReduceFunction<ShippingPriority
 	}
 
 	@Override
-	public void open(Configuration parameters) throws Exception {
-		super.open(parameters);
+	public void open(Configuration parameters) {
+		try {
+			super.open(parameters);
 
-		this.cpuGauge = new CpuGauge();
-		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+			this.cpuGauge = new CpuGauge();
+			getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
 
-		if (this.pinningPolicy) {
-			// listing the cpu cores available
-			int nbits = Runtime.getRuntime().availableProcessors();
-			// pinning operator' thread to a specific cpu core
-			this.affinity = new BitSet(nbits);
-			affinity.set(((int) Thread.currentThread().getId() % nbits));
-			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+			if (this.pinningPolicy) {
+				// listing the cpu cores available
+				int nbits = Runtime.getRuntime().availableProcessors();
+				// pinning operator' thread to a specific cpu core
+				this.affinity = new BitSet(nbits);
+				affinity.set(((int) Thread.currentThread().getId() % nbits));
+				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public ShippingPriorityItem reduce(ShippingPriorityItem value1, ShippingPriorityItem value2) throws Exception {
-		// updates the CPU core current in use
-		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+	public ShippingPriorityItem reduce(ShippingPriorityItem value1, ShippingPriorityItem value2) {
+		ShippingPriorityItem shippingPriorityItem = null;
+		try {
+			// updates the CPU core current in use
+			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-		ShippingPriorityItem shippingPriorityItem = new ShippingPriorityItem(value1.getOrderkey(),
-				value1.getRevenue() + value2.getRevenue(), value1.getOrderdate(), value1.getShippriority());
+			shippingPriorityItem = new ShippingPriorityItem(value1.getOrderkey(),
+					value1.getRevenue() + value2.getRevenue(), value1.getOrderdate(), value1.getShippriority());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return shippingPriorityItem;
 	}
 }

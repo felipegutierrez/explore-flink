@@ -28,50 +28,58 @@ public class OrderKeyedByCustomerProcessFunction extends KeyedProcessFunction<Lo
 	}
 
 	@Override
-	public void open(Configuration parameters) throws Exception {
-		super.open(parameters);
+	public void open(Configuration parameters) {
+		try {
+			super.open(parameters);
 
-		this.cpuGauge = new CpuGauge();
-		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+			this.cpuGauge = new CpuGauge();
+			getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
 
-		if (this.pinningPolicy) {
-			// listing the cpu cores available
-			int nbits = Runtime.getRuntime().availableProcessors();
-			// pinning operator' thread to a specific cpu core
-			this.affinity = new BitSet(nbits);
-			affinity.set(((int) Thread.currentThread().getId() % nbits));
-			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+			if (this.pinningPolicy) {
+				// listing the cpu cores available
+				int nbits = Runtime.getRuntime().availableProcessors();
+				// pinning operator' thread to a specific cpu core
+				this.affinity = new BitSet(nbits);
+				affinity.set(((int) Thread.currentThread().getId() % nbits));
+				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+			}
+
+			ListStateDescriptor<Long> customerDescriptor = new ListStateDescriptor<Long>("customersKeysState",
+					Long.class);
+			customerKeyList = getRuntimeContext().getListState(customerDescriptor);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		ListStateDescriptor<Long> customerDescriptor = new ListStateDescriptor<Long>("customersKeysState", Long.class);
-		customerKeyList = getRuntimeContext().getListState(customerDescriptor);
 	}
 
 	@Override
 	public void processElement(Order order, KeyedProcessFunction<Long, Order, ShippingPriorityItem>.Context context,
-			Collector<ShippingPriorityItem> out) throws Exception {
-		// updates the CPU core current in use
-		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+			Collector<ShippingPriorityItem> out) {
+		try {
+			// updates the CPU core current in use
+			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-		if (customerKeyList != null && Iterators.size(customerKeyList.get().iterator()) == 0) {
-			CustomerSource customerSource = new CustomerSource();
-			List<Long> customers = customerSource.getCustomersKeys();
-			customerKeyList.addAll(customers);
-		}
+			if (customerKeyList != null && Iterators.size(customerKeyList.get().iterator()) == 0) {
+				CustomerSource customerSource = new CustomerSource();
+				List<Long> customers = customerSource.getCustomersKeys();
+				customerKeyList.addAll(customers);
+			}
 
-		for (Long customerKey : customerKeyList.get()) {
-			// System.out.println("Customer: " + customer);
-			// System.out.println("Order: " + order);
-			if (order != null && order.getCustomerKey() == customerKey.longValue()) {
-				try {
-					ShippingPriorityItem spi = new ShippingPriorityItem(order.getOrderKey(), 0.0,
-							OrdersSource.format(order.getOrderDate()), order.getShipPriority());
-					// System.out.println("OrderProcessWindowFunction TRUE: " + spi);
-					out.collect(spi);
-				} catch (Exception e) {
-					e.printStackTrace();
+			for (Long customerKey : customerKeyList.get()) {
+				// System.out.println("Customer: " + customer + " - Order: " + order);
+				if (order != null && order.getCustomerKey() == customerKey.longValue()) {
+					try {
+						ShippingPriorityItem spi = new ShippingPriorityItem(order.getOrderKey(), 0.0,
+								OrdersSource.format(order.getOrderDate()), order.getShipPriority());
+						// System.out.println("OrderProcessWindowFunction TRUE: " + spi);
+						out.collect(spi);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
 				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }

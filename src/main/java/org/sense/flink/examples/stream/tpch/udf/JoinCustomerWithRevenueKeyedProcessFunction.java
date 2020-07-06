@@ -33,47 +33,55 @@ public class JoinCustomerWithRevenueKeyedProcessFunction extends
 	}
 
 	@Override
-	public void open(Configuration parameters) throws Exception {
-		super.open(parameters);
+	public void open(Configuration parameters) {
+		try {
+			super.open(parameters);
 
-		this.cpuGauge = new CpuGauge();
-		getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
+			this.cpuGauge = new CpuGauge();
+			getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
 
-		if (this.pinningPolicy) {
-			// listing the cpu cores available
-			int nbits = Runtime.getRuntime().availableProcessors();
-			// pinning operator' thread to a specific cpu core
-			this.affinity = new BitSet(nbits);
-			affinity.set(((int) Thread.currentThread().getId() % nbits));
-			LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+			if (this.pinningPolicy) {
+				// listing the cpu cores available
+				int nbits = Runtime.getRuntime().availableProcessors();
+				// pinning operator' thread to a specific cpu core
+				this.affinity = new BitSet(nbits);
+				affinity.set(((int) Thread.currentThread().getId() % nbits));
+				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
+			}
+
+			ListStateDescriptor<Tuple5<Integer, String, String, String, Double>> customerWithNationDescriptor = new ListStateDescriptor<Tuple5<Integer, String, String, String, Double>>(
+					"customerWithNationState",
+					TypeInformation.of(new TypeHint<Tuple5<Integer, String, String, String, Double>>() {
+					}));
+			customerWithNationList = getRuntimeContext().getListState(customerWithNationDescriptor);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		ListStateDescriptor<Tuple5<Integer, String, String, String, Double>> customerWithNationDescriptor = new ListStateDescriptor<Tuple5<Integer, String, String, String, Double>>(
-				"customerWithNationState",
-				TypeInformation.of(new TypeHint<Tuple5<Integer, String, String, String, Double>>() {
-				}));
-		customerWithNationList = getRuntimeContext().getListState(customerWithNationDescriptor);
 	}
 
 	@Override
 	public void processElement(Tuple2<Integer, Double> value,
 			KeyedProcessFunction<Tuple, Tuple2<Integer, Double>, Tuple6<Integer, String, String, String, Double, Double>>.Context ctx,
-			Collector<Tuple6<Integer, String, String, String, Double, Double>> out) throws Exception {
-		// updates the CPU core current in use
-		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
+			Collector<Tuple6<Integer, String, String, String, Double, Double>> out) {
+		try {
+			// updates the CPU core current in use
+			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-		if (customerWithNationList != null && Iterators.size(customerWithNationList.get().iterator()) == 0) {
-			CustomerSource customerSource = new CustomerSource();
-			List<Tuple5<Integer, String, String, String, Double>> customerWithNation = customerSource
-					.getCustomersWithNation();
-			customerWithNationList.addAll(customerWithNation);
-		}
-
-		for (Tuple5<Integer, String, String, String, Double> customerWithNation : customerWithNationList.get()) {
-			if (customerWithNation.f0.equals(value.f0)) {
-				out.collect(Tuple6.of(customerWithNation.f0, customerWithNation.f1, customerWithNation.f2,
-						customerWithNation.f3, customerWithNation.f4, value.f1));
+			if (customerWithNationList != null && Iterators.size(customerWithNationList.get().iterator()) == 0) {
+				CustomerSource customerSource = new CustomerSource();
+				List<Tuple5<Integer, String, String, String, Double>> customerWithNation = customerSource
+						.getCustomersWithNation();
+				customerWithNationList.addAll(customerWithNation);
 			}
+
+			for (Tuple5<Integer, String, String, String, Double> customerWithNation : customerWithNationList.get()) {
+				if (customerWithNation.f0.equals(value.f0)) {
+					out.collect(Tuple6.of(customerWithNation.f0, customerWithNation.f1, customerWithNation.f2,
+							customerWithNation.f3, customerWithNation.f4, value.f1));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
