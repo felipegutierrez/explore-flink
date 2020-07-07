@@ -17,8 +17,7 @@ public class ShippingPriorityKeyedProcessFunction
 		extends KeyedProcessFunction<Long, ShippingPriorityItem, ShippingPriorityItem> {
 	private static final long serialVersionUID = 1L;
 
-	private ImmutableList<Tuple2<Integer, Double>> lineItemList = ImmutableList
-			.copyOf(new LineItemSource().getLineItemsRevenueByOrderKey());
+	private ImmutableList<Tuple2<Integer, Double>> lineItemList = null;
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -44,8 +43,7 @@ public class ShippingPriorityKeyedProcessFunction
 				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
 			}
 
-			// LineItemSource lineItemSource = new LineItemSource();
-			// lineItemList = lineItemSource.getLineItemsRevenueByOrderKey();
+			lineItemList = ImmutableList.copyOf(new LineItemSource().getLineItemsRevenueByOrderKey());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

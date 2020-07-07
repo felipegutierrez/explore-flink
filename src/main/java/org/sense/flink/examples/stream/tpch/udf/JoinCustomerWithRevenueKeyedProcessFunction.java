@@ -20,8 +20,7 @@ public class JoinCustomerWithRevenueKeyedProcessFunction extends
 		KeyedProcessFunction<Tuple, Tuple2<Integer, Double>, Tuple6<Integer, String, String, String, Double, Double>> {
 	private static final long serialVersionUID = 1L;
 
-	private ImmutableMap<Integer, Tuple4<String, String, String, Double>> customerWithNationList = ImmutableMap
-			.copyOf(new CustomerSource().getCustomersWithNation());
+	private ImmutableMap<Integer, Tuple4<String, String, String, Double>> customerWithNationList = null;
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -46,6 +45,7 @@ public class JoinCustomerWithRevenueKeyedProcessFunction extends
 				affinity.set(((int) Thread.currentThread().getId() % nbits));
 				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
 			}
+			customerWithNationList = ImmutableMap.copyOf(new CustomerSource().getCustomersWithNation());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -16,7 +16,7 @@ import net.openhft.affinity.impl.LinuxJNAAffinity;
 public class OrderKeyedByCustomerProcessFunction extends KeyedProcessFunction<Long, Order, ShippingPriorityItem> {
 	private static final long serialVersionUID = 1L;
 
-	private ImmutableList<Long> customerKeyList = ImmutableList.copyOf(new CustomerSource().getCustomersKeys());
+	private ImmutableList<Long> customerKeyList = null;
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -41,6 +41,7 @@ public class OrderKeyedByCustomerProcessFunction extends KeyedProcessFunction<Lo
 				affinity.set(((int) Thread.currentThread().getId() % nbits));
 				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
 			}
+			customerKeyList = ImmutableList.copyOf(new CustomerSource().getCustomersKeys());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
