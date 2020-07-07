@@ -51,7 +51,7 @@ public class ShippingPriorityItem implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ShippingPriorityItem [getOrderkey()=" + getOrderkey() + ", getRevenue()=" + getRevenue()
-				+ ", getOrderdate()=" + getOrderdate() + ", getShippriority()=" + getShippriority() + "]";
+		return "ShippingPriorityItem [orderkey=" + orderkey + ", revenue=" + revenue + ", orderdate=" + orderdate
+				+ ", shippriority=" + shippriority + "]";
 	}
 }

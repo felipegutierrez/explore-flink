@@ -1,8 +1,9 @@
 package org.sense.flink.examples.stream.tpch.udf;
 
 import java.util.BitSet;
-import java.util.Map;
+import java.util.List;
 
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
@@ -15,7 +16,7 @@ public class ShippingPriorityKeyedProcessFunction
 		extends KeyedProcessFunction<Long, ShippingPriorityItem, ShippingPriorityItem> {
 	private static final long serialVersionUID = 1L;
 
-	private Map<Integer, Double> lineItemList = null;
+	private List<Tuple2<Integer, Double>> lineItemList = null;
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -56,12 +57,9 @@ public class ShippingPriorityKeyedProcessFunction
 			// updates the CPU core current in use
 			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-			for (Map.Entry<Integer, Double> lineItem : lineItemList.entrySet()) {
-				// System.out.println(lineItem.getKey() + "/" + lineItem.getValue() + "
-				// ShippingPriorityItem: " + shippingPriorityItem);
-				if (shippingPriorityItem != null
-						&& (lineItem.getKey().longValue() == shippingPriorityItem.getOrderkey().longValue())) {
-					shippingPriorityItem.setRevenue(lineItem.getValue());
+			for (Tuple2<Integer, Double> lineItem : lineItemList) {
+				if (lineItem.f0.longValue() == shippingPriorityItem.getOrderkey().longValue()) {
+					shippingPriorityItem.setRevenue(lineItem.f1);
 					out.collect(shippingPriorityItem);
 				}
 			}

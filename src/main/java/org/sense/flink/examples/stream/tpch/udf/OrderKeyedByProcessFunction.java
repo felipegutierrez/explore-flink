@@ -1,7 +1,7 @@
 package org.sense.flink.examples.stream.tpch.udf;
 
 import java.util.BitSet;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
@@ -15,7 +15,7 @@ import net.openhft.affinity.impl.LinuxJNAAffinity;
 public class OrderKeyedByProcessFunction extends KeyedProcessFunction<Long, Order, Tuple2<Integer, Double>> {
 	private static final long serialVersionUID = 1L;
 
-	private Map<Integer, Double> lineItemList = null;
+	private List<Tuple2<Integer, Double>> lineItemList = null;
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -55,10 +55,9 @@ public class OrderKeyedByProcessFunction extends KeyedProcessFunction<Long, Orde
 			// updates the CPU core current in use
 			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-			for (Map.Entry<Integer, Double> lineItem : lineItemList.entrySet()) {
-				// System.out.println(lineItem.getKey() + "/" + lineItem.getValue());
-				if (order != null && (lineItem.getKey().intValue() == ((int) order.getOrderKey()))) {
-					out.collect(Tuple2.of((int) order.getCustomerKey(), lineItem.getValue()));
+			for (Tuple2<Integer, Double> lineItem : lineItemList) {
+				if (lineItem.f0.equals((int) order.getOrderKey())) {
+					out.collect(Tuple2.of((int) order.getCustomerKey(), lineItem.f1));
 				}
 			}
 		} catch (Exception e) {

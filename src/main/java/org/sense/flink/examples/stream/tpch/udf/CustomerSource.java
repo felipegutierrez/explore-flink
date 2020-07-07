@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +68,7 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 			while (reader.ready() && (line = reader.readLine()) != null) {
 				startTime = System.nanoTime();
 				customerItem = getCustomerItem(line);
-				sourceContext.collectWithTimestamp(customerItem, new Date().getTime());
+				sourceContext.collect(customerItem);
 
 				// sleep in nanoseconds to have a reproducible data rate for the data source
 				this.dataRateListener.busySleep(startTime);

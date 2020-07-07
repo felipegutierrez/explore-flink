@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
@@ -68,7 +67,7 @@ public class OrdersSource extends RichSourceFunction<Order> {
 				startTime = System.nanoTime();
 				rowNumber++;
 				orderItem = getOrderItem(line, rowNumber);
-				sourceContext.collectWithTimestamp(orderItem, new Date().getTime());
+				sourceContext.collect(orderItem);
 
 				// sleep in nanoseconds to have a reproducible data rate for the data source
 				this.dataRateListener.busySleep(startTime);
