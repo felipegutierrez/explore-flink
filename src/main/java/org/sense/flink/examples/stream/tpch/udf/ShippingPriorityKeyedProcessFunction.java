@@ -17,7 +17,7 @@ public class ShippingPriorityKeyedProcessFunction
 		extends KeyedProcessFunction<Long, ShippingPriorityItem, ShippingPriorityItem> {
 	private static final long serialVersionUID = 1L;
 
-	private final ImmutableList<Tuple2<Integer, Double>> lineItemList = ImmutableList
+	private ImmutableList<Tuple2<Integer, Double>> lineItemList = ImmutableList
 			.copyOf(new LineItemSource().getLineItemsRevenueByOrderKey());
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
