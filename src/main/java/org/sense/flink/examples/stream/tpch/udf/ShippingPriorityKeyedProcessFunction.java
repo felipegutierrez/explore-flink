@@ -65,11 +65,12 @@ public class ShippingPriorityKeyedProcessFunction
 				if (lineItem.f0.longValue() == shippingPriorityItem.getOrderkey().longValue()) {
 					shippingPriorityItem.setRevenue(lineItem.f1);
 					out.collect(shippingPriorityItem);
-				} else {
-					System.out.println(
-							"WARNING: lineItem.f0.longValue() != shippingPriorityItem.getOrderkey().longValue(): "
-									+ lineItem.f0.longValue() + " != "
-									+ shippingPriorityItem.getOrderkey().longValue());
+					// } else {
+					// System.out.println(
+					// "WARNING: lineItem.f0.longValue() !=
+					// shippingPriorityItem.getOrderkey().longValue(): "
+					// + lineItem.f0.longValue() + " != "
+					// + shippingPriorityItem.getOrderkey().longValue());
 				}
 			}
 		} catch (Exception e) {
