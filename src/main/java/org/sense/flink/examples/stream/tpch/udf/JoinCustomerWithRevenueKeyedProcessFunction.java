@@ -12,13 +12,16 @@ import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 import org.sense.flink.util.CpuGauge;
 
+import com.google.common.collect.ImmutableMap;
+
 import net.openhft.affinity.impl.LinuxJNAAffinity;
 
 public class JoinCustomerWithRevenueKeyedProcessFunction extends
 		KeyedProcessFunction<Tuple, Tuple2<Integer, Double>, Tuple6<Integer, String, String, String, Double, Double>> {
 	private static final long serialVersionUID = 1L;
 
-	private Map<Integer, Tuple4<String, String, String, Double>> customerWithNationList = null;
+	private ImmutableMap<Integer, Tuple4<String, String, String, Double>> customerWithNationList = ImmutableMap
+			.copyOf(new CustomerSource().getCustomersWithNation());
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -43,9 +46,6 @@ public class JoinCustomerWithRevenueKeyedProcessFunction extends
 				affinity.set(((int) Thread.currentThread().getId() % nbits));
 				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
 			}
-
-			CustomerSource customerSource = new CustomerSource();
-			customerWithNationList = customerSource.getCustomersWithNation();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -61,8 +61,6 @@ public class JoinCustomerWithRevenueKeyedProcessFunction extends
 
 			for (Map.Entry<Integer, Tuple4<String, String, String, Double>> customerWithNation : customerWithNationList
 					.entrySet()) {
-				// System.out.println(customerWithNation.getKey() + "/" +
-				// customerWithNation.getValue());
 				if (customerWithNation.getKey().equals(value.f0)) {
 					out.collect(Tuple6.of(customerWithNation.getKey(), customerWithNation.getValue().f0,
 							customerWithNation.getValue().f1, customerWithNation.getValue().f2,

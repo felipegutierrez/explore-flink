@@ -1,7 +1,6 @@
 package org.sense.flink.examples.stream.tpch.udf;
 
 import java.util.BitSet;
-import java.util.List;
 
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
@@ -10,12 +9,14 @@ import org.sense.flink.examples.stream.tpch.pojo.Order;
 import org.sense.flink.examples.stream.tpch.pojo.ShippingPriorityItem;
 import org.sense.flink.util.CpuGauge;
 
+import com.google.common.collect.ImmutableList;
+
 import net.openhft.affinity.impl.LinuxJNAAffinity;
 
 public class OrderKeyedByCustomerProcessFunction extends KeyedProcessFunction<Long, Order, ShippingPriorityItem> {
 	private static final long serialVersionUID = 1L;
 
-	private List<Long> customerKeyList = null;
+	private final ImmutableList<Long> customerKeyList = ImmutableList.copyOf(new CustomerSource().getCustomersKeys());
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -40,10 +41,6 @@ public class OrderKeyedByCustomerProcessFunction extends KeyedProcessFunction<Lo
 				affinity.set(((int) Thread.currentThread().getId() % nbits));
 				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
 			}
-
-			CustomerSource customerSource = new CustomerSource();
-			customerKeyList = customerSource.getCustomersKeys();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
