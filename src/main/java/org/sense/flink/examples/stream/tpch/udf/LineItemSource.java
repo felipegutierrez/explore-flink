@@ -13,9 +13,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.sense.flink.examples.stream.tpch.pojo.LineItem;
@@ -150,11 +151,11 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 		return lineItemsList;
 	}
 
-	public List<Tuple2<Integer, Double>> getLineItemsRevenueByOrderKey() {
+	public Map<Integer, Double> getLineItemsRevenueByOrderKey() {
 		String line = null;
 		InputStream s = null;
 		BufferedReader r = null;
-		List<Tuple2<Integer, Double>> lineItemsList = new ArrayList<Tuple2<Integer, Double>>();
+		Map<Integer, Double> lineItemsList = new HashMap<Integer, Double>();
 		try {
 			s = new FileInputStream(TPCH_DATA_LINE_ITEM);
 			r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
@@ -168,7 +169,7 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 				Double revenue = lineItem.getExtendedPrice() * (1 - lineItem.getDiscount());
 				Integer orderKey = (int) lineItem.getOrderKey();
 
-				lineItemsList.add(Tuple2.of(orderKey, revenue));
+				lineItemsList.put(orderKey, revenue);
 			}
 		} catch (NumberFormatException nfe) {
 			throw new RuntimeException("Invalid record: " + line, nfe);
