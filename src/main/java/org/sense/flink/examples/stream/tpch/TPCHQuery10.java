@@ -5,14 +5,20 @@ import static org.sense.flink.util.MetricLabels.OPERATOR_SINK;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_FILE;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_LOG;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_MQTT;
+import static org.sense.flink.util.SinkOutputs.PATH_OUTPUT_FILE;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
+import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
+import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
 import org.sense.flink.examples.stream.tpch.pojo.Order;
 import org.sense.flink.examples.stream.tpch.udf.JoinCustomerWithRevenueKeyedProcessFunction;
 import org.sense.flink.examples.stream.tpch.udf.OrderKeySelector;
@@ -122,7 +128,17 @@ public class TPCHQuery10 {
 			} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_LOG)) {
 				result.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
 			} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_FILE)) {
-				result.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
+				StreamingFileSink<String> sink = StreamingFileSink
+						.forRowFormat(new Path(PATH_OUTPUT_FILE), new SimpleStringEncoder<String>("UTF-8"))
+						.withRollingPolicy(
+								DefaultRollingPolicy.builder().withRolloverInterval(TimeUnit.MINUTES.toMillis(15))
+										.withInactivityInterval(TimeUnit.MINUTES.toMillis(5))
+										.withMaxPartSize(1024 * 1024 * 1024).build())
+						.build();
+						
+				result
+						.map(new Tuple6ToStringMap(pinningPolicy)).name(Tuple6ToStringMap.class.getSimpleName()).uid(Tuple6ToStringMap.class.getSimpleName())
+						.addSink(sink).name(OPERATOR_SINK).uid(OPERATOR_SINK);
 			} else {
 				System.out.println("discarding output");
 			}
