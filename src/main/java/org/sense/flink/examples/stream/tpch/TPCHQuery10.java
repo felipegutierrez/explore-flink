@@ -2,7 +2,6 @@ package org.sense.flink.examples.stream.tpch;
 
 import static org.sense.flink.util.MetricLabels.OPERATOR_REDUCER;
 import static org.sense.flink.util.MetricLabels.OPERATOR_SINK;
-import static org.sense.flink.util.MetricLabels.ROCKSDB_STATE_DIR_NFS;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_FILE;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_LOG;
 import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_MQTT;
@@ -11,8 +10,6 @@ import java.io.IOException;
 
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
-import org.apache.flink.contrib.streaming.state.PredefinedOptions;
-import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -84,31 +81,13 @@ public class TPCHQuery10 {
 	}
 
 	public TPCHQuery10() {
-		this("file:///tmp/flink/state", PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, false);
+		this(PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false);
 	}
 
 	public TPCHQuery10(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy) {
-		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy, false);
-	}
-
-	public TPCHQuery10(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy,
-			boolean rocksDB) {
-		this(ROCKSDB_STATE_DIR_NFS, output, ipAddressSink, disableOperatorChaining, pinningPolicy, rocksDB);
-	}
-
-	public TPCHQuery10(String stateDir, String output, String ipAddressSink, boolean disableOperatorChaining,
-			boolean pinningPolicy, boolean rocksDB) {
 		try {
 			StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
 			env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
-
-			if (rocksDB) {
-				// RocksDB state back-end
-				RocksDBStateBackend stateBackend = new RocksDBStateBackend(stateDir, true);
-				stateBackend.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED);
-				env.setStateBackend(stateBackend);
-			}
 
 			if (disableOperatorChaining) {
 				env.disableOperatorChaining();
