@@ -57,10 +57,19 @@ public class ShippingPriorityKeyedProcessFunction
 			// updates the CPU core current in use
 			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
+			if (lineItemList.isEmpty()) {
+				System.out.println("WARNING: lineItemList is empty");
+			}
+
 			for (Tuple2<Integer, Double> lineItem : lineItemList) {
 				if (lineItem.f0.longValue() == shippingPriorityItem.getOrderkey().longValue()) {
 					shippingPriorityItem.setRevenue(lineItem.f1);
 					out.collect(shippingPriorityItem);
+				} else {
+					System.out.println(
+							"WARNING: lineItem.f0.longValue() != shippingPriorityItem.getOrderkey().longValue(): "
+									+ lineItem.f0.longValue() + " != "
+									+ shippingPriorityItem.getOrderkey().longValue());
 				}
 			}
 		} catch (Exception e) {
