@@ -3,10 +3,7 @@ package org.sense.flink.examples.stream.tpch.udf;
 import java.util.BitSet;
 import java.util.List;
 
-import org.apache.flink.api.common.state.ListState;
-import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.shaded.guava18.com.google.common.collect.Iterators;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 import org.sense.flink.examples.stream.tpch.pojo.Order;
@@ -18,7 +15,7 @@ import net.openhft.affinity.impl.LinuxJNAAffinity;
 public class OrderKeyedByCustomerProcessFunction extends KeyedProcessFunction<Long, Order, ShippingPriorityItem> {
 	private static final long serialVersionUID = 1L;
 
-	private ListState<Long> customerKeyList = null;
+	private List<Long> customerKeyList = null;
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -44,9 +41,9 @@ public class OrderKeyedByCustomerProcessFunction extends KeyedProcessFunction<Lo
 				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
 			}
 
-			ListStateDescriptor<Long> customerDescriptor = new ListStateDescriptor<Long>("customersKeysState",
-					Long.class);
-			customerKeyList = getRuntimeContext().getListState(customerDescriptor);
+			CustomerSource customerSource = new CustomerSource();
+			customerKeyList = customerSource.getCustomersKeys();
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -59,13 +56,7 @@ public class OrderKeyedByCustomerProcessFunction extends KeyedProcessFunction<Lo
 			// updates the CPU core current in use
 			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-			if (customerKeyList != null && Iterators.size(customerKeyList.get().iterator()) == 0) {
-				CustomerSource customerSource = new CustomerSource();
-				List<Long> customers = customerSource.getCustomersKeys();
-				customerKeyList.addAll(customers);
-			}
-
-			for (Long customerKey : customerKeyList.get()) {
+			for (Long customerKey : customerKeyList) {
 				// System.out.println("Customer: " + customer + " - Order: " + order);
 				if (order != null && order.getCustomerKey() == customerKey.longValue()) {
 					try {

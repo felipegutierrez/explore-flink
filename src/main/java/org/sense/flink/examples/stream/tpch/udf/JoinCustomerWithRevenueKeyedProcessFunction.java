@@ -1,18 +1,13 @@
 package org.sense.flink.examples.stream.tpch.udf;
 
 import java.util.BitSet;
-import java.util.List;
+import java.util.Map;
 
-import org.apache.flink.api.common.state.ListState;
-import org.apache.flink.api.common.state.ListStateDescriptor;
-import org.apache.flink.api.common.typeinfo.TypeHint;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple5;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.api.java.tuple.Tuple6;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.shaded.guava18.com.google.common.collect.Iterators;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
 import org.sense.flink.util.CpuGauge;
@@ -23,7 +18,7 @@ public class JoinCustomerWithRevenueKeyedProcessFunction extends
 		KeyedProcessFunction<Tuple, Tuple2<Integer, Double>, Tuple6<Integer, String, String, String, Double, Double>> {
 	private static final long serialVersionUID = 1L;
 
-	private ListState<Tuple5<Integer, String, String, String, Double>> customerWithNationList = null;
+	private Map<Integer, Tuple4<String, String, String, Double>> customerWithNationList = null;
 	private transient CpuGauge cpuGauge;
 	private BitSet affinity;
 	private boolean pinningPolicy;
@@ -49,11 +44,8 @@ public class JoinCustomerWithRevenueKeyedProcessFunction extends
 				LinuxJNAAffinity.INSTANCE.setAffinity(affinity);
 			}
 
-			ListStateDescriptor<Tuple5<Integer, String, String, String, Double>> customerWithNationDescriptor = new ListStateDescriptor<Tuple5<Integer, String, String, String, Double>>(
-					"customerWithNationState",
-					TypeInformation.of(new TypeHint<Tuple5<Integer, String, String, String, Double>>() {
-					}));
-			customerWithNationList = getRuntimeContext().getListState(customerWithNationDescriptor);
+			CustomerSource customerSource = new CustomerSource();
+			customerWithNationList = customerSource.getCustomersWithNation();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -67,17 +59,14 @@ public class JoinCustomerWithRevenueKeyedProcessFunction extends
 			// updates the CPU core current in use
 			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
 
-			if (customerWithNationList != null && Iterators.size(customerWithNationList.get().iterator()) == 0) {
-				CustomerSource customerSource = new CustomerSource();
-				List<Tuple5<Integer, String, String, String, Double>> customerWithNation = customerSource
-						.getCustomersWithNation();
-				customerWithNationList.addAll(customerWithNation);
-			}
-
-			for (Tuple5<Integer, String, String, String, Double> customerWithNation : customerWithNationList.get()) {
-				if (customerWithNation.f0.equals(value.f0)) {
-					out.collect(Tuple6.of(customerWithNation.f0, customerWithNation.f1, customerWithNation.f2,
-							customerWithNation.f3, customerWithNation.f4, value.f1));
+			for (Map.Entry<Integer, Tuple4<String, String, String, Double>> customerWithNation : customerWithNationList
+					.entrySet()) {
+				// System.out.println(customerWithNation.getKey() + "/" +
+				// customerWithNation.getValue());
+				if (customerWithNation.getKey().equals(value.f0)) {
+					out.collect(Tuple6.of(customerWithNation.getKey(), customerWithNation.getValue().f0,
+							customerWithNation.getValue().f1, customerWithNation.getValue().f2,
+							customerWithNation.getValue().f3, value.f1));
 				}
 			}
 		} catch (Exception e) {

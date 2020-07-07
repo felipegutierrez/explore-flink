@@ -11,9 +11,11 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.flink.api.java.tuple.Tuple5;
+import org.apache.flink.api.java.tuple.Tuple4;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 import org.sense.flink.examples.stream.tpch.pojo.Customer;
@@ -170,11 +172,11 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 		return customerKeyList;
 	}
 
-	public List<Tuple5<Integer, String, String, String, Double>> getCustomersWithNation() {
+	public Map<Integer, Tuple4<String, String, String, Double>> getCustomersWithNation() {
 		NationSource nationSource = new NationSource();
 		List<Nation> nations = nationSource.getNations();
 		List<Customer> customers = getCustomers();
-		List<Tuple5<Integer, String, String, String, Double>> customersWithNation = new ArrayList<Tuple5<Integer, String, String, String, Double>>();
+		Map<Integer, Tuple4<String, String, String, Double>> customersWithNation = new HashMap<Integer, Tuple4<String, String, String, Double>>();
 
 		for (Nation nation : nations) {
 			for (Customer customer : customers) {
@@ -185,8 +187,8 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 					String nationName = nation.getName();
 					Double customerAccountBalance = customer.getAccountBalance();
 
-					customersWithNation
-							.add(Tuple5.of(customerRow, customerKey, customerName, nationName, customerAccountBalance));
+					customersWithNation.put(customerRow,
+							Tuple4.of(customerKey, customerName, nationName, customerAccountBalance));
 				}
 			}
 		}
