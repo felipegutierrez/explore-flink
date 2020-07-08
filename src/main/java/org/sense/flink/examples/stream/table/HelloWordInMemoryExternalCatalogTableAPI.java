@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.table.descriptors.ConnectorDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ public class HelloWordInMemoryExternalCatalogTableAPI {
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 		// Create Stream table environment
-		StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+		// StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 		// obtain query configuration from TableEnvironment
 		// StreamQueryConfig qConfig = tableEnv.queryConfig();
 		// set query parameters

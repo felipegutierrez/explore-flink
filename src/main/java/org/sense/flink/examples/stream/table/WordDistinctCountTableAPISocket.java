@@ -1,13 +1,8 @@
 package org.sense.flink.examples.stream.table;
 
-import org.apache.flink.streaming.api.datastream.DataStreamSource;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.OverWindow;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.java.StreamTableEnvironment;
 // import org.apache.flink.table.api.java.Tumble;
 import org.apache.flink.table.functions.TableFunction;
-import org.apache.flink.types.Row;
 
 /**
  * On the terminal execute "nc -lk 9000", run this class and type words back on
@@ -29,27 +24,27 @@ public class WordDistinctCountTableAPISocket {
 	public WordDistinctCountTableAPISocket() throws Exception {
 
 		StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+		// StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
 		// @formatter:off
-		DataStreamSource<String> ds = env.socketTextStream("localhost", 9000);
-		tableEnv.registerDataStream("sourceTable", ds, "line, proctime.proctime");
-		
-		tableEnv.registerFunction("splitFunc", new SplitTableFunction());
-		Table result = tableEnv.scan("sourceTable")
-				.joinLateral("splitFunc(line) as word")
-				// .window(Tumble.over("5.seconds").on("proctime").as("w"))
-				// .window([OverWindow w].as("w"))
-				// .groupBy("w")
-				.select("count.distinct(word)");
-		tableEnv.toAppendStream(result, Row.class).print();
+//		DataStreamSource<String> ds = env.socketTextStream("localhost", 9000);
+//		tableEnv.registerDataStream("sourceTable", ds, "line, proctime.proctime");
+//		
+//		tableEnv.registerFunction("splitFunc", new SplitTableFunction());
+//		Table result = tableEnv.scan("sourceTable")
+//				.joinLateral("splitFunc(line) as word")
+//				// .window(Tumble.over("5.seconds").on("proctime").as("w"))
+//				// .window([OverWindow w].as("w"))
+//				// .groupBy("w")
+//				.select("count.distinct(word)");
+//		tableEnv.toAppendStream(result, Row.class).print();
 		// @formatter:on
 
-		System.out.println("Execution plan ........................ ");
-		System.out.println(env.getExecutionPlan());
-		System.out.println("Plan explaination ........................ ");
-		System.out.println(tableEnv.explain(result));
-		System.out.println("........................ ");
+		// System.out.println("Execution plan ........................ ");
+		// System.out.println(env.getExecutionPlan());
+		// System.out.println("Plan explaination ........................ ");
+		// System.out.println(tableEnv.explain(result));
+		// System.out.println("........................ ");
 
 		env.execute("WordDistinctCountTableAPISocket");
 	}

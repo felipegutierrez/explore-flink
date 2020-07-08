@@ -1,14 +1,7 @@
 package org.sense.flink.examples.stream.table;
 
-import org.apache.flink.api.common.time.Time;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.table.api.StreamQueryConfig;
-import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.Tumble;
-import org.apache.flink.table.api.java.StreamTableEnvironment;
-import org.apache.flink.types.Row;
-import org.sense.flink.mqtt.MqttSensorTableSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,34 +23,34 @@ public class MqttSensorDataAverageTableAPI {
 		env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
 
 		// Create Stream table environment
-		StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+		// StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
 		// obtain query configuration from TableEnvironment
-		//StreamQueryConfig qConfig = tableEnv.queryConfig();
+		// StreamQueryConfig qConfig = tableEnv.queryConfig();
 		// set query parameters
-		//qConfig.withIdleStateRetentionTime(Time.minutes(30), Time.hours(2));
+		// qConfig.withIdleStateRetentionTime(Time.minutes(30), Time.hours(2));
 
 		// @formatter:off
 		// Register Data Source Stream tables in the table environment
-		tableEnv.registerTableSource("PeopleStation01", new MqttSensorTableSource(ipAddressSource01, topic_station_01_people));
+//		tableEnv.registerTableSource("PeopleStation01", new MqttSensorTableSource(ipAddressSource01, topic_station_01_people));
 
 		// Query
-		Table result = tableEnv.scan("PeopleStation01")
-				.window(Tumble.over("5.seconds").on("eventTime").as("eventTimeWindow"))
-				.groupBy("eventTimeWindow, stationId, platformType, sensorType")
-				.select("eventTimeWindow.end as second, stationId, platformType, sensorType, value.avg as avgValue")
-				.filter("platformType = 'CIT'")
-				;
-
-		tableEnv.toAppendStream(result, Row.class).print();
+//		Table result = tableEnv.scan("PeopleStation01")
+//				.window(Tumble.over("5.seconds").on("eventTime").as("eventTimeWindow"))
+//				.groupBy("eventTimeWindow, stationId, platformType, sensorType")
+//				.select("eventTimeWindow.end as second, stationId, platformType, sensorType, value.avg as avgValue")
+//				.filter("platformType = 'CIT'")
+//				;
+//
+//		tableEnv.toAppendStream(result, Row.class).print();
 		// @formatter:on
 
-		result.printSchema();
-		System.out.println("Execution plan ........................ ");
-		System.out.println(env.getExecutionPlan());
-		System.out.println("Plan explaination ........................ ");
-		System.out.println(tableEnv.explain(result));
-		System.out.println("........................ ");
+		// result.printSchema();
+		// System.out.println("Execution plan ........................ ");
+		// System.out.println(env.getExecutionPlan());
+		// System.out.println("Plan explaination ........................ ");
+		// System.out.println(tableEnv.explain(result));
+		// System.out.println("........................ ");
 
 		env.execute("MqttSensorDataAverageTableAPI");
 	}
