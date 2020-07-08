@@ -62,10 +62,12 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 			InputStream stream = new FileInputStream(dataFilePath);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 
+			long rowNumber = 0;
 			long startTime = System.nanoTime();
 			String line = reader.readLine();
 			while (line != null) {
-				sourceContext.collect(getLineItem(line));
+				rowNumber++;
+				sourceContext.collect(getLineItem(line, rowNumber));
 
 				// sleep in nanoseconds to have a reproducible data rate for the data source
 				this.dataRateListener.busySleep(startTime);
@@ -88,16 +90,15 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 		}
 	}
 
-	private LineItem getLineItem(String line) {
+	private LineItem getLineItem(String line, long rowNumber) {
 		String[] tokens = line.split("\\|");
 		if (tokens.length != 16) {
 			throw new RuntimeException("Invalid record: " + line);
 		}
 		LineItem lineItem;
 		try {
-			long rowNumber = Long.parseLong(tokens[0]);
-			long orderKey = Long.parseLong(tokens[1]);
-			long partKey = Long.parseLong(tokens[2]);
+			long orderKey = Long.parseLong(tokens[0]);
+			long partKey = Long.parseLong(tokens[1]);
 			long supplierKey = Long.parseLong(tokens[2]);
 			int lineNumber = Integer.parseInt(tokens[3]);
 			long quantity = Long.parseLong(tokens[4]);
@@ -130,10 +131,11 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 		try {
 			InputStream s = new FileInputStream(TPCH_DATA_LINE_ITEM);
 			BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
-
+			long rowNumber = 0;
 			line = r.readLine();
 			while (line != null) {
-				lineItemsList.add(getLineItem(line));
+				rowNumber++;
+				lineItemsList.add(getLineItem(line, rowNumber));
 				line = r.readLine();
 			}
 			r.close();
@@ -154,10 +156,11 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 		try {
 			InputStream s = new FileInputStream(TPCH_DATA_LINE_ITEM);
 			BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
-
+			long rowNumber = 0;
 			line = r.readLine();
 			while (line != null) {
-				LineItem lineItem = getLineItem(line);
+				rowNumber++;
+				LineItem lineItem = getLineItem(line, rowNumber);
 
 				// LineItem: compute revenue and project out return flag
 				// revenue per item = l_extendedprice * (1 - l_discount)

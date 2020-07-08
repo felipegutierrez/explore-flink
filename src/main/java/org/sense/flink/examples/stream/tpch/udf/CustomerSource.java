@@ -62,10 +62,12 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 			InputStream stream = new FileInputStream(dataFilePath);
 			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 
+			int rowNumber = 0;
 			long startTime = System.nanoTime();
 			String line = reader.readLine();
 			while (line != null) {
-				sourceContext.collect(getCustomerItem(line));
+				rowNumber++;
+				sourceContext.collect(getCustomerItem(line, rowNumber));
 
 				// sleep in nanoseconds to have a reproducible data rate for the data source
 				this.dataRateListener.busySleep(startTime);
@@ -88,16 +90,15 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 		}
 	}
 
-	private Customer getCustomerItem(String line) {
+	private Customer getCustomerItem(String line, int rowNumber) {
 		String[] tokens = line.split("\\|");
 		if (tokens.length != 8) {
 			throw new RuntimeException("Invalid record: " + line);
 		}
 		Customer customer;
 		try {
-			int rowNumber = Integer.parseInt(tokens[0]);
-			long customerKey = Long.parseLong(tokens[1].split("#")[1]);
-			String name = tokens[2];
+			long customerKey = Long.parseLong(tokens[0]);
+			String name = tokens[1];
 			String address = tokens[2];
 			long nationKey = Long.parseLong(tokens[3]);
 			String phone = tokens[4];
@@ -121,10 +122,11 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 		try {
 			InputStream s = new FileInputStream(TPCH_DATA_COSTUMER);
 			BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
-
+			int rowNumber = 0;
 			line = r.readLine();
 			while (line != null) {
-				customerList.add(getCustomerItem(line));
+				rowNumber++;
+				customerList.add(getCustomerItem(line, rowNumber));
 				line = r.readLine();
 			}
 			r.close();
@@ -145,10 +147,11 @@ public class CustomerSource extends RichSourceFunction<Customer> {
 		try {
 			InputStream s = new FileInputStream(TPCH_DATA_COSTUMER);
 			BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
-
+			int rowNumber = 0;
 			line = r.readLine();
 			while (line != null) {
-				customerKeyList.add(getCustomerItem(line).getCustomerKey());
+				rowNumber++;
+				customerKeyList.add(getCustomerItem(line, rowNumber).getCustomerKey());
 				line = r.readLine();
 			}
 			r.close();
