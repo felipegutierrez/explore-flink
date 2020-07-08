@@ -28,8 +28,6 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 	private final String dataFilePath;
 	private DataRateListener dataRateListener;
 	private boolean running;
-	private transient BufferedReader reader;
-	private transient InputStream stream;
 
 	public LineItemSource() {
 		this(TPCH_DATA_LINE_ITEM);
@@ -48,31 +46,38 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 	}
 
 	@Override
-	public void run(SourceContext<LineItem> sourceContext) throws Exception {
-		while (running) {
-			generateLineItemArray(sourceContext);
+	public void run(SourceContext<LineItem> sourceContext) {
+		try {
+			while (running) {
+				generateLineItem(sourceContext);
+				Thread.sleep(2 * 1000);
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-		this.reader.close();
-		this.reader = null;
-		this.stream.close();
-		this.stream = null;
 	}
 
-	private void generateLineItemArray(SourceContext<LineItem> sourceContext) {
+	private void generateLineItem(SourceContext<LineItem> sourceContext) {
 		try {
-			stream = new FileInputStream(dataFilePath);
-			reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
-			String line;
-			LineItem lineItem;
-			long startTime;
-			while (reader.ready() && (line = reader.readLine()) != null) {
-				startTime = System.nanoTime();
-				lineItem = getLineItem(line);
-				sourceContext.collect(lineItem);
+			InputStream stream = new FileInputStream(dataFilePath);
+			BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
+
+			long startTime = System.nanoTime();
+			String line = reader.readLine();
+			while (line != null) {
+				sourceContext.collect(getLineItem(line));
 
 				// sleep in nanoseconds to have a reproducible data rate for the data source
 				this.dataRateListener.busySleep(startTime);
+
+				// get start time and line for the next iteration
+				startTime = System.nanoTime();
+				line = reader.readLine();
 			}
+			reader.close();
+			reader = null;
+			stream.close();
+			stream = null;
 		} catch (FileNotFoundException e) {
 			System.err.println("Please make sure they are available at [" + dataFilePath + "].");
 			System.err.println(
@@ -120,88 +125,62 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 	}
 
 	public List<LineItem> getLineItems() {
-		String line = null;
-		InputStream s = null;
-		BufferedReader r = null;
 		List<LineItem> lineItemsList = new ArrayList<LineItem>();
+		String line = null;
 		try {
-			s = new FileInputStream(TPCH_DATA_LINE_ITEM);
-			r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
+			InputStream s = new FileInputStream(TPCH_DATA_LINE_ITEM);
+			BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
 
-			while (r.ready() && (line = r.readLine()) != null) {
+			line = r.readLine();
+			while (line != null) {
 				lineItemsList.add(getLineItem(line));
+				line = r.readLine();
 			}
-		} catch (NumberFormatException nfe) {
-			throw new RuntimeException("Invalid record: " + line, nfe);
-		} catch (Exception e) {
-			throw new RuntimeException("Invalid record: " + line, e);
-		} finally {
-
-		}
-		try {
 			r.close();
 			r = null;
 			s.close();
 			s = null;
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (NumberFormatException nfe) {
+			throw new RuntimeException("Invalid record: " + line, nfe);
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid record: " + line, e);
 		}
 		return lineItemsList;
 	}
 
 	public List<Tuple2<Integer, Double>> getLineItemsRevenueByOrderKey() {
 		String line = null;
-		InputStream s = null;
-		BufferedReader r = null;
 		List<Tuple2<Integer, Double>> lineItemsList = new ArrayList<Tuple2<Integer, Double>>();
 		try {
-			s = new FileInputStream(TPCH_DATA_LINE_ITEM);
-			r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
+			InputStream s = new FileInputStream(TPCH_DATA_LINE_ITEM);
+			BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
 
-			while (r.ready() && (line = r.readLine()) != null) {
-
+			line = r.readLine();
+			while (line != null) {
 				LineItem lineItem = getLineItem(line);
 
 				// LineItem: compute revenue and project out return flag
 				// revenue per item = l_extendedprice * (1 - l_discount)
 				Double revenue = lineItem.getExtendedPrice() * (1 - lineItem.getDiscount());
 				Integer orderKey = (int) lineItem.getOrderKey();
-
 				lineItemsList.add(Tuple2.of(orderKey, revenue));
-			}
-		} catch (NumberFormatException nfe) {
-			throw new RuntimeException("Invalid record: " + line, nfe);
-		} catch (Exception e) {
-			throw new RuntimeException("Invalid record: " + line, e);
-		} finally {
 
-		}
-		try {
+				line = r.readLine();
+			}
 			r.close();
 			r = null;
 			s.close();
 			s = null;
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (NumberFormatException nfe) {
+			throw new RuntimeException("Invalid record: " + line, nfe);
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid record: " + line, e);
 		}
 		return lineItemsList;
 	}
 
 	@Override
 	public void cancel() {
-		try {
-			this.running = false;
-			if (this.reader != null) {
-				this.reader.close();
-			}
-			if (this.stream != null) {
-				this.stream.close();
-			}
-		} catch (IOException ioe) {
-			throw new RuntimeException("Could not cancel SourceFunction", ioe);
-		} finally {
-			this.reader = null;
-			this.stream = null;
-		}
+		this.running = false;
 	}
 }

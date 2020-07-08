@@ -4,7 +4,6 @@ import static org.sense.flink.util.MetricLabels.TPCH_DATA_NATION;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -26,32 +25,26 @@ public class NationSource {
 
 	public List<Nation> getNations() {
 		String line = null;
-		InputStream s = null;
-		BufferedReader r = null;
 		List<Nation> nationList = new ArrayList<Nation>();
 		long rowNumber = 0;
 		try {
-			s = new FileInputStream(this.dataFilePath);
-			r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
+			InputStream s = new FileInputStream(this.dataFilePath);
+			BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
 
-			while (r.ready() && (line = r.readLine()) != null) {
+			line = r.readLine();
+			while (line != null) {
 				rowNumber++;
 				nationList.add(getNationItem(line, rowNumber));
+				line = r.readLine();
 			}
-		} catch (NumberFormatException nfe) {
-			throw new RuntimeException("Invalid record: " + line, nfe);
-		} catch (Exception e) {
-			throw new RuntimeException("Invalid record: " + line, e);
-		} finally {
-
-		}
-		try {
 			r.close();
 			r = null;
 			s.close();
 			s = null;
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (NumberFormatException nfe) {
+			throw new RuntimeException("Invalid record: " + line, nfe);
+		} catch (Exception e) {
+			throw new RuntimeException("Invalid record: " + line, e);
 		}
 		return nationList;
 	}
