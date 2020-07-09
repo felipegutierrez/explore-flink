@@ -150,9 +150,9 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 		return lineItemsList;
 	}
 
-	public List<Tuple2<Integer, Double>> getLineItemsRevenueByOrderKey() {
+	public List<Tuple2<Long, Double>> getLineItemsRevenueByOrderKey() {
 		String line = null;
-		List<Tuple2<Integer, Double>> lineItemsList = new ArrayList<Tuple2<Integer, Double>>();
+		List<Tuple2<Long, Double>> lineItemsList = new ArrayList<Tuple2<Long, Double>>();
 		try {
 			InputStream s = new FileInputStream(TPCH_DATA_LINE_ITEM);
 			BufferedReader r = new BufferedReader(new InputStreamReader(s, StandardCharsets.UTF_8));
@@ -165,7 +165,7 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
 				// LineItem: compute revenue and project out return flag
 				// revenue per item = l_extendedprice * (1 - l_discount)
 				Double revenue = lineItem.getExtendedPrice() * (1 - lineItem.getDiscount());
-				Integer orderKey = (int) lineItem.getOrderKey();
+				Long orderKey = lineItem.getOrderKey();
 				lineItemsList.add(Tuple2.of(orderKey, revenue));
 
 				line = r.readLine();

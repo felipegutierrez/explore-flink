@@ -1,14 +1,5 @@
 package org.sense.flink.examples.stream.tpch;
 
-import static org.sense.flink.util.MetricLabels.OPERATOR_SINK;
-import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_FILE;
-import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_LOG;
-import static org.sense.flink.util.SinkOutputs.PARAMETER_OUTPUT_MQTT;
-import static org.sense.flink.util.SinkOutputs.PATH_OUTPUT_FILE;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.flink.api.common.serialization.SimpleStringEncoder;
 import org.apache.flink.core.fs.Path;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -18,30 +9,29 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSin
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
 import org.sense.flink.examples.stream.tpch.pojo.Order;
 import org.sense.flink.examples.stream.tpch.pojo.ShippingPriorityItem;
-import org.sense.flink.examples.stream.tpch.udf.OrderCustomerKeySelector;
-import org.sense.flink.examples.stream.tpch.udf.OrderKeyedByCustomerProcessFunction;
-import org.sense.flink.examples.stream.tpch.udf.OrdersSource;
-import org.sense.flink.examples.stream.tpch.udf.ShippingPriority3KeySelector;
-import org.sense.flink.examples.stream.tpch.udf.ShippingPriorityItemMap;
-import org.sense.flink.examples.stream.tpch.udf.ShippingPriorityKeySelector;
-import org.sense.flink.examples.stream.tpch.udf.ShippingPriorityKeyedProcessFunction;
-import org.sense.flink.examples.stream.tpch.udf.SumShippingPriorityItem;
+import org.sense.flink.examples.stream.tpch.udf.*;
 import org.sense.flink.mqtt.MqttStringPublisher;
+
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static org.sense.flink.util.MetricLabels.OPERATOR_SINK;
+import static org.sense.flink.util.SinkOutputs.*;
 
 /**
  * Implementation of the TPC-H Benchmark query 03 also available at:
- * 
+ * <p>
  * https://github.com/apache/flink/blob/master/flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/relational/TPCHQuery3.java
- * 
+ * <p>
  * The original query can be found at:
- * 
+ * <p>
  * https://docs.deistercloud.com/content/Databases.30/TPCH%20Benchmark.90/Sample%20querys.20.xml
- * 
+ *
  * <p>
  * This program implements the following SQL equivalent:
  *
  * <p>
- * 
+ *
  * <pre>
  * {@code
  * SELECT
@@ -68,87 +58,85 @@ import org.sense.flink.mqtt.MqttStringPublisher;
  * <p>
  * Compared to the original TPC-H query this version does not sort the result by
  * revenue and orderdate.
- * 
- * @author Felipe Oliveira Gutierrez
  *
+ * @author Felipe Oliveira Gutierrez
  */
 public class TPCHQuery03 {
 
-	private final String topic = "topic-tpch-query-03";
+    private final String topic = "topic-tpch-query-03";
 
-	public static void main(String[] args) throws Exception {
-		new TPCHQuery03();
-	}
+    public TPCHQuery03() {
+        this(PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, -1);
+    }
 
-	public TPCHQuery03() {
-		this(PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false);
-	}
+    public TPCHQuery03(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy, long maxCount) {
+        try {
+            StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+            env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
 
-	public TPCHQuery03(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy) {
-		try {
-			StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-			env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+            if (disableOperatorChaining) {
+                env.disableOperatorChaining();
+            }
 
-			if (disableOperatorChaining) {
-				env.disableOperatorChaining();
-			}
+            DataStream<Order> orders = env
+                    .addSource(new OrdersSource(maxCount)).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
 
-			// @formatter:off
-			DataStream<Order> orders = env
-					.addSource(new OrdersSource()).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
+            // Filter market segment "AUTOMOBILE"
+            // customers = customers.filter(new CustomerFilter());
 
-			// Filter market segment "AUTOMOBILE"
-			// customers = customers.filter(new CustomerFilter());
+            // Filter all Orders with o_orderdate < 12.03.1995
+            DataStream<Order> ordersFiltered = orders
+                    .filter(new OrderDateFilter("1995-03-12")).name(OrderDateFilter.class.getSimpleName()).uid(OrderDateFilter.class.getSimpleName());
 
-			// Filter all Orders with o_orderdate < 12.03.1995
-			// orders = orders.filter(new OrderFilter());
+            // Join customers with orders and package them into a ShippingPriorityItem
+            DataStream<ShippingPriorityItem> customerWithOrders = ordersFiltered
+                    .keyBy(new OrderKeySelector())
+                    .process(new OrderKeyedByCustomerProcessFunction(pinningPolicy)).name(OrderKeyedByCustomerProcessFunction.class.getSimpleName()).uid(OrderKeyedByCustomerProcessFunction.class.getSimpleName());
 
-			// Join customers with orders and package them into a ShippingPriorityItem
-			DataStream<ShippingPriorityItem> shippingPriorityStream01 = orders
-					.keyBy(new OrderCustomerKeySelector())
-					.process(new OrderKeyedByCustomerProcessFunction(pinningPolicy)).name(OrderKeyedByCustomerProcessFunction.class.getSimpleName()).uid(OrderKeyedByCustomerProcessFunction.class.getSimpleName());
+            // Join the last join result with Lineitems
+            DataStream<ShippingPriorityItem> result = customerWithOrders
+                    .keyBy(new ShippingPriorityOrderKeySelector())
+                    .process(new ShippingPriorityKeyedProcessFunction(pinningPolicy)).name(ShippingPriorityKeyedProcessFunction.class.getSimpleName()).uid(ShippingPriorityKeyedProcessFunction.class.getSimpleName());
 
-			// Join the last join result with Lineitems
-			DataStream<ShippingPriorityItem> shippingPriorityStream02 = shippingPriorityStream01
-					.keyBy(new ShippingPriorityKeySelector())
-					.process(new ShippingPriorityKeyedProcessFunction(pinningPolicy)).name(ShippingPriorityKeyedProcessFunction.class.getSimpleName()).uid(ShippingPriorityKeyedProcessFunction.class.getSimpleName());
+            // Group by l_orderkey, o_orderdate and o_shippriority and compute revenue sum
+            DataStream<ShippingPriorityItem> resultSum = result
+                    .keyBy(new ShippingPriority3KeySelector())
+                    .reduce(new SumShippingPriorityItem(pinningPolicy)).name(SumShippingPriorityItem.class.getSimpleName()).uid(SumShippingPriorityItem.class.getSimpleName());
 
-			// Group by l_orderkey, o_orderdate and o_shippriority and compute revenue sum
-			DataStream<ShippingPriorityItem> shippingPriorityStream03 = shippingPriorityStream02
-					.keyBy(new ShippingPriority3KeySelector())
-					.reduce(new SumShippingPriorityItem(pinningPolicy)).name(SumShippingPriorityItem.class.getSimpleName()).uid(SumShippingPriorityItem.class.getSimpleName());
+            // emit result
+            if (output.equalsIgnoreCase(PARAMETER_OUTPUT_MQTT)) {
+                resultSum
+                        .map(new ShippingPriorityItemMap(pinningPolicy)).name(ShippingPriorityItemMap.class.getSimpleName()).uid(ShippingPriorityItemMap.class.getSimpleName())
+                        .addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(OPERATOR_SINK).uid(OPERATOR_SINK);
+            } else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_LOG)) {
+                resultSum.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
+            } else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_FILE)) {
+                StreamingFileSink<String> sink = StreamingFileSink
+                        .forRowFormat(new Path(PATH_OUTPUT_FILE), new SimpleStringEncoder<String>("UTF-8"))
+                        .withRollingPolicy(
+                                DefaultRollingPolicy.builder().withRolloverInterval(TimeUnit.MINUTES.toMillis(15))
+                                        .withInactivityInterval(TimeUnit.MINUTES.toMillis(5))
+                                        .withMaxPartSize(1024 * 1024 * 1024).build())
+                        .build();
 
-			// emit result
-			if (output.equalsIgnoreCase(PARAMETER_OUTPUT_MQTT)) {
-				shippingPriorityStream03
-						.map(new ShippingPriorityItemMap(pinningPolicy)).name(ShippingPriorityItemMap.class.getSimpleName()).uid(ShippingPriorityItemMap.class.getSimpleName())
-						.addSink(new MqttStringPublisher(ipAddressSink, topic, pinningPolicy)).name(OPERATOR_SINK).uid(OPERATOR_SINK);
-			} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_LOG)) {
-				shippingPriorityStream03.print().name(OPERATOR_SINK).uid(OPERATOR_SINK);
-			} else if (output.equalsIgnoreCase(PARAMETER_OUTPUT_FILE)) {
-				StreamingFileSink<String> sink = StreamingFileSink
-						.forRowFormat(new Path(PATH_OUTPUT_FILE), new SimpleStringEncoder<String>("UTF-8"))
-						.withRollingPolicy(
-								DefaultRollingPolicy.builder().withRolloverInterval(TimeUnit.MINUTES.toMillis(15))
-										.withInactivityInterval(TimeUnit.MINUTES.toMillis(5))
-										.withMaxPartSize(1024 * 1024 * 1024).build())
-						.build();
-						
-				shippingPriorityStream03
-						.map(new ShippingPriorityItemMap(pinningPolicy)).name(ShippingPriorityItemMap.class.getSimpleName()).uid(ShippingPriorityItemMap.class.getSimpleName())
-						.addSink(sink).name(OPERATOR_SINK).uid(OPERATOR_SINK);
-			} else {
-				System.out.println("discarding output");
-			}
-			// @formatter:on
+                resultSum
+                        .map(new ShippingPriorityItemMap(pinningPolicy)).name(ShippingPriorityItemMap.class.getSimpleName()).uid(ShippingPriorityItemMap.class.getSimpleName())
+                        .addSink(sink).name(OPERATOR_SINK).uid(OPERATOR_SINK);
+            } else {
+                System.out.println("discarding output");
+            }
 
-			System.out.println("Stream job: " + TPCHQuery03.class.getSimpleName());
-			System.out.println("Execution plan >>>\n" + env.getExecutionPlan());
-			env.execute(TPCHQuery03.class.getSimpleName());
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+            System.out.println("Stream job: " + TPCHQuery03.class.getSimpleName());
+            System.out.println("Execution plan >>>\n" + env.getExecutionPlan());
+            env.execute(TPCHQuery03.class.getSimpleName());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        new TPCHQuery03();
+    }
 }
