@@ -18,7 +18,7 @@
 		<flink.version>1.11.0</flink.version>
 		<guava.version>29.0-jre</guava.version>
 		<junit.version>4.12</junit.version>
-		<scala.version>2.12.3</scala.version>
+		<scala.version>2.12.7</scala.version>
 		<geotools.version>21.2</geotools.version>
 	</properties>
 
