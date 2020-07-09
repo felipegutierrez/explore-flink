@@ -105,3 +105,6 @@ hs_err_pid*
 
 jobsID.json
 
+# User-specific stuff
+.idea**
+
