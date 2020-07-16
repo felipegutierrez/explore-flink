@@ -55,10 +55,6 @@ import static org.sense.flink.util.SinkOutputs.*;
  * }
  * </pre>
  *
- * <p>
- * Compared to the original TPC-H query this version does not sort the result by
- * revenue and orderdate.
- *
  * @author Felipe Oliveira Gutierrez
  */
 public class TPCHQuery03 {

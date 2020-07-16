@@ -21,7 +21,7 @@ import static org.sense.flink.util.MetricLabels.OPERATOR_SINK;
 import static org.sense.flink.util.SinkOutputs.*;
 
 /**
- * Implementation of the TPC-H Benchmark query 03 also available at:
+ * Implementation of the TPC-H Benchmark query 10 also available at:
  * <p>
  * https://github.com/apache/flink/blob/master/flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/relational/TPCHQuery10.java
  * <p>
@@ -36,37 +36,39 @@ import static org.sense.flink.util.SinkOutputs.*;
  *
  * <pre>
  * {@code
- * SELECT
- *        c_custkey,
- *        c_name,
- *        c_address,
- *        n_name,
- *        c_acctbal
- *        SUM(l_extendedprice * (1 - l_discount)) AS revenue,
+ * SELECT FIRST 20
+ *      c_custkey,
+ *      c_name,
+ *      SUM(l_extendedprice * (1 - l_discount)) AS revenue,
+ *      c_acctbal,
+ *      n_name,
+ *      c_address,
+ *      c_phone,
+ *      c_comment
  * FROM
- *        customer,
- *        orders,
- *        lineitem,
- *        nation
+ *      customer,
+ *      orders,
+ *      lineitem,
+ *      nation
  * WHERE
- *        c_custkey = o_custkey
- *        AND l_orderkey = o_orderkey
- *        AND YEAR(o_orderdate) > '1990'
- *        AND l_returnflag = 'R'
- *        AND c_nationkey = n_nationkey
+ *      c_custkey = o_custkey
+ *      AND l_orderkey = o_orderkey
+ *      AND o_orderdate >= MDY  (10,1,1993)
+ *      AND o_orderdate < MDY(10,1,1993) + 3 UNITS MONTH
+ *      AND l_returnflag = 'R'
+ *      AND c_nationkey = n_nationkey
  * GROUP BY
- *        c_custkey,
- *        c_name,
- *        c_acctbal,
- *        n_name,
- *        c_address
+ *      c_custkey,
+ *      c_name,
+ *      c_acctbal,
+ *      c_phone,
+ *      n_name,
+ *      c_address,
+ *      c_comment
+ * ORDER BY
+ *      revenue DESC
  * }
  * </pre>
- *
- * <p>
- * Compared to the original TPC-H query this version does not print c_phone and
- * c_comment, only filters by years greater than 1990 instead of a period of 3
- * months, and does not sort the result by revenue.
  *
  * @author Felipe Oliveira Gutierrez
  */

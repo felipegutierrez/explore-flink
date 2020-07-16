@@ -5,6 +5,7 @@ import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.edgent.*;
 import org.sense.flink.examples.stream.kafka.KafkaConsumerQuery;
 import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
+import org.sense.flink.examples.stream.tpch.TPCHQuery01;
 import org.sense.flink.examples.stream.tpch.TPCHQuery03;
 import org.sense.flink.examples.stream.tpch.TPCHQuery10;
 import org.sense.flink.examples.stream.twitter.TwitterExample;
@@ -349,6 +350,10 @@ public class App {
                     new TPCHQuery10(output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
                     app = 0;
                     break;
+                case 38:
+                    new TPCHQuery01(output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
+                    app = 0;
+                    break;
                 default:
                     args = null;
                     System.out.println("No application selected [" + app + "] ");
@@ -400,6 +405,7 @@ public class App {
         System.out.println("35 - Kafka source");
         System.out.println("36 - TPC-H Benchmark query 03");
         System.out.println("37 - TPC-H Benchmark query 10");
+        System.out.println("38 - TPC-H Benchmark query 01");
         System.out.println();
     }
 
