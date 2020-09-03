@@ -6,6 +6,9 @@ scala: 2.12.7
 branches:
   only:
     - master
+cache:
+  directories:
+  - "$HOME/.m2"
 before_install:
   - git clone https://github.com/geotools/geotools.git
   - cd geotools/modules/library/referencing      && mvn install -Dmaven.test.skip=true && cd ../../../..
@@ -13,6 +16,9 @@ before_install:
   - cd geotools/modules/unsupported/geojsonstore && mvn install -Dmaven.test.skip=true && cd ../../../..
   - cd geotools/modules/library/metadata         && mvn install -Dmaven.test.skip=true && cd ../../../..
   - cd geotools/modules/plugin/shapefile         && mvn install -Dmaven.test.skip=true && cd ../../../..
+install:
+  - curl -o $HOME/.m2/settings.xml https://raw.githubusercontent.com/trajano/trajano/master/src/site/resources/settings.xml
+  - mvn dependency:go-offline
 script:
   - mvn package
 
