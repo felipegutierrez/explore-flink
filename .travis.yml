@@ -11,7 +11,11 @@ cache:
     - $HOME/.m2
 before_install:
   - git clone https://github.com/geotools/geotools.git
-  - cd geotools && mvn install -Dmaven.test.skip=true && cd ..
+  - cd geotools/modules/library/referencing      && mvn install -Dmaven.test.skip=true && cd ../../../..
+  - cd geotools/modules/plugin/epsg-wkt          && mvn install -Dmaven.test.skip=true && cd ../../../..
+  - cd geotools/modules/unsupported/geojsonstore && mvn install -Dmaven.test.skip=true && cd ../../../..
+  - cd geotools/modules/library/metadata         && mvn install -Dmaven.test.skip=true && cd ../../../..
+  - cd geotools/modules/plugin/shapefile         && mvn install -Dmaven.test.skip=true && cd ../../../..
 script:
   - mvn clean package
 
