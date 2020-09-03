@@ -11,7 +11,7 @@ cache:
     - $HOME/.m2
 before_install:
   - git clone https://github.com/geotools/geotools.git
-  - cd geotools && mvn install && cd ..
+  - cd geotools && mvn install -Dmaven.test.skip=true && cd ..
 script:
   - mvn clean package
 
