@@ -3,11 +3,15 @@ sudo: false
 jdk:
   - openjdk8
 scala: 2.12.7
-cache:
-  directories:
-    - $HOME/.m2
 branches:
   only:
     - master
-script: mvn clean package
+cache:
+  directories:
+    - $HOME/.m2
+before_install:
+  - git clone https://github.com/geotools/geotools.git
+  - cd geotools && mvn install && cd ..
+script:
+  - mvn clean package
 
