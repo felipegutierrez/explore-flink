@@ -35,18 +35,18 @@ services:
 #      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
 #    ports:
 #      - 9094:9094
-  client:
-    build: .
-    image: apache/flink-ops-playground:1-FLINK-1.11-scala_2.12
-    command: "flink run -d -p 2 -c org.sense.flink.App /opt/explore-flink/target/explore-flink.jar -app 38 -output file"
-    depends_on:
-      - jobmanager
-      - taskmanager
-    #      - kafka
-    volumes:
-      - ./conf:/opt/flink/conf
-    environment:
-      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+#  client:
+#    build: .
+#    image: apache/flink-ops-playground:1-FLINK-1.11-scala_2.12
+#    command: "flink run -d -p 2 -c org.sense.flink.App /opt/explore-flink/target/explore-flink.jar -app 38 -output file"
+#    depends_on:
+#      - jobmanager
+#      - taskmanager
+#    #      - kafka
+#    volumes:
+#      - ./conf:/opt/flink/conf
+#    environment:
+#      - JOB_MANAGER_RPC_ADDRESS=jobmanager
 #  clickevent-generator:
 #    image: apache/flink-ops-playground:1-FLINK-1.11-scala_2.11
 #    command: "java -classpath /opt/ClickCountJob.jar:/opt/flink/lib/* org.apache.flink.playgrounds.ops.clickcount.ClickEventGenerator --bootstrap.servers kafka:9092 --topic input"
