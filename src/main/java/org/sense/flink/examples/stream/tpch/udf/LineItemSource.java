@@ -57,7 +57,7 @@ public class LineItemSource extends RichSourceFunction<LineItem> {
                 generateLineItem(sourceContext);
 
                 Thread.sleep(2 * 1000);
-                // deside when to stop generate data
+                // decide when to stop generate data
                 if (this.maxCount != -1 && count >= this.maxCount) {
                     this.running = false;
                 }

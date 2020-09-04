@@ -156,7 +156,7 @@ public class App {
                     break;
                 case 1:
                     System.out.println("App 1 selected");
-                    new WordCountSocketFilterQEP();
+                    new WordCountFilterQEP();
                     app = 0;
                     break;
                 case 2:
