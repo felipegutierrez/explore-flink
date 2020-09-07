@@ -41,6 +41,8 @@ local.properties
 .target
 target
 out
+docker/ops-playground-image/java/explore-flink/target
+docker/ops-playground-image/java/explore-flink/out
 
 # Tern plugin
 .tern-project

@@ -16,7 +16,7 @@ WORKDIR /opt/flink/bin
 COPY --from=builder /opt/explore-flink/target/explore-flink.jar /opt/explore-flink.jar
 
 ###############################################################################
-# Troubleshotting
+# Troubleshooting
 ###############################################################################
 # Restart docker images from scratch
 #docker system prune

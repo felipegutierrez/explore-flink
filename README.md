@@ -1,8 +1,7 @@
 
 [![Build Status](https://api.travis-ci.org/felipegutierrez/explore-flink.svg?branch=master)](https://travis-ci.org/felipegutierrez/explore-flink)
 
-This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with docker-compose, Java 8, and Scala 2.12. The docker images can be found at [docker-hub-felipeogutierrez](). 
-
+This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with docker-compose, Java 8, and Scala 2.12. The docker images can be found at [docker-hub-felipeogutierrez](). Access the WebUI Flink console at [http://localhost:8081/](http://localhost:8081/).
 
 ```
 cd operations-playground
@@ -22,12 +21,15 @@ operations-playground_taskmanager-01_1         /docker-entrypoint.sh task ...   
 operations-playground_taskmanager-02_1         /docker-entrypoint.sh task ...   Up       6123/tcp, 8081/tcp                  
 operations-playground_taskmanager-03_1         /docker-entrypoint.sh task ...   Up       6123/tcp, 8081/tcp                  
 operations-playground_zookeeper_1              /bin/sh -c /usr/sbin/sshd  ...   Up       2181/tcp, 22/tcp, 2888/tcp, 3888/tcp
-
-docker-compose logs clickevent-generator|client|kafka|zookeeper|jobmanager|taskmanager-01|taskmanager-02|taskmanager-03
 ```
 Stop the images:
 ```
 docker-compose down
+```
+Troubleshooting:
+```
+docker-compose logs clickevent-generator|client|kafka|zookeeper|jobmanager|taskmanager-01|taskmanager-02|taskmanager-03
+docker system prune
 ```
 
 ---------------------------------------------------------------------
