@@ -15,8 +15,7 @@ script:
   - cd ../../../../
 
 after_success:
-  - cd operations-playground
-  - docker-compose build -t felipeogutierrez/explore-flink:latest .
+  - docker-compose build -t felipeogutierrez/explore-flink:latest ./operations-playground
   # Log in to the docker CLI. Log in to docker in a single command line
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   - docker push felipeogutierrez/explore-flink:latest
