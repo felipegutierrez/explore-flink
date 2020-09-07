@@ -110,3 +110,5 @@ jobsID.json
 # User-specific stuff
 .idea**
 
+# others
+.cache-tests

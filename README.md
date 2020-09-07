@@ -1,7 +1,7 @@
 
 [![Build Status](https://api.travis-ci.org/felipegutierrez/explore-flink.svg?branch=master)](https://travis-ci.org/felipegutierrez/explore-flink)
 
-This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with docker-compose, Java 8, and Scala 2.12. The docker images can be found at [docker-hub-felipeogutierrez](). Access the WebUI Flink console at [http://localhost:8081/](http://localhost:8081/).
+This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with docker-compose, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). Access the WebUI Flink at [http://localhost:8081/](http://localhost:8081/). 
 
 ```
 cd operations-playground
