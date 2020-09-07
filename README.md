@@ -29,7 +29,9 @@ docker-compose down
 Troubleshooting:
 ```
 docker-compose logs clickevent-generator|client|kafka|zookeeper|jobmanager|taskmanager-01|taskmanager-02|taskmanager-03
+docker-compose images
 docker system prune
+docker image ls
 ```
 
 ---------------------------------------------------------------------
