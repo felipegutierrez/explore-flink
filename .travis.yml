@@ -10,5 +10,5 @@ cache:
   directories:
   - "$HOME/.m2"
 script:
+  - cd docker/ops-playground-image/java/explore-flink/
   - mvn package
-
