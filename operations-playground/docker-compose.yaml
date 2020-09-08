@@ -1,4 +1,4 @@
-version: "2.1"
+version: "3.7"
 services:
   client:
     build: ../docker/ops-playground-image
@@ -28,6 +28,11 @@ services:
   jobmanager:
     image: flink:1.11.1-scala_2.12
     command: "jobmanager.sh start-foreground"
+    hostname: "jobmanager"
+    expose:
+      - "6123"
+      - "9250"
+      - "9251"
     ports:
       - 8081:8081
     volumes:
@@ -36,12 +41,20 @@ services:
       - /tmp/flink-savepoints-directory:/tmp/flink-savepoints-directory
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    restart: always
   taskmanager-01:
     image: flink:1.11.1-scala_2.12
+    hostname: "taskmanager-01"
+    expose:
+      - "6121"
+      - "6122"
+      - "9250"
     depends_on:
       - jobmanager
       - tpch-dbgen
     command: "taskmanager.sh start-foreground"
+    links:
+      - jobmanager:jobmanager
     volumes:
       - ./conf:/opt/flink/conf
       - flink-checkpoints-directory:/tmp/flink-checkpoints-directory
@@ -50,12 +63,20 @@ services:
       - tpch-dbgen-data:/opt/tpch-dbgen/data/
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    restart: always
   taskmanager-02:
     image: flink:1.11.1-scala_2.12
+    hostname: "taskmanager-02"
+    expose:
+      - "6121"
+      - "6122"
+      - "9250"
     depends_on:
       - jobmanager
       - tpch-dbgen
     command: "taskmanager.sh start-foreground"
+    links:
+      - jobmanager:jobmanager
     volumes:
       - ./conf:/opt/flink/conf
       - flink-checkpoints-directory:/tmp/flink-checkpoints-directory
@@ -64,12 +85,20 @@ services:
       - tpch-dbgen-data:/opt/tpch-dbgen/data/
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    restart: always
   taskmanager-03:
     image: flink:1.11.1-scala_2.12
+    hostname: "taskmanager-03"
+    expose:
+      - "6121"
+      - "6122"
+      - "9250"
     depends_on:
       - jobmanager
       - tpch-dbgen
     command: "taskmanager.sh start-foreground"
+    links:
+      - jobmanager:jobmanager
     volumes:
       - ./conf:/opt/flink/conf
       - flink-checkpoints-directory:/tmp/flink-checkpoints-directory
@@ -78,8 +107,10 @@ services:
       - tpch-dbgen-data:/opt/tpch-dbgen/data/
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    restart: always
   zookeeper:
     image: wurstmeister/zookeeper:3.4.6
+    restart: always
   kafka:
     image: wurstmeister/kafka:2.12-2.2.1
     environment:
@@ -91,6 +122,34 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     ports:
       - 9094:9094
+    restart: always
+  prometheus:
+    image: prom/prometheus
+    hostname: "prometheus"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../docker/prometheus/:/etc/prometheus/
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    restart: always
+  grafana:
+    image: grafana/grafana
+    hostname: "grafana"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    volumes:
+      - ../docker/grafana-spend-report-init/provisioning/:/etc/grafana/provisioning/
+      - ../docker/grafana-spend-report-init/dashboard.json:/etc/grafana/dashboard.json
+      - ../docker/grafana-spend-report-init/grafana.ini:/etc/grafana/grafana.ini
+    restart: always
 volumes:
   flink-checkpoints-directory:
   tpch-dbgen-data:

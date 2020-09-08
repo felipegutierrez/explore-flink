@@ -1,0 +1,15 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+  - job_name: 'flink'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['jobmanager:9250', 'jobmanager:9251', 'taskmanager-01:9250', 'taskmanager-02:9250', 'taskmanager-03:9250']
+    metrics_path: /
+
+
