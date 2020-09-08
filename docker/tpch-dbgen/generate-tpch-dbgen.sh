@@ -13,10 +13,10 @@ sed -i '/WORKLOAD =/c\WORKLOAD=TPCH' makefile.suite
 # compile
 make -f makefile.suite
 
-# run the tpch-dbgen to generate data with database factor of 1GB
+# run the tpch-dbgen to generate data with database factor of 0.1GB
 mkdir data && cd data
 cp ../dbgen . && cp ../dists.dss .
-./dbgen -f -s 0.2
+./dbgen -f -s 0.1
 ls -l
 
 # create the datarate.txt file
