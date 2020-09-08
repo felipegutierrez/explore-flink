@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# download
+git clone https://github.com/electrum/tpch-dbgen.git
+
+# replace variables
+cd tpch-dbgen
+sed -i '/CC      =/c\CC=gcc' makefile.suite
+sed -i '/DATABASE=/c\DATABASE=INFORMIX' makefile.suite
+sed -i '/MACHINE =/c\MACHINE=LINUX' makefile.suite
+sed -i '/WORKLOAD =/c\WORKLOAD=TPCH' makefile.suite
+
+# compile
+make -f makefile.suite
+
+# run the tpch-dbgen to generate data with database factor of 1GB
+mkdir data && cd data
+cp ../dbgen . && cp ../dists.dss .
+./dbgen -f -s 0.2
+ls -l
+
+# create the datarate.txt file
+mkdir -p /tmp
+echo "1000000000" > /tmp/datarate.txt

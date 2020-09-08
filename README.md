@@ -32,6 +32,7 @@ docker-compose logs clickevent-generator|client|kafka|zookeeper|jobmanager|taskm
 docker-compose images
 docker system prune
 docker image ls
+docker run -i -t felipeogutierrez/tpch-dbgen /bin/bash
 ```
 
 ---------------------------------------------------------------------

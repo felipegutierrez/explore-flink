@@ -69,7 +69,7 @@ public class OrdersSource extends RichSourceFunction<Order> {
                 generateOrderItem(sourceContext);
 
                 Thread.sleep(2 * 1000);
-                // deside when to stop generate data
+                // decide when to stop generate data
                 if (this.maxCount != -1 && count >= this.maxCount) {
                     this.running = false;
                 }
