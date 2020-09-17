@@ -37,3 +37,36 @@ docker system prune
 docker image ls
 docker run -i -t felipeogutierrez/tpch-dbgen /bin/bash
 ```
+
+## Kubernetes
+
+```
+$ minikube start
+$ minikube ssh 'sudo ip link set docker0 promisc on'
+$ kubectl create -f k8s/flink-configuration-configmap.yaml
+$ kubectl create -f k8s/jobmanager-service.yaml
+$ kubectl create -f k8s/jobmanager-session-deployment.yaml
+$ kubectl create -f k8s/taskmanager-session-deployment.yaml
+$ kubectl create -f k8s/jobmanager-rest-service.yaml
+$ kubectl get deployments
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+flink-jobmanager    1/1     1            1           16m
+flink-taskmanager   2/2     2            2           15m
+$ kubectl get pods
+NAME                                 READY   STATUS    RESTARTS   AGE
+flink-jobmanager-fccd97c9c-7s96g     1/1     Running   0          17m
+flink-taskmanager-869f5cf7f9-2kkmn   1/1     Running   0          15m
+flink-taskmanager-869f5cf7f9-fnk5l   1/1     Running   0          15m
+$ kubectl get services
+NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+flink-jobmanager        ClusterIP   10.111.78.59   <none>        6123/TCP,6124/TCP,8081/TCP   66m
+flink-jobmanager-rest   NodePort    10.111.73.83   <none>        8081:30081/TCP               7m12s
+kubernetes              ClusterIP   10.96.0.1      <none>        443/TCP                      8d
+$ kubectl get svc flink-jobmanager-rest
+$ minikube ip
+172.17.0.2
+```
+Access [http://172.17.0.2:30081](http://172.17.0.2:30081).
+
+
+
