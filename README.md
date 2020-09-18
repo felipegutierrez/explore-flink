@@ -40,33 +40,49 @@ docker run -i -t felipeogutierrez/tpch-dbgen /bin/bash
 
 ## Kubernetes
 
+This sesion aims to deploy the docker images above using minikube v1.13.0 Kubernetes v1.19.0 and Docker 19.03.8. It is based on the official tutorial [Flink with Kubernetes Setup](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html).
 ```
 $ minikube start
 $ minikube ssh 'sudo ip link set docker0 promisc on'
+
 $ kubectl create -f k8s/flink-configuration-configmap.yaml
+$ kubectl get configmaps
+NAME           DATA   AGE
+flink-config   2      16m
+
 $ kubectl create -f k8s/jobmanager-service.yaml
-$ kubectl create -f k8s/jobmanager-session-deployment.yaml
-$ kubectl create -f k8s/taskmanager-session-deployment.yaml
+$ kubectl proxy
 $ kubectl create -f k8s/jobmanager-rest-service.yaml
-$ kubectl get deployments
-NAME                READY   UP-TO-DATE   AVAILABLE   AGE
-flink-jobmanager    1/1     1            1           16m
-flink-taskmanager   2/2     2            2           15m
-$ kubectl get pods
-NAME                                 READY   STATUS    RESTARTS   AGE
-flink-jobmanager-fccd97c9c-7s96g     1/1     Running   0          17m
-flink-taskmanager-869f5cf7f9-2kkmn   1/1     Running   0          15m
-flink-taskmanager-869f5cf7f9-fnk5l   1/1     Running   0          15m
+$ kubectl get svc flink-jobmanager-rest
 $ kubectl get services
 NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
 flink-jobmanager        ClusterIP   10.111.78.59   <none>        6123/TCP,6124/TCP,8081/TCP   66m
 flink-jobmanager-rest   NodePort    10.111.73.83   <none>        8081:30081/TCP               7m12s
 kubernetes              ClusterIP   10.96.0.1      <none>        443/TCP                      8d
-$ kubectl get svc flink-jobmanager-rest
+
+$ kubectl create -f k8s/jobmanager-session-deployment.yaml
+$ kubectl create -f k8s/taskmanager-session-deployment.yaml
+$ kubectl get deployments
+NAME                READY   UP-TO-DATE   AVAILABLE   AGE
+flink-jobmanager    1/1     1            1           16m
+flink-taskmanager   2/2     2            2           15m
+$ kubectl get pods
+NAME                                 READY   STATUS              RESTARTS   AGE
+flink-jobmanager-6c8f8b98b4-7srkd    0/1     ContainerCreating   0          21s
+flink-taskmanager-796c9b948d-dh2fn   0/1     ContainerCreating   0          16s
+flink-taskmanager-796c9b948d-pgp7j   0/1     ContainerCreating   0          16s
+flink-taskmanager-796c9b948d-vrn2r   0/1     ContainerCreating   0          16s
+
 $ minikube ip
 172.17.0.2
 ```
 Access [http://172.17.0.2:30081](http://172.17.0.2:30081).
 
-
-
+Clean your Kubernetes cluster and delete everything when you finish to test.
+```
+$ kubectl delete deployments flink-jobmanager flink-taskmanager
+$ kubectl delete pods flink-jobmanager-6c8f8b98b4-7srkd flink-taskmanager-796c9b948d-dh2fn flink-taskmanager-796c9b948d-pgp7j flink-taskmanager-796c9b948d-vrn2r
+$ kubectl delete services flink-jobmanager flink-jobmanager-rest
+$ kubectl delete configmaps flink-config
+$ minikube stop
+```
