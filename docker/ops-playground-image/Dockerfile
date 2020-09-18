@@ -14,6 +14,7 @@ FROM flink:1.11.1-scala_2.12
 WORKDIR /opt/flink/bin
 # copy explore-flink job
 COPY --from=builder /opt/explore-flink/target/explore-flink.jar /opt/explore-flink.jar
+USER flink
 
 ###############################################################################
 # Troubleshooting
