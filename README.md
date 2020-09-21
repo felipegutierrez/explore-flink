@@ -33,8 +33,10 @@ Troubleshooting:
 ```
 docker-compose logs clickevent-generator|client|kafka|zookeeper|jobmanager|taskmanager-01|taskmanager-02|taskmanager-03
 docker-compose images
+docker container prune
 docker system prune
 docker image ls
+docker image rm ID
 docker run -i -t felipeogutierrez/tpch-dbgen /bin/bash
 ```
 

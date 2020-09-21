@@ -3,7 +3,7 @@ services:
   client:
     build: ../docker/ops-playground-image
     image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
-    command: "flink run -d -p 4 /opt/explore-flink.jar -app 36 -disableOperatorChaining true -output file"
+    command: "flink run -d -p 4 /opt/flink/usrlib/explore-flink.jar -app 36 -disableOperatorChaining true -output file"
     depends_on:
       - jobmanager
       - kafka
