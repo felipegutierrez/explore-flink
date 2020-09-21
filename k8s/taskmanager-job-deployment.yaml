@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: flink-taskmanager
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: flink
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: taskmanager
-        image: flink:1.11.0-scala_2.11
+        image: flink:1.11.1-scala_2.12
         env:
         args: ["taskmanager"]
         ports:
@@ -47,4 +47,4 @@ spec:
             path: log4j-console.properties
       - name: job-artifacts-volume
         hostPath:
-          path: /host/path/to/job/artifacts
+          path: /opt/flink/lib

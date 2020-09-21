@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: taskmanager
-        image: flink:1.11.0-scala_2.12
+        image: flink:1.11.1-scala_2.12
         args: ["taskmanager"]
         ports:
         - containerPort: 6122

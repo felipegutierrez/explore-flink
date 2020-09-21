@@ -1,0 +1,52 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tpch-03-stream
+spec:
+  template:
+    metadata:
+      name: tpch-03-stream
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: tpch-03-stream
+          image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
+          # imagePullPolicy: Always
+          # command: ["ls"]
+          command: ["flink run -d -p 4 explore-flink.jar -app 36 -disableOperatorChaining true -output file"]
+          # env:
+          # args: ["standalone-job", "--job-classname", "org.sense.flink.App"]
+          # args: ["standalone-job", "--job-classname", "org.apache.flink.streaming.examples.wordcount.WordCount"] #, <optional arguments>, <job arguments>] # optional arguments: ["--job-id", "<job id>", "--fromSavepoint", "/path/to/savepoint", "--allowNonRestoredState"]
+          # command:
+          #   - "flink run -d -p 4 /opt/explore-flink.jar -app 36 -disableOperatorChaining true -output file"
+          ports:
+            - containerPort: 6123
+              name: rpc
+            - containerPort: 6124
+              name: blob-server
+            - containerPort: 8081
+              name: webui
+      #     livenessProbe:
+      #       tcpSocket:
+      #         port: 6123
+      #       initialDelaySeconds: 30
+      #       periodSeconds: 60
+      #     volumeMounts:
+      #       - name: flink-config-volume
+      #         mountPath: /opt/flink/conf
+      #       - name: job-artifacts-volume
+      #         mountPath: /opt/flink/usrlib
+      #     securityContext:
+      #       runAsUser: 9999  # refers to user _flink_ from official flink image, change if necessary
+      # volumes:
+      #   - name: flink-config-volume
+      #     configMap:
+      #       name: flink-config
+      #       items:
+      #         - key: flink-conf.yaml
+      #           path: flink-conf.yaml
+      #         - key: log4j-console.properties
+      #           path: log4j-console.properties
+      #   - name: job-artifacts-volume
+      #     hostPath:
+      #       path: /opt
