@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: taskmanager
-        image: flink:1.11.1-scala_2.12
+        image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
         env:
         args: ["taskmanager"]
         ports:
@@ -32,8 +32,8 @@ spec:
         volumeMounts:
         - name: flink-config-volume
           mountPath: /opt/flink/conf/
-        - name: job-artifacts-volume
-          mountPath: /opt/flink/usrlib
+#        - name: job-artifacts-volume
+#          mountPath: /opt/flink/usrlib
         securityContext:
           runAsUser: 9999  # refers to user _flink_ from official flink image, change if necessary
       volumes:
@@ -45,6 +45,6 @@ spec:
             path: flink-conf.yaml
           - key: log4j-console.properties
             path: log4j-console.properties
-      - name: job-artifacts-volume
-        hostPath:
-          path: /opt/flink/lib
+#      - name: job-artifacts-volume
+#        hostPath:
+#          path: /opt/flink/lib
