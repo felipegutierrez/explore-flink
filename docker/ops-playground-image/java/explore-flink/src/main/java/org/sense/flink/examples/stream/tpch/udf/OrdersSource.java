@@ -81,6 +81,7 @@ public class OrdersSource extends RichSourceFunction<Order> {
 
     private void generateOrderItem(SourceContext<Order> sourceContext) {
         try {
+            System.out.println("reading file: " + dataFilePath);
             InputStream stream = new FileInputStream(dataFilePath);
             BufferedReader reader = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
 

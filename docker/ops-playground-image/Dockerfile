@@ -11,9 +11,9 @@ RUN mvn clean install
 # Build Operations Playground Image
 ###############################################################################
 FROM flink:1.11.1-scala_2.12
-WORKDIR /opt/flink/lib
-COPY --from=builder --chown=flink:flink /opt/explore-flink/target/explore-flink.jar /opt/flink/lib/explore-flink.jar
-#USER flink
+WORKDIR /opt/flink/usrlib
+COPY --from=builder --chown=flink:flink /opt/explore-flink/target/explore-flink.jar /opt/flink/usrlib/explore-flink.jar
+RUN ln -fs /opt/flink/usrlib/explore-flink.jar /opt/flink/lib/explore-flink.jar
 
 ###############################################################################
 # Troubleshooting
