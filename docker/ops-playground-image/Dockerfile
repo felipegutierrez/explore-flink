@@ -13,7 +13,7 @@ RUN mvn clean install
 FROM flink:1.11.1-scala_2.12
 WORKDIR /opt/flink/usrlib
 COPY --from=builder --chown=flink:flink /opt/explore-flink/target/explore-flink.jar /opt/flink/usrlib/explore-flink.jar
-USER flink
+#USER flink
 
 ###############################################################################
 # Troubleshooting
