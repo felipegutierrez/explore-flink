@@ -66,10 +66,10 @@ public class TPCHQuery01 {
     private final String topic = "topic-tpch-query-01";
 
     public TPCHQuery01() {
-        this(PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, -1);
+        this(null, PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, -1);
     }
 
-    public TPCHQuery01(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy, long maxCount) {
+    public TPCHQuery01(String input, String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy, long maxCount) {
         try {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);

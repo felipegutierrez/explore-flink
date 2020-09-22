@@ -36,6 +36,7 @@ public class App {
     private static final String PARAMETER_PARALLELISM = "-parallelism";
     private static final String PARAMETER_DISABLE_OPERATOR_CHAINING = "-disableOperatorChaining";
     private static final String PARAMETER_OUTPUT = "-output";
+    private static final String PARAMETER_INPUT = "-input";
     private static final String PARAMETER_DURATION = "-duration";
     private static final String PARAMETER_MAX_COUNT = "-maxCount";
     private static final String PARAMETER_PINNING_POLICY = "-pinningPolicy";
@@ -46,6 +47,7 @@ public class App {
         String ipAddressSource = "127.0.0.1";
         String ipAddressSink = "127.0.0.1";
         String output = SinkOutputs.PARAMETER_OUTPUT_FILE;
+        String input = null;
         int app = 0;
         int frequencyPull = 10;
         int frequencyWindow = 30;
@@ -114,6 +116,9 @@ public class App {
                 } else if (PARAMETER_MAX_COUNT.equals(String.valueOf(args[i])) && i + 1 < size) {
                     i++;
                     maxCount = Long.parseLong(args[i]);
+                } else if (PARAMETER_INPUT.equals(String.valueOf(args[i])) && i + 1 < size) {
+                    i++;
+                    input = String.valueOf(args[i]);
                 } else if (PARAMETER_OUTPUT.equals(String.valueOf(args[i])) && i + 1 < size) {
                     i++;
                     if (SinkOutputs.PARAMETER_OUTPUT_FILE.equals(String.valueOf(args[i]))) {
@@ -146,6 +151,7 @@ public class App {
         System.out.println("lookup                  : " + lookup);
         System.out.println("pinning policy          : " + pinningPolicy);
         System.out.println("output                  : " + output);
+        System.out.println("input                   : " + input);
         System.out.println();
 
         try {
@@ -345,15 +351,15 @@ public class App {
                     app = 0;
                     break;
                 case 36:
-                    new TPCHQuery03(output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
+                    new TPCHQuery03(input, output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
                     app = 0;
                     break;
                 case 37:
-                    new TPCHQuery10(output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
+                    new TPCHQuery10(input, output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
                     app = 0;
                     break;
                 case 38:
-                    new TPCHQuery01(output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
+                    new TPCHQuery01(input, output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
                     app = 0;
                     break;
                 case 39:

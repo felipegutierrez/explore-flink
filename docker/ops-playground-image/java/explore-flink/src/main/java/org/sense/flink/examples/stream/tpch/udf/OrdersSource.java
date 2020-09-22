@@ -33,13 +33,7 @@ public class OrdersSource extends RichSourceFunction<Order> {
     public OrdersSource(String dataFilePath, long maxCount) {
         this.running = true;
         this.maxCount = maxCount;
-
-        File input = new File(dataFilePath);
-        if (input.exists()) {
-            this.dataFilePath = dataFilePath;
-        } else {
-            this.dataFilePath = dataFilePath.replace("/opt/tpch-dbgen", "");
-        }
+        this.dataFilePath = dataFilePath;
     }
 
     public static String format(int date) {

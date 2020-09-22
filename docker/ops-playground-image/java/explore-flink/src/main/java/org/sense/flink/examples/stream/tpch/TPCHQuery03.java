@@ -62,10 +62,10 @@ public class TPCHQuery03 {
     private final String topic = "topic-tpch-query-03";
 
     public TPCHQuery03() {
-        this(PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, -1);
+        this(null, PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, -1);
     }
 
-    public TPCHQuery03(String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy, long maxCount) {
+    public TPCHQuery03(String input, String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy, long maxCount) {
         try {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
@@ -75,7 +75,7 @@ public class TPCHQuery03 {
             }
 
             DataStream<Order> orders = env
-                    .addSource(new OrdersSource(maxCount)).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
+                    .addSource(new OrdersSource(input, maxCount)).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
 
             // Filter market segment "AUTOMOBILE"
             // customers = customers.filter(new CustomerFilter());
