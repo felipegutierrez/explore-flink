@@ -13,11 +13,10 @@ spec:
       containers:
         - name: jobmanager
           image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
-          #imagePullPolicy: Always
+          imagePullPolicy: Always
           env:
           #command: ["ls"]
           args: ["standalone-job", "--job-classname", "org.sense.flink.App", "-app", "36"] #, <optional arguments>, <job arguments>] # optional arguments: ["--job-id", "<job id>", "--fromSavepoint", "/path/to/savepoint", "--allowNonRestoredState"]
-          #args: ["standalone-job", "--job-classname", "org.sense.flink.examples.stream.tpch.TPCHQuery03"] #, <optional arguments>, <job arguments>] # optional arguments: ["--job-id", "<job id>", "--fromSavepoint", "/path/to/savepoint", "--allowNonRestoredState"]
           ports:
             - containerPort: 6123
               name: rpc
