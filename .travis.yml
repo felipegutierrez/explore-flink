@@ -20,4 +20,5 @@ after_success:
   # Log in to the docker CLI. Log in to docker in a single command line
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # take the images and push them to docker.hub
+  - docker push felipeogutierrez/tpch-dbgen
   - docker push felipeogutierrez/explore-flink:1.11.1-scala_2.12
