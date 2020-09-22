@@ -34,6 +34,11 @@ $ kubectl get jobs
 NAME               COMPLETIONS   DURATION   AGE
 flink-jobmanager   0/1           3m16s      3m16s
 
+$ kubectl create -f k8s/taskmanager-job-pvc.yaml
+$ kubectl get pvc
+NAME                  STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+tpch-dbgen-data-pvc   Bound    pvc-004508b4-d224-4094-976a-43ab62b3fdce   200Mi      RWO            standard       26s
+
 $ kubectl create -f k8s/taskmanager-job-deployment.yaml
 $ kubectl get deployments
 NAME                READY   UP-TO-DATE   AVAILABLE   AGE
