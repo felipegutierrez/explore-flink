@@ -22,3 +22,6 @@ ls -l
 # create the datarate.txt file
 mkdir -p /tmp
 echo "1000000000" > /tmp/datarate.txt
+
+# keeps the container up and running
+sleep infinity & wait
