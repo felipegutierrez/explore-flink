@@ -24,4 +24,4 @@ mkdir -p /tmp
 echo "1000000000" > /tmp/datarate.txt
 
 # keeps the container up and running
-sleep infinity & wait
+# sleep infinity & wait
