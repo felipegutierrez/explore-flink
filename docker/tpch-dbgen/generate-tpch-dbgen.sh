@@ -14,7 +14,7 @@ sed -i '/WORKLOAD =/c\WORKLOAD=TPCH' makefile.suite
 make -f makefile.suite
 
 # run the tpch-dbgen to generate data with database factor of 0.1GB
-mkdir data && cd data
+mkdir -p data && cd data
 cp ../dbgen . && cp ../dists.dss .
 ./dbgen -f -s 0.1
 ls -l
