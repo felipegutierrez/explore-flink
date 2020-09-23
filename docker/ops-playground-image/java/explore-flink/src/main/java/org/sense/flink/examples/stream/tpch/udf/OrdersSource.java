@@ -33,7 +33,11 @@ public class OrdersSource extends RichSourceFunction<Order> {
     public OrdersSource(String dataFilePath, long maxCount) {
         this.running = true;
         this.maxCount = maxCount;
-        this.dataFilePath = dataFilePath;
+        if (dataFilePath == null) {
+            this.dataFilePath = TPCH_DATA_ORDER;
+        } else {
+            this.dataFilePath = dataFilePath;
+        }
     }
 
     public static String format(int date) {
