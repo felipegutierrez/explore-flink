@@ -22,6 +22,8 @@ kubectl create -f k8s/prometheus-configuration-configmap.yaml
 kubectl create -f k8s/prometheus-service.yaml
 kubectl create -f k8s/prometheus-rest-service.yaml
 
+kubectl create -f k8s/grafana-service.yaml
+kubectl create -f k8s/grafana-rest-service.yaml
 ```
 List the objects:
 ```
@@ -45,6 +47,7 @@ kubectl create -f k8s/tpch-dbgen-datarate-pvc.yaml
 kubectl create -f k8s/tpch-dbgen-job.yaml
 
 kubectl create -f k8s/prometheus-deployment.yaml
+kubectl create -f k8s/grafana-deployment.yaml
 
 kubectl create -f k8s/jobmanager-job.yaml
 kubectl create -f k8s/taskmanager-job-deployment.yaml
@@ -76,6 +79,9 @@ flink-taskmanager-5c95bcc75b-rllc4   1/1     Running   0          85s
 tpch-dbgen-job-z5pqj                 1/1     Running   0          3m15s
 ```
 Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091/](http://172.17.0.2:30091/).
+
+![Flink web UI using Kubernetes](images/flink-webui.png)
+![Prometheus web UI using Kubernetes](images/prometheus-webui.png)
 
 ### Troubleshooting:
 Logs:

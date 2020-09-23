@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink
+      component: grafana
+  template:
+    metadata:
+      labels:
+        app: flink
+        component: grafana
+    spec:
+      # volumes:
+      # - name: prometheus-config-volume
+      #   configMap:
+      #     name: prometheus-config
+      #     items:
+      #     - key: prometheus.yml
+      #       path: prometheus.yml
+      containers:
+      - name: grafana
+        image: grafana/grafana
+        ports:
+        - containerPort: 3000
+          name: http
+        # volumeMounts:
+        #   - name: prometheus-config-volume
+        #     mountPath: /etc/prometheus/prometheus.yml
+        #     subPath: prometheus.yml
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        fsGroup: 472
