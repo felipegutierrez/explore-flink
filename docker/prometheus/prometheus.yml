@@ -11,5 +11,3 @@ scrape_configs:
     static_configs:
       - targets: ['jobmanager:9250', 'jobmanager:9251', 'taskmanager-01:9250', 'taskmanager-02:9250', 'taskmanager-03:9250']
     metrics_path: /
-
-

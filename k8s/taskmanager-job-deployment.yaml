@@ -14,6 +14,7 @@ spec:
         app: flink
         component: taskmanager
     spec:
+      hostname: flink-taskmanager
       volumes:
       - name: flink-config-volume
         configMap:
@@ -32,7 +33,7 @@ spec:
       containers:
       - name: taskmanager
         image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
-        imagePullPolicy: Always
+        # imagePullPolicy: Always
         env:
         args: ["taskmanager"]
         ports:
@@ -40,6 +41,7 @@ spec:
           name: rpc
         - containerPort: 6125
           name: query-state
+        - containerPort: 9250
         livenessProbe:
           tcpSocket:
             port: 6122

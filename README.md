@@ -7,19 +7,28 @@ This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with D
 
 This section aims to deploy the docker images above using minikube v1.13.1 Kubernetes v1.19.0 and Docker 19.03.8. It is based on the official tutorial [Flink with Kubernetes Setup](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html).
 
-Deploy the common components of FLink cluster in Kubernetes:
+Deploy the `Service` and `configmap` components of Flink cluster with Prometheus and Grafana into Kubernetes:
 ```
 minikube start
 minikube ssh 'sudo ip link set docker0 promisc on'
+kubectl proxy
 
 kubectl create -f k8s/flink-configuration-configmap.yaml
 kubectl create -f k8s/jobmanager-service.yaml
-kubectl proxy
 kubectl create -f k8s/jobmanager-rest-service.yaml
-kubectl get svc flink-jobmanager-rest
+kubectl create -f k8s/taskmanager-service.yaml
+
+kubectl create -f k8s/prometheus-configuration-configmap.yaml
+kubectl create -f k8s/prometheus-service.yaml
+kubectl create -f k8s/prometheus-rest-service.yaml
+
 ```
 List the objects:
 ```
+kubectl get svc flink-jobmanager-rest
+kubectl get configmaps
+kubectl get services
+
 $ kubectl get configmaps
 NAME           DATA   AGE
 flink-config   2      16m
@@ -34,6 +43,9 @@ Deploy 2 `PersistentVolumeClaim` to share a directory, a `Job` to create the TPC
 kubectl create -f k8s/tpch-dbgen-pvc.yaml
 kubectl create -f k8s/tpch-dbgen-datarate-pvc.yaml
 kubectl create -f k8s/tpch-dbgen-job.yaml
+
+kubectl create -f k8s/prometheus-deployment.yaml
+
 kubectl create -f k8s/jobmanager-job.yaml
 kubectl create -f k8s/taskmanager-job-deployment.yaml
 ```
@@ -63,7 +75,7 @@ flink-taskmanager-5c95bcc75b-h5x8p   1/1     Running   0          85s
 flink-taskmanager-5c95bcc75b-rllc4   1/1     Running   0          85s
 tpch-dbgen-job-z5pqj                 1/1     Running   0          3m15s
 ```
-Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081).
+Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091/](http://172.17.0.2:30091/).
 
 ### Troubleshooting:
 Logs:

@@ -15,22 +15,4 @@ spec:
       containers:
       - name: tpch-dbgen
         image: felipeogutierrez/tpch-dbgen
-        imagePullPolicy: Always
-        # env:
-        # command: ["/bin/sh","-c"]
-        # args: ["ls ; pwd ; ./generate-tpch-dbgen.sh ; ls"]
-        # args: ["cp -Rf /opt/tpch-dbgen/data /data; ls /data/"]
-        # args: ["/bin/cp -a /opt/tpch-dbgen/data /data; ls /data/"]
-        # command:
-        #   - /bin/cp
-        #   - -a
-        #   - /opt/tpch-dbgen/data
-        #   - /data
-        # volumeMounts:
-        # - mountPath: /data
-        #   name: tpch-dbgen-data
-        # workingDir: /opt/tpch-dbgen/data
-      # volumes:
-      # - name: tpch-dbgen-data
-      #   persistentVolumeClaim:
-      #     claimName: tpch-dbgen-data-pvc
+        # imagePullPolicy: Always

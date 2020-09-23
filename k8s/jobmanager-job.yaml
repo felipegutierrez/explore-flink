@@ -10,6 +10,7 @@ spec:
         component: jobmanager
     spec:
       restartPolicy: OnFailure
+      hostname: flink-jobmanager
       volumes:
         - name: flink-config-volume
           configMap:
@@ -22,7 +23,7 @@ spec:
       containers:
         - name: jobmanager
           image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
-          imagePullPolicy: Always
+          # imagePullPolicy: Always
           env:
           args: ["standalone-job", "--job-classname", "org.sense.flink.App", "-app", "36"] #, <optional arguments>, <job arguments>] # optional arguments: ["--job-id", "<job id>", "--fromSavepoint", "/path/to/savepoint", "--allowNonRestoredState"]
           ports:
@@ -32,6 +33,8 @@ spec:
               name: blob-server
             - containerPort: 8081
               name: webui
+            - containerPort: 9250
+            - containerPort: 9251
           livenessProbe:
             tcpSocket:
               port: 6123

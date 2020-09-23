@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flink
+      component: prometheus
+  template:
+    metadata:
+      labels:
+        app: flink
+        component: prometheus
+    spec:
+      volumes:
+      - name: prometheus-config-volume
+        configMap:
+          name: prometheus-config
+          items:
+          - key: prometheus.yml
+            path: prometheus.yml
+      containers:
+      - name: prometheus
+        image: prom/prometheus
+        ports:
+        - containerPort: 9090
+        volumeMounts:
+          - name: prometheus-config-volume
+            mountPath: /etc/prometheus/prometheus.yml
+            subPath: prometheus.yml

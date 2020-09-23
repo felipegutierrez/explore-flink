@@ -15,6 +15,10 @@ data:
     jobmanager.memory.process.size: 1600m
     taskmanager.memory.process.size: 1728m
     parallelism.default: 2
+    # Metrics Reporter
+    metrics.reporter.prom.class: org.apache.flink.metrics.prometheus.PrometheusReporter
+    metrics.reporter.prom.host: 127.0.0.1
+    metrics.reporter.prom.port: 9250-9260
   log4j-console.properties: |+
     # This affects logging for both user code and Flink
     rootLogger.level = INFO

@@ -11,6 +11,10 @@ spec:
     port: 6124
   - name: webui
     port: 8081
+  - name: prometheus-0
+    port: 9250
+  - name: prometheus-1
+    port: 9251
   selector:
     app: flink
     component: jobmanager

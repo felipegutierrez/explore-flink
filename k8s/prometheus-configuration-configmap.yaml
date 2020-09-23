@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  labels:
+    app: flink
+data:
+  prometheus.yml: |+
+    global:
+      scrape_interval: 15s
+
+    scrape_configs:
+      - job_name: 'prometheus'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['localhost:9090']
+      - job_name: 'flink'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['flink-jobmanager:9250', 'flink-jobmanager:9251', 'flink-taskmanager:9250']
+        metrics_path: /
