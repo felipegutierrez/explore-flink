@@ -10,12 +10,20 @@ spec:
         component: jobmanager
     spec:
       restartPolicy: OnFailure
+      volumes:
+        - name: flink-config-volume
+          configMap:
+            name: flink-config
+            items:
+              - key: flink-conf.yaml
+                path: flink-conf.yaml
+              - key: log4j-console.properties
+                path: log4j-console.properties
       containers:
         - name: jobmanager
           image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
           imagePullPolicy: Always
           env:
-          #command: ["ls"]
           args: ["standalone-job", "--job-classname", "org.sense.flink.App", "-app", "36"] #, <optional arguments>, <job arguments>] # optional arguments: ["--job-id", "<job id>", "--fromSavepoint", "/path/to/savepoint", "--allowNonRestoredState"]
           ports:
             - containerPort: 6123
@@ -32,19 +40,5 @@ spec:
           volumeMounts:
             - name: flink-config-volume
               mountPath: /opt/flink/conf
-            # - name: job-artifacts-volume
-            #   mountPath: /opt/flink/usrlib
           securityContext:
             runAsUser: 9999  # refers to user _flink_ from official flink image, change if necessary
-      volumes:
-        - name: flink-config-volume
-          configMap:
-            name: flink-config
-            items:
-              - key: flink-conf.yaml
-                path: flink-conf.yaml
-              - key: log4j-console.properties
-                path: log4j-console.properties
-        # - name: job-artifacts-volume
-        #   hostPath:
-        #     path: /opt/flink/lib

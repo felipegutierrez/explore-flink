@@ -14,9 +14,25 @@ spec:
         app: flink
         component: taskmanager
     spec:
+      volumes:
+      - name: flink-config-volume
+        configMap:
+          name: flink-config
+          items:
+          - key: flink-conf.yaml
+            path: flink-conf.yaml
+          - key: log4j-console.properties
+            path: log4j-console.properties
+      - name: tpch-dbgen-data
+        persistentVolumeClaim:
+          claimName: tpch-dbgen-data-pvc
+      - name: tpch-dbgen-datarate
+        persistentVolumeClaim:
+          claimName: tpch-dbgen-datarate-pvc
       containers:
       - name: taskmanager
         image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
+        imagePullPolicy: Always
         env:
         args: ["taskmanager"]
         ports:
@@ -32,19 +48,11 @@ spec:
         volumeMounts:
         - name: flink-config-volume
           mountPath: /opt/flink/conf/
-#        - name: job-artifacts-volume
-#          mountPath: /opt/flink/usrlib
+        - name: tpch-dbgen-data
+          mountPath: /opt/tpch-dbgen/data
+          subPath: data
+        - mountPath: /tmp
+          name: tpch-dbgen-datarate
+          subPath: tmp
         securityContext:
           runAsUser: 9999  # refers to user _flink_ from official flink image, change if necessary
-      volumes:
-      - name: flink-config-volume
-        configMap:
-          name: flink-config
-          items:
-          - key: flink-conf.yaml
-            path: flink-conf.yaml
-          - key: log4j-console.properties
-            path: log4j-console.properties
-#      - name: job-artifacts-volume
-#        hostPath:
-#          path: /opt/flink/lib

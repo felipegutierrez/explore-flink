@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tpch-dbgen-job
+spec:
+  template:
+    metadata:
+      labels:
+        app: flink
+        component: tpch-dbgen
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+        - name: tpch-dbgen-data
+          persistentVolumeClaim:
+            claimName: tpch-dbgen-data-pvc
+        - name: tpch-dbgen-datarate
+          persistentVolumeClaim:
+            claimName: tpch-dbgen-datarate-pvc
+      containers:
+        - name: tpch-dbgen
+          image: felipeogutierrez/tpch-dbgen
+          imagePullPolicy: Always
+          volumeMounts:
+          - mountPath: /opt/tpch-dbgen/data
+            name: tpch-dbgen-data
+            subPath: data
+          - mountPath: /tmp
+            name: tpch-dbgen-datarate
+            subPath: tmp
