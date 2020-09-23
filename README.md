@@ -22,6 +22,7 @@ kubectl create -f k8s/prometheus-configuration-configmap.yaml
 kubectl create -f k8s/prometheus-service.yaml
 kubectl create -f k8s/prometheus-rest-service.yaml
 
+kubectl create -f k8s/grafana-configuration-configmap.yaml
 kubectl create -f k8s/grafana-service.yaml
 kubectl create -f k8s/grafana-rest-service.yaml
 ```

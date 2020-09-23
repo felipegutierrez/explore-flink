@@ -14,23 +14,28 @@ spec:
         app: flink
         component: grafana
     spec:
-      # volumes:
-      # - name: prometheus-config-volume
-      #   configMap:
-      #     name: prometheus-config
-      #     items:
-      #     - key: prometheus.yml
-      #       path: prometheus.yml
+      volumes:
+      - name: grafana-config-volume
+        configMap:
+          name: grafana-config
+          items:
+          - key: grafana.ini
+            path: grafana.ini
+          - key: datasource.yml
+            path: provisioning/datasources/datasource.yml
+          - key: dashboards.yml
+            path: provisioning/dashboards/dashboards.yml
+          - key: dashboard.json
+            path: dashboard.json
       containers:
       - name: grafana
         image: grafana/grafana
         ports:
         - containerPort: 3000
           name: http
-        # volumeMounts:
-        #   - name: prometheus-config-volume
-        #     mountPath: /etc/prometheus/prometheus.yml
-        #     subPath: prometheus.yml
+        volumeMounts:
+          - name: grafana-config-volume
+            mountPath: /etc/grafana/
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
