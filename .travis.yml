@@ -1,14 +1,38 @@
 language: java
-sudo: false
+sudo: required
+dist: xenial
+env:
+  global:
+    - CHANGE_MINIKUBE_NONE_USER=true
+    - MINIKUBE_WANTUPDATENOTIFICATION=false
+    - MINIKUBE_WANTREPORTERRORPROMPT=false
+    - MINIKUBE_HOME=$HOME
+    - KUBECONFIG=$HOME/.kube/config
 jdk:
   - openjdk8
 scala: 2.12.7
 branches:
   only:
     - master
+before_install:
+  - sudo apt-get -qq -y install conntrack
 cache:
   directories:
   - "$HOME/.m2"
+before_script:
+  # Download kubectl, which is a requirement for using minikube
+  - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
+  # Download minikube
+  - curl -Lo minikube https://storage.googleapis.com/minikube/releases/v1.13.1/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+  # configure minikube
+  - mkdir -p $HOME/.kube $HOME/.minikube
+  - touch $KUBECONFIG
+  # start minikube
+  - sudo minikube start --profile=minikube --vm-driver=none --kubernetes-version=v1.19.0
+  - minikube update-context --profile=minikube
+  # configure travis-CI with minikube
+  - "sudo chown -R travis: /home/travis/.minikube/"
+  - eval "$(minikube docker-env --profile=minikube)" && export DOCKER_CLI='docker'
 script:
   - cd docker/ops-playground-image/java/explore-flink/
   - mvn package
