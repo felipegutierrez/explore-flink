@@ -20,6 +20,9 @@ cache:
   directories:
   - "$HOME/.m2"
 before_script:
+  # Download kubeval to validate Kubernetes yaml files
+  - curl -Lo kubeval-linux-amd64.tar.gz https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz && tar xf kubeval-linux-amd64.tar.gz && sudo mv kubeval /usr/local/bin/ && rm -Rf kubeval-linux-amd64.tar.gz
+  - kubeval k8s/*.yaml
   # Download kubectl, which is a requirement for using minikube
   - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
   # Download minikube
