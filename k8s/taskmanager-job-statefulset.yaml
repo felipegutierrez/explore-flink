@@ -1,18 +1,17 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: flink-taskmanager
 spec:
-  replicas: 1
+  replicas: 3
+  serviceName: flink-taskmanager
   selector:
     matchLabels:
-      app: flink
-      component: taskmanager
+      app: flink-taskmanager # has to match .spec.template.metadata.labels
   template:
     metadata:
       labels:
-        app: flink
-        component: taskmanager
+        app: flink-taskmanager # has to match .spec.selector.matchLabels
     spec:
       hostname: flink-taskmanager
       volumes:

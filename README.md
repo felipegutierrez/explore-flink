@@ -51,7 +51,7 @@ kubectl create -f k8s/prometheus-deployment.yaml
 kubectl create -f k8s/grafana-deployment.yaml
 
 kubectl create -f k8s/jobmanager-job.yaml
-kubectl create -f k8s/taskmanager-job-deployment.yaml
+kubectl create -f k8s/taskmanager-job-statefulset.yaml
 ```
 List the objects:
 ```
