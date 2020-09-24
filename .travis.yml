@@ -66,3 +66,15 @@ after_success:
   - kubectl create -f k8s/tpch-dbgen-job.yaml
   - kubectl create -f k8s/jobmanager-job.yaml
   - kubectl create -f k8s/taskmanager-job-statefulset.yaml
+  # test if TPCH-dbgen-job is available
+  - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get jobs -o jsonpath="$JSONPATH" 2>&1 | grep -q "tpch-dbgen-job"; do sleep 1;echo "waiting for tpch-dbgen-job deployment to be available"; kubectl get jobs -n default; done
+  # test if Flink JobManager is available
+  - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get jobs -o jsonpath="$JSONPATH" 2>&1 | grep -q "flink-jobmanager"; do sleep 1;echo "waiting for flink-jobmanager deployment to be available"; kubectl get jobs -n default; done
+  # test if Flink TaskManagers are available
+  - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get pods -lapp=flink-taskmanager -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1;echo "waiting for flink-taskmanager deployment to be available"; kubectl get pods -n default; done
+  # delete Kubernetes objects
+  - kubectl delete statefulset flink-taskmanager
+  - kubectl delete jobs flink-jobmanager tpch-dbgen-job
+  - kubectl delete pvc tpch-dbgen-data-pvc tpch-dbgen-datarate-pvc
+  - kubectl delete configmaps flink-config
+  - kubectl delete services flink-jobmanager flink-jobmanager-rest flink-taskmanager
