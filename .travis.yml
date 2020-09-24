@@ -54,3 +54,15 @@ after_success:
   # take the images and push them to docker.hub
   - docker push felipeogutierrez/tpch-dbgen
   - docker push felipeogutierrez/explore-flink:1.11.1-scala_2.12
+  - cd ../
+  # test the explore-flink:1.11.1-scala_2.12 image inside Kubernetes
+  - minikube ssh 'sudo ip link set docker0 promisc on'
+  - kubectl create -f k8s/flink-configuration-configmap.yaml
+  - kubectl create -f k8s/jobmanager-service.yaml
+  - kubectl create -f k8s/jobmanager-rest-service.yaml
+  - kubectl create -f k8s/taskmanager-service.yaml
+  - kubectl create -f k8s/tpch-dbgen-pvc.yaml
+  - kubectl create -f k8s/tpch-dbgen-datarate-pvc.yaml
+  - kubectl create -f k8s/tpch-dbgen-job.yaml
+  - kubectl create -f k8s/jobmanager-job.yaml
+  - kubectl create -f k8s/taskmanager-job-statefulset.yaml
