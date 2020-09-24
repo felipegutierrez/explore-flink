@@ -79,10 +79,11 @@ flink-taskmanager-5c95bcc75b-h5x8p   1/1     Running   0          85s
 flink-taskmanager-5c95bcc75b-rllc4   1/1     Running   0          85s
 tpch-dbgen-job-z5pqj                 1/1     Running   0          3m15s
 ```
-Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091/](http://172.17.0.2:30091/).
+Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091/](http://172.17.0.2:30091/), and the Grafana WebUI at [http://172.17.0.2:30011](http://172.17.0.2:30011).
 
 ![Flink web UI using Kubernetes](images/flink-webui.png)
 ![Prometheus web UI using Kubernetes](images/prometheus-webui.png)
+![Grafana web UI using Kubernetes](images/grafana-webui.png)
 
 ### Troubleshooting:
 Logs:
