@@ -7,30 +7,23 @@ This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with D
 
 This section aims to deploy the docker images above using minikube v1.13.1 Kubernetes v1.19.0 and Docker 19.03.8. It is based on the official tutorial [Flink with Kubernetes Setup](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html).
 
-Deploy the `Service` and `configmap` components of Flink cluster with Prometheus and Grafana into Kubernetes:
+Deploy the `Service` and `configmap` components of Flink cluster with Prometheus and Grafana into Kubernetes. Deploy 2 `PersistentVolumeClaim` to share a directory, a `Job` to create the TPC-H files, 1 `Job` with the Flink-JobManager, and 1 `Deployment` with 3 Flink-TaskManagers in Kubernetes.
 ```
 minikube start
 minikube ssh 'sudo ip link set docker0 promisc on'
 kubectl proxy
 
-kubectl create -f k8s/flink-configuration-configmap.yaml
-kubectl create -f k8s/jobmanager-service.yaml
-kubectl create -f k8s/jobmanager-rest-service.yaml
-kubectl create -f k8s/taskmanager-service.yaml
-
-kubectl create -f k8s/prometheus-configuration-configmap.yaml
-kubectl create -f k8s/prometheus-service.yaml
-kubectl create -f k8s/prometheus-rest-service.yaml
-
-kubectl create -f k8s/grafana-configuration-configmap.yaml
-kubectl create -f k8s/grafana-service.yaml
-kubectl create -f k8s/grafana-rest-service.yaml
+kubectl create -f k8s/*.yaml
 ```
 List the objects:
 ```
-kubectl get svc flink-jobmanager-rest
 kubectl get configmaps
 kubectl get services
+kubectl get jobs
+kubectl get pvc
+kubectl get deployments
+kubectl get statefulset
+kubectl get pods
 
 $ kubectl get configmaps
 NAME           DATA   AGE
@@ -40,25 +33,6 @@ NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        
 flink-jobmanager        ClusterIP   10.111.78.59   <none>        6123/TCP,6124/TCP,8081/TCP   66m
 flink-jobmanager-rest   NodePort    10.111.73.83   <none>        8081:30081/TCP               7m12s
 kubernetes              ClusterIP   10.96.0.1      <none>        443/TCP                      8d
-```
-Deploy 2 `PersistentVolumeClaim` to share a directory, a `Job` to create the TPC-H files, 1 `Job` with the Flink-JobManager, and 1 `Deployment` with 3 Flink-TaskManagers in Kubernetes:
-```
-kubectl create -f k8s/tpch-dbgen-pvc.yaml
-kubectl create -f k8s/tpch-dbgen-datarate-pvc.yaml
-kubectl create -f k8s/tpch-dbgen-job.yaml
-
-kubectl create -f k8s/prometheus-deployment.yaml
-kubectl create -f k8s/grafana-deployment.yaml
-
-kubectl create -f k8s/jobmanager-job.yaml
-kubectl create -f k8s/taskmanager-job-statefulset.yaml
-```
-List the objects:
-```
-kubectl get jobs
-kubectl get pvc
-kubectl get deployments
-kubectl get pods
 
 $ kubectl get jobs
 NAME               COMPLETIONS   DURATION   AGE
