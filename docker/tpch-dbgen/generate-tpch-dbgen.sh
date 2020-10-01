@@ -1,6 +1,7 @@
 #!/bin/sh
 
-# download
+# remove "tpch-dbgen" if exists and download
+rm -Rf tpch-dbgen
 git clone https://github.com/electrum/tpch-dbgen.git
 
 # replace variables

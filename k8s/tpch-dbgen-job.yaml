@@ -20,7 +20,7 @@ spec:
       containers:
         - name: tpch-dbgen
           image: felipeogutierrez/tpch-dbgen
-          imagePullPolicy: Always
+          imagePullPolicy: Always # Always/IfNotPresent
           volumeMounts:
           - mountPath: /opt/tpch-dbgen/data
             name: tpch-dbgen-data

@@ -20,7 +20,7 @@ List the objects, the resources:
 kubectl get all
 kubectl api-resources
 ```
-Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091/](http://172.17.0.2:30091/), and the Grafana WebUI at [http://172.17.0.2:30011](http://172.17.0.2:30011).
+Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091](http://172.17.0.2:30091), and the Grafana WebUI at [http://172.17.0.2:30011](http://172.17.0.2:30011).
 
 ![Flink web UI using Kubernetes](images/flink-webui.png)
 ![Prometheus web UI using Kubernetes](images/prometheus-webui.png)
@@ -36,12 +36,13 @@ __confluent.support.metrics
 ```
 Logs:
 ```
-$ kubectl describe pod <POD_ID>
-$ kubectl logs <POD_ID>
-$ kubectl exec -i -t <POD_ID> -- /bin/bash
-$ kubectl get nodes
-$ kubectl top nodes
-$ kubectl -n kube-system top pods
+kubectl describe pod <POD_ID>
+kubectl logs <POD_ID>
+kubectl exec -i -t <POD_ID> -- /bin/bash
+kubectl get nodes
+kubectl top nodes
+kubectl get pods -A
+kubectl -n kube-system top pods
 ```
 Clean your Kubernetes cluster and delete everything when you finish to test.
 ```
