@@ -68,6 +68,7 @@ after_success:
   - kubectl create -f k8s/tpch-dbgen-job.yaml
   - kubectl create -f k8s/zookeeper-statefulset.yaml
   - kubectl create -f k8s/kafka-statefulset.yaml
+  - kubectl create -f kafka-client.yaml
   - kubectl create -f k8s/jobmanager-job.yaml
   - kubectl create -f k8s/taskmanager-job-statefulset.yaml
   # test if TPCH-dbgen-job is available
@@ -84,3 +85,5 @@ after_success:
   - kubectl delete pvc tpch-dbgen-data-pvc tpch-dbgen-datarate-pvc
   - kubectl delete configmaps flink-config
   - kubectl delete services zookeeper kafka flink-jobmanager flink-jobmanager-rest flink-taskmanager
+  - kubectl delete pods kafka-client
+  - kubectl delete deployment metrics-server -n kube-system 
