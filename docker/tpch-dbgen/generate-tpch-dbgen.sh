@@ -1,8 +1,10 @@
 #!/bin/sh
 
-# remove "tpch-dbgen" if exists and download
+# remove "tpch-dbgen-tmp" if exists and download
+rm -Rf tpch-dbgen-tmp
 git clone https://github.com/electrum/tpch-dbgen.git tpch-dbgen-tmp
 
+mkdir -p tpch-dbgen
 cp -R tpch-dbgen-tmp/* tpch-dbgen/
 # rm -Rf tpch-dbgen-tmp
 
