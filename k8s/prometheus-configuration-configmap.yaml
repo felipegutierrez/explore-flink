@@ -11,11 +11,16 @@ data:
 
     scrape_configs:
       - job_name: 'prometheus'
-        scrape_interval: 5s
+        scrape_interval: 15s
         static_configs:
           - targets: ['localhost:9090']
       - job_name: 'flink'
-        scrape_interval: 5s
+        scrape_interval: 15s
         static_configs:
           - targets: ['flink-jobmanager:9250', 'flink-jobmanager:9251', 'flink-taskmanager-0.flink-taskmanager.default.svc.cluster.local:9250', 'flink-taskmanager-1.flink-taskmanager.default.svc.cluster.local:9250', 'flink-taskmanager-2.flink-taskmanager.default.svc.cluster.local:9250']
+        metrics_path: /
+      - job_name: 'kafka'
+        scrape_interval: 15s
+        static_configs:
+          - targets: ['kafka-0.kafka.default.svc.cluster.local:7071', 'kafka-1.kafka.default.svc.cluster.local:7071', 'kafka-2.kafka.default.svc.cluster.local:7071']
         metrics_path: /

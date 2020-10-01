@@ -5,18 +5,18 @@ metadata:
   labels:
     app: kafka
 spec:
-  type: ClusterIP #LoadBalancer/ClusterIP
-  clusterIP: None
-  sessionAffinity: ClientIP
+  clusterIP: None # type: ClusterIP
   ports:
-  - port: 9092
-    name: kafka-0-port
+  - name: prometheus
+    port: 7071
+  - name: kafka-0
+    port: 9092
     protocol: TCP
-  - port: 9093
-    name: kafka-1-port
+  - name: kafka-1
+    port: 9093
     protocol: TCP
-  - port: 9094
-    name: kafka-2-port
+  - name: kafka-2
+    port: 9094
     protocol: TCP
   selector:
     app: kafka

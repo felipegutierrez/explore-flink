@@ -26,6 +26,7 @@ spec:
           name: kafka-1
         - containerPort: 9094
           name: kafka-2
+        - containerPort: 7071
         env:
         - name: MY_METADATA_NAME
           valueFrom:
