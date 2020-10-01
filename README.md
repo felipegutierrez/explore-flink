@@ -22,9 +22,7 @@ kubectl api-resources
 ```
 Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091/targets](http://172.17.0.2:30091/targets) and [http://172.17.0.2:30091/graph](http://172.17.0.2:30091/graph), and the Grafana WebUI at [http://172.17.0.2:30011](http://172.17.0.2:30011).
 
-![Flink web UI using Kubernetes](images/flink-webui.png)
-![Prometheus web UI using Kubernetes](images/prometheus-webui.png)
-![Grafana web UI using Kubernetes](images/grafana-webui.png)
+![Flink web UI - prometheus - grafana - using Kubernetes](images/4h017m.gif)
 
 ### Troubleshooting:
 Testing Kafka client:
