@@ -14,62 +14,36 @@ spec:
       labels:
         app: kafka # has to match .spec.selector.matchLabels
     spec:
+      restartPolicy: Always
       containers:
       - name: kafka
         image: confluentinc/cp-enterprise-kafka:5.5.0
-        # image: confluentinc/cp-kafka:5.5.0
-        # image: wurstmeister/kafka:2.12-2.5.0
-        # command:
-        # - sh
-        # - -c
-        # - "export KAFKA_ADVERTISED_HOST_NAME=$(hostname).kafka.default.svc.cluster.local && start-kafka.sh"
-        # - "unset KAFKA_PORT && export KAFKA_BROKER_ID=${HOSTNAME##*-} && export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_IP}:9092"
+        # imagePullPolicy: Always
         ports:
         - containerPort: 9092
+          name: kafka-0
+        - containerPort: 9093
+          name: kafka-1
+        - containerPort: 9094
+          name: kafka-2
         env:
-        - name: KAFKA_ZOOKEEPER_CONNECT
-          value: zookeeper:2181 # zookeeper-2.zookeeper.default.svc.cluster.local
-        - name: MY_POD_NAME
+        - name: MY_METADATA_NAME
           valueFrom:
             fieldRef:
-              fieldPath: metadata.name 
-        - name: KAFKA_PORT_NUMBER
-          value: "9092"
+              fieldPath: metadata.name
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: STAS_DELAY
+          value: "120"
+        - name: KAFKA_ZOOKEEPER_CONNECT
+          value: zookeeper:2181 # zookeeper-2.zookeeper.default.svc.cluster.local
         - name: KAFKA_ADVERTISED_LISTENERS
-          value: "LISTENER-$(MY_POD_NAME)://$(MY_POD_NAME):9092"
-          # value: "LISTENER_0://kafka-0:9092,LISTENER_1://kafka-1:9093,LISTENER_2://kafka-2:9094"
+          value: "INSIDE://$(MY_POD_IP):9092"
+        - name: KAFKA_LISTENERS
+          value: "INSIDE://$(MY_POD_IP):9092"
         - name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP
-          value: "LISTENER-$(MY_POD_NAME):PLAINTEXT,LISTENER-$(MY_POD_NAME):PLAINTEXT,LISTENER-$(MY_POD_NAME):PLAINTEXT"
+          value: "INSIDE:PLAINTEXT"
         - name: KAFKA_INTER_BROKER_LISTENER_NAME
-          value: "LISTENER-kafka-0"
-        # - name: KAFKA_ADVERTISED_LISTENERS
-        #   value: SASL_SSL://$(MY_POD_NAME).kafka.svc.cluster.local:$(KAFKA_PORT_NUMBER)
-
-        # - name: POD_IP
-        #   valueFrom:
-        #     fieldRef:
-        #       apiVersion: v1
-        #       fieldPath: status.podIP
-        # - name: HOSTNAME
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.name
-        # - name: KAFKA_ADVERTISED_HOST_NAME
-        #   valueFrom:
-        #     fieldRef:
-        #       fieldPath: metadata.name #$(metadata.name).kafka.default.svc.cluster.local
-        # - name: KAFKA_LISTENERS
-        #   value: "LISTENER_0://0.0.0.0:9092,LISTENER_1://0.0.0.0:9093,LISTENER_2://0.0.0.0:9094"
-        # 
-        # - name: KAFKA_ADVERTISED_PORT
-        #   value: "30718"
-        # - name: KAFKA_LISTENERS
-        #   value: ://:30718 # SASL_SSL://:$(KAFKA_PORT_NUMBER)
-        # - name: KAFKA_ADVERTISED_LISTENERS
-        #   value: kafka-0.kafka.svc.cluster.local:30718  # 10.105.140.116
-        # - name: KAFKA_LISTENERS
-        #   value: PLAINTEXT://kafka-0:9092
-        # - name: BROKER_ID_COMMAND
-        #   value: "hostname | awk -F '-' '{print $2}'"
-        # - name: KAFKA_BROKER_ID
-        #   value: "0"
+          value: "INSIDE"

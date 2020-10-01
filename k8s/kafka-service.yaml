@@ -10,7 +10,13 @@ spec:
   sessionAffinity: ClientIP
   ports:
   - port: 9092
-    name: kafka-port
+    name: kafka-0-port
+    protocol: TCP
+  - port: 9093
+    name: kafka-1-port
+    protocol: TCP
+  - port: 9094
+    name: kafka-2-port
     protocol: TCP
   selector:
     app: kafka

@@ -3,7 +3,7 @@
 
 This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with Docker 19.03.8, Kubernetes v1.19.0, minikube v1.13.1, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). 
 
-## Kubernetes + Docker + Flink + Prometheus + Grafana
+## Kubernetes + Docker + Flink(1JobManager, 3TaskManagers) + Prometheus + Grafana
 
 This section aims to deploy the docker images above using minikube v1.13.1 Kubernetes v1.19.0 and Docker 19.03.8. It is based on the official tutorial [Flink with Kubernetes Setup](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html).
 
@@ -75,7 +75,7 @@ $ kubectl delete configmaps flink-config
 $ minikube stop
 ```
 
-## Docker + Flink + Prometheus + Grafana
+## Docker + Kafka(1ZooKeeper, 1Broker) + Flink(1JobManager, 3TaskManagers) + Prometheus + Grafana
 This section is here only to help if one would like to not use Kubernetes and deploy Flink only using Docker.
 ```
 cd operations-playground
