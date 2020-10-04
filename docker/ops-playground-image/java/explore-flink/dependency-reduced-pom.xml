@@ -145,13 +145,14 @@
     </dependency>
   </dependencies>
   <properties>
-    <scala.version>2.12.7</scala.version>
-    <guava.version>29.0-jre</guava.version>
-    <jdk.version>1.8</jdk.version>
-    <scala.binary.version>2.12</scala.binary.version>
     <flink.version>1.11.1</flink.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <geotools.version>21.2</geotools.version>
     <junit.version>4.12</junit.version>
+    <guava.version>29.0-jre</guava.version>
+    <scala.binary.version>2.12</scala.binary.version>
+    <kafka.version>2.6.0</kafka.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <jdk.version>1.8</jdk.version>
+    <scala.version>2.12.7</scala.version>
   </properties>
 </project>

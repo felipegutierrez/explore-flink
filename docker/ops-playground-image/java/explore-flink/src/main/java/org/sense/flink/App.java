@@ -7,6 +7,7 @@ import org.sense.flink.examples.stream.clickcount.ClickEventGenerator;
 import org.sense.flink.examples.stream.edgent.*;
 import org.sense.flink.examples.stream.kafka.KafkaConsumerQuery;
 import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
+import org.sense.flink.examples.stream.tpch.TCPHOrderProducer;
 import org.sense.flink.examples.stream.tpch.TPCHQuery01;
 import org.sense.flink.examples.stream.tpch.TPCHQuery03;
 import org.sense.flink.examples.stream.tpch.TPCHQuery10;
@@ -370,6 +371,10 @@ public class App {
                     new ClickEventCount();
                     app = 0;
                     break;
+                case 41:
+                    new TCPHOrderProducer();
+                    app = 0;
+                    break;
                 default:
                     args = null;
                     System.out.println("No application selected [" + app + "] ");
@@ -424,6 +429,7 @@ public class App {
         System.out.println("38 - TPC-H Benchmark query 01");
         System.out.println("39 - ClickEventGenerator using Kafka");
         System.out.println("40 - ClickEventCount consuming from Kafka");
+        System.out.println("41 - TCP-H Order Producer from Kafka");
         System.out.println();
     }
 
