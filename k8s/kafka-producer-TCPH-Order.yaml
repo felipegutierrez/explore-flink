@@ -1,0 +1,33 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kafka-producer-tpch-order
+  namespace: default
+spec:
+  template:
+    metadata:
+      labels:
+        app: kafka-producer-tpch-order
+    spec:
+      restartPolicy: OnFailure
+      volumes:
+        - name: tpch-dbgen-data
+          persistentVolumeClaim:
+            claimName: tpch-dbgen-data-pvc
+      containers:
+        - name: kafka-producer-tpch-order
+          image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
+          imagePullPolicy: IfNotPresent # Always/IfNotPresent
+          volumeMounts:
+            - mountPath: /opt/tpch-dbgen/data
+              name: tpch-dbgen-data
+              subPath: data
+          env:
+          command: ["ls"]
+#          command: ["ls && java explore-flink.jar -cp org.sense.flink.App -app 41"]
+#          - name: JAVA_OPTIONS
+#            value: "-Xmx512m"
+#    args: [ "standalone-job", "--job-classname", "org.sense.flink.App", "-app", "41" ]
+#      - sh
+#      - -c
+#      - "exec tail -f /dev/null"

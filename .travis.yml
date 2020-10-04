@@ -67,9 +67,7 @@ after_success:
   - kubectl create -f k8s/tpch-dbgen-datarate-pvc.yaml
   - kubectl create -f k8s/tpch-dbgen-job.yaml
   - kubectl create -f k8s/zookeeper-statefulset.yaml
-  - kubectl create -f k8s/kafka-statefulset.yaml
-  - kubectl create -f kafka-client.yaml
-  - kubectl create -f k8s/flink-jobmanager-job.yaml
+  - kubectl create -f k8s/kafka-statefulset.yaml  - kubectl create -f k8s/flink-jobmanager-job.yaml
   - kubectl create -f k8s/flink-taskmanager-statefulset.yaml
   # test if TPCH-dbgen-job is available
   - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get jobs -o jsonpath="$JSONPATH" 2>&1 | grep -q "tpch-dbgen-job"; do sleep 1;echo "waiting for tpch-dbgen-job deployment to be available"; kubectl get jobs -n default; done
@@ -85,5 +83,4 @@ after_success:
   - kubectl delete pvc tpch-dbgen-data-pvc tpch-dbgen-datarate-pvc
   - kubectl delete configmaps flink-config
   - kubectl delete services zookeeper kafka flink-jobmanager flink-jobmanager-rest flink-taskmanager
-  - kubectl delete pods kafka-client
   - kubectl delete deployment metrics-server -n kube-system 
