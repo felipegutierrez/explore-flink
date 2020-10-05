@@ -69,13 +69,13 @@ after_success:
   #- kubectl create -f k8s/zookeeper-statefulset.yaml
   #- kubectl create -f k8s/kafka-statefulset.yaml  - kubectl create -f k8s/flink-jobmanager-job.yaml
   - kubectl create -f k8s/flink-taskmanager-statefulset.yaml
-  - kubectl create -f k8s/flink-jobmanager.yaml
+  - kubectl create -f k8s/flink-jobmanager-job.yaml
   # test if TPCH-dbgen-job is available
   #- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get jobs -o jsonpath="$JSONPATH" 2>&1 | grep -q "tpch-dbgen-job"; do sleep 1;echo "waiting for tpch-dbgen-job deployment to be available"; kubectl get jobs -n default; done
   # test if Zookeeper is available
   # test if Kafka is available
   # test if Flink JobManager/TaskManagers are available
-  - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get jobs -o jsonpath="$JSONPATH" 2>&1 | grep -q "flink-jobmanager"; do sleep 1;echo "waiting for flink-jobmanager deployment to be available"; kubectl get jobs -n default; done
+  - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get jobs -o jsonpath="$JSONPATH" 2>&1 | grep -q "flink-jobmanager"; do sleep 1;echo "waiting for flink-jobmanager job to be available"; kubectl get jobs -n default; done
   - JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get pods -lapp=flink-taskmanager -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1;echo "waiting for flink-taskmanager deployment to be available"; kubectl get pods -n default; done
   # delete Kubernetes objects
   - kubectl delete statefulset zookeeper kafka flink-taskmanager
