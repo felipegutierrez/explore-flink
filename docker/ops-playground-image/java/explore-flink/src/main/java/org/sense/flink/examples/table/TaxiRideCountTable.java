@@ -13,20 +13,17 @@ import org.sense.flink.examples.table.util.TaxiRide;
 import org.sense.flink.examples.table.util.TaxiRideCommons;
 
 import static org.apache.flink.table.api.Expressions.$;
-import static org.sense.flink.examples.table.util.TaxiRideCommons.*;
 import static org.sense.flink.util.MetricLabels.OPERATOR_SOURCE;
 
 public class TaxiRideCountTable {
 
     final String input = TaxiRideCommons.pathToRideData;
-    private boolean disableOperatorChaining;
-    private int slotSplit;
 
     public TaxiRideCountTable() {
-        this(true, 0);
+        this(true, 4);
     }
 
-    public TaxiRideCountTable(boolean disableOperatorChaining, int slotSplit) {
+    public TaxiRideCountTable(boolean disableOperatorChaining, int parallelism) {
         try {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
@@ -34,6 +31,7 @@ public class TaxiRideCountTable {
             // access flink configuration
             Configuration configuration = tableEnv.getConfig().getConfiguration();
             // set low-level key-value options
+            configuration.setInteger("table.exec.resource.default-parallelism", parallelism);
             // local-global aggregation depends on mini-batch is enabled
             configuration.setString("table.exec.mini-batch.enabled", "true");
             configuration.setString("table.exec.mini-batch.allow-latency", "1 s");
@@ -44,20 +42,8 @@ public class TaxiRideCountTable {
             if (disableOperatorChaining) {
                 env.disableOperatorChaining();
             }
-            String slotGroup01 = SLOT_GROUP_DEFAULT;
-            String slotGroup02 = SLOT_GROUP_DEFAULT;
-            if (slotSplit == 0) {
-                slotGroup01 = SLOT_GROUP_DEFAULT;
-                slotGroup02 = SLOT_GROUP_DEFAULT;
-            } else if (slotSplit == 1) {
-                slotGroup01 = SLOT_GROUP_01_01;
-                slotGroup02 = SLOT_GROUP_DEFAULT;
-            } else if (slotSplit == 2) {
-                slotGroup01 = SLOT_GROUP_01_01;
-                slotGroup02 = SLOT_GROUP_01_02;
-            }
 
-            DataStream<TaxiRide> ridesStream = env.addSource(new TaxiRideSource(input)).name(OPERATOR_SOURCE).uid(OPERATOR_SOURCE).slotSharingGroup(slotGroup01);
+            DataStream<TaxiRide> ridesStream = env.addSource(new TaxiRideSource(input)).name(OPERATOR_SOURCE).uid(OPERATOR_SOURCE);
 
             // "rideId, isStart, startTime, endTime, startLon, startLat, endLon, endLat, passengerCnt, taxiId, driverId"
             Table ridesTableStream = tableEnv.fromDataStream(ridesStream);
