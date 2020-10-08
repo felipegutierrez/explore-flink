@@ -60,33 +60,33 @@
     <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-guava:18.0-11.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-metrics-dropwizard:1.11.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: io.dropwizard.metrics:metrics-core:3.2.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-twitter_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-planner_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-api-scala-bridge_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-api-java-bridge_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-api-java:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-streaming-scala_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-scala_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-reflect:2.12.7" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang:scala-compiler:2.12.7" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-xml_2.12:1.0.6" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-kafka_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-kafka-base_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-connector-twitter_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-streaming-scala_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-scala_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-reflect:2.12.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang:scala-compiler:2.12.7" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.scala-lang.modules:scala-xml_2.12:1.0.6" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-connector-kafka_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-connector-kafka-base_2.12:1.11.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-statebackend-rocksdb_2.12:1.11.2" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.data-artisans:frocksdbjni:5.17.2-artisans-2.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-common:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-common:1.11.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-asm-7:7.1-11.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-planner-blink_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-api-scala_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-runtime-blink_2.12:1.11.2" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.janino:janino:3.0.9" level="project" />
-    <orderEntry type="library" name="Maven: org.codehaus.janino:commons-compiler:3.0.9" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.calcite.avatica:avatica-core:1.16.0" level="project" />
-    <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.10" level="project" />
-    <orderEntry type="library" name="Maven: org.fusesource.mqtt-client:mqtt-client:1.15" level="project" />
-    <orderEntry type="library" name="Maven: org.fusesource.hawtdispatch:hawtdispatch-transport:1.22" level="project" />
-    <orderEntry type="library" name="Maven: org.fusesource.hawtdispatch:hawtdispatch:1.22" level="project" />
-    <orderEntry type="library" name="Maven: org.fusesource.hawtbuf:hawtbuf:1.11" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-api-java-bridge_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-api-java:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-planner-blink_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-api-scala_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-api-scala-bridge_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-runtime-blink_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.codehaus.janino:janino:3.0.9" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.codehaus.janino:commons-compiler:3.0.9" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.calcite.avatica:avatica-core:1.16.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.reflections:reflections:0.9.10" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-planner_2.12:1.11.2" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.fusesource.mqtt-client:mqtt-client:1.15" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.fusesource.hawtdispatch:hawtdispatch-transport:1.22" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.fusesource.hawtdispatch:hawtdispatch:1.22" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.fusesource.hawtbuf:hawtbuf:1.11" level="project" />
     <orderEntry type="library" name="Maven: com.addthis:stream-lib:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: it.unimi.dsi:fastutil:6.5.7" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.26" level="project" />
@@ -121,6 +121,6 @@
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna:4.2.1" level="project" />
     <orderEntry type="library" name="Maven: net.java.dev.jna:jna-platform:4.2.1" level="project" />
     <orderEntry type="library" name="Maven: com.intellij:annotations:12.0" level="project" />
-    <orderEntry type="library" name="Maven: io.airlift.tpch:tpch:0.10" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: io.airlift.tpch:tpch:0.10" level="project" />
   </component>
 </module>
