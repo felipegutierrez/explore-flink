@@ -8,22 +8,28 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import org.sense.flink.examples.stream.udf.MqttDataSink;
+import org.sense.flink.examples.stream.udf.TaxiRideCountMap;
 import org.sense.flink.examples.table.udf.TaxiRideSource;
 import org.sense.flink.examples.table.util.TaxiRide;
 import org.sense.flink.examples.table.util.TaxiRideCommons;
 
 import static org.apache.flink.table.api.Expressions.$;
-import static org.sense.flink.util.MetricLabels.OPERATOR_SOURCE;
+import static org.sense.flink.util.MetricLabels.*;
 
 public class TaxiRideCountTable {
 
     final String input = TaxiRideCommons.pathToRideData;
 
     public TaxiRideCountTable() {
-        this(true, 4);
+        this("127.0.0.1", 1883, true, 4);
     }
 
-    public TaxiRideCountTable(boolean disableOperatorChaining, int parallelism) {
+    public TaxiRideCountTable(String sinkHost) {
+        this(sinkHost, 1883, true, 4);
+    }
+
+    public TaxiRideCountTable(String sinkHost, int sinkPort, boolean disableOperatorChaining, int parallelism) {
         try {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
@@ -51,10 +57,14 @@ public class TaxiRideCountTable {
             Table resultTableStream = ridesTableStream
                     .groupBy($("taxiId"))
                     .select($("taxiId"), $("passengerCnt").count().as("passengerCnt"));
+
             // DataStream<TaxiRide> result = tableEnv.toAppendStream(resultTableStream, TaxiRide.class);
             TypeInformation<Tuple2<Long, Long>> typeInfo = TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {
             });
-            tableEnv.toRetractStream(resultTableStream, typeInfo).print();
+            tableEnv
+                    .toRetractStream(resultTableStream, typeInfo)
+                    .map(new TaxiRideCountMap()).name(OPERATOR_MAP_OUTPUT).uid(OPERATOR_MAP_OUTPUT)
+                    .addSink(new MqttDataSink(TOPIC_DATA_SINK, sinkHost, sinkPort)).name(OPERATOR_SINK).uid(OPERATOR_SINK);
 
             System.out.println(env.getExecutionPlan());
             env.execute(TaxiRideCountTable.class.getSimpleName());
@@ -65,6 +75,6 @@ public class TaxiRideCountTable {
     }
 
     public static void main(String[] args) {
-        new TaxiRideCountTable();
+        TaxiRideCountTable taxiRideCountTable = new TaxiRideCountTable();
     }
 }

@@ -121,56 +121,6 @@
     </dependency>
     <dependency>
       <groupId>org.apache.flink</groupId>
-      <artifactId>flink-connector-twitter_2.12</artifactId>
-      <version>1.11.2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-streaming-scala_2.12</artifactId>
-      <version>1.11.2</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>flink-scala_2.12</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>scala-reflect</artifactId>
-          <groupId>org.scala-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>scala-compiler</artifactId>
-          <groupId>org.scala-lang</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-connector-kafka_2.12</artifactId>
-      <version>1.11.2</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>flink-connector-kafka-base_2.12</artifactId>
-          <groupId>org.apache.flink</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
-      <artifactId>flink-statebackend-rocksdb_2.12</artifactId>
-      <version>1.11.2</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>frocksdbjni</artifactId>
-          <groupId>com.data-artisans</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.flink</groupId>
       <artifactId>flink-table-common</artifactId>
       <version>1.11.2</version>
       <scope>provided</scope>
@@ -224,22 +174,6 @@
         <exclusion>
           <artifactId>flink-table-api-scala-bridge_2.12</artifactId>
           <groupId>org.apache.flink</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.fusesource.mqtt-client</groupId>
-      <artifactId>mqtt-client</artifactId>
-      <version>1.15</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>hawtdispatch-transport</artifactId>
-          <groupId>org.fusesource.hawtdispatch</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>hawtbuf</artifactId>
-          <groupId>org.fusesource.hawtbuf</groupId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -287,7 +287,7 @@ public class App {
                     app = 0;
                     break;
                 case 24:
-                    new TaxiRideCountTable();
+                    new TaxiRideCountTable(ipAddressSink);
                     app = 0;
                     break;
                 case 25:

@@ -38,6 +38,7 @@ public class MetricLabels {
 	public static final String OPERATOR_AGGREGATE = "aggregate";
 	public static final String OPERATOR_PRE_AGGREGATE = "pre-aggregate";
 	public static final String OPERATOR_FLAT_OUTPUT = "flat-output";
+	public static final String OPERATOR_MAP_OUTPUT = "map-output";
 	public static final String OPERATOR_SINK = "sink";
 	public static final String TPCH_DATA_LINE_ITEM = "/opt/tpch-dbgen/data/lineitem.tbl";
 	public static final String TPCH_DATA_ORDER = "/opt/tpch-dbgen/data/orders.tbl";
