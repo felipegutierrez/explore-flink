@@ -3,6 +3,7 @@ package org.sense.flink.examples.table;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
@@ -29,6 +30,16 @@ public class TaxiRideCountTable {
         try {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
+
+            // access flink configuration
+            Configuration configuration = tableEnv.getConfig().getConfiguration();
+            // set low-level key-value options
+            // local-global aggregation depends on mini-batch is enabled
+            configuration.setString("table.exec.mini-batch.enabled", "true");
+            configuration.setString("table.exec.mini-batch.allow-latency", "1 s");
+            configuration.setString("table.exec.mini-batch.size", "1000");
+            // enable two-phase, i.e. local-global aggregation
+            configuration.setString("table.optimizer.agg-phase-strategy", "TWO_PHASE");
 
             if (disableOperatorChaining) {
                 env.disableOperatorChaining();
