@@ -1,5 +1,8 @@
 package org.sense.flink.examples.table;
 
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
@@ -8,6 +11,7 @@ import org.sense.flink.examples.table.udf.TaxiRideSource;
 import org.sense.flink.examples.table.util.TaxiRide;
 import org.sense.flink.examples.table.util.TaxiRideCommons;
 
+import static org.apache.flink.table.api.Expressions.$;
 import static org.sense.flink.examples.table.util.TaxiRideCommons.*;
 import static org.sense.flink.util.MetricLabels.OPERATOR_SOURCE;
 
@@ -44,9 +48,16 @@ public class TaxiRideCountTable {
 
             DataStream<TaxiRide> ridesStream = env.addSource(new TaxiRideSource(input)).name(OPERATOR_SOURCE).uid(OPERATOR_SOURCE).slotSharingGroup(slotGroup01);
 
-            Table ridesTableStream = tableEnv.fromDataStream(ridesStream, "rideId, isStart, startTime, endTime, startLon, startLat, endLon, endLat, passengerCnt, taxiId, driverId");
-            Table resultTableStream = tableEnv.sqlQuery("SELECT * from " + ridesTableStream);
-            tableEnv.toAppendStream(resultTableStream, ridesStream.getType()).print();
+            // "rideId, isStart, startTime, endTime, startLon, startLat, endLon, endLat, passengerCnt, taxiId, driverId"
+            Table ridesTableStream = tableEnv.fromDataStream(ridesStream);
+
+            Table resultTableStream = ridesTableStream
+                    .groupBy($("taxiId"))
+                    .select($("taxiId"), $("passengerCnt").count().as("passengerCnt"));
+            // DataStream<TaxiRide> result = tableEnv.toAppendStream(resultTableStream, TaxiRide.class);
+            TypeInformation<Tuple2<Long, Long>> typeInfo = TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {
+            });
+            tableEnv.toRetractStream(resultTableStream, typeInfo).print();
 
             System.out.println(env.getExecutionPlan());
             env.execute(TaxiRideCountTable.class.getSimpleName());

@@ -6,13 +6,13 @@ import org.sense.flink.examples.stream.clickcount.ClickEventCount;
 import org.sense.flink.examples.stream.clickcount.ClickEventGenerator;
 import org.sense.flink.examples.stream.edgent.*;
 import org.sense.flink.examples.stream.kafka.KafkaConsumerQuery;
-import org.sense.flink.examples.stream.table.MqttSensorDataAverageTableAPI;
 import org.sense.flink.examples.stream.tpch.TCPHOrderProducer;
 import org.sense.flink.examples.stream.tpch.TPCHQuery01;
 import org.sense.flink.examples.stream.tpch.TPCHQuery03;
 import org.sense.flink.examples.stream.tpch.TPCHQuery10;
 import org.sense.flink.examples.stream.twitter.TwitterExample;
 import org.sense.flink.examples.stream.valencia.*;
+import org.sense.flink.examples.table.TaxiRideCountTable;
 import org.sense.flink.util.SinkOutputs;
 import org.sense.flink.util.ValenciaItemType;
 
@@ -287,7 +287,7 @@ public class App {
                     app = 0;
                     break;
                 case 24:
-                    new MqttSensorDataAverageTableAPI(ipAddressSource, ipAddressSink);
+                    new TaxiRideCountTable();
                     app = 0;
                     break;
                 case 25:
@@ -412,7 +412,7 @@ public class App {
         System.out.println("21 - Estimate cardinality with HyperLogLog");
         System.out.println("22 - Estimate cardinality with HyperLogLogPlus");
         System.out.println("23 - Estimate cardinality with Bloom Filter");
-        System.out.println("24 - Executing join over MQTT data using Flink Table API");
+        System.out.println("24 - Aggregation query for Taxi Ride Count using Flink Table API");
         System.out.println("25 - Reading values from Valencia Open-data Web Portal and processing a JOIN using Flink Data Stream");
         System.out.println("26 - Reading values from Valencia Open-data Web Portal and processing a COMBINER using Flink Data Stream");
         System.out.println("27 - Reading values from Valencia Open-data Web Portal and computing the Standard Repartition JOIN using Flink Data Stream");

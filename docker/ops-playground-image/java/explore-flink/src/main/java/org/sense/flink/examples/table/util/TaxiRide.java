@@ -35,7 +35,7 @@ public class TaxiRide implements Comparable<TaxiRide>, Serializable {
     public float startLat;
     public float endLon;
     public float endLat;
-    public short passengerCnt;
+    public long passengerCnt;
     public long taxiId;
     public long driverId;
 
@@ -46,7 +46,7 @@ public class TaxiRide implements Comparable<TaxiRide>, Serializable {
 
     public TaxiRide(long rideId, boolean isStart, DateTime startTime, DateTime endTime,
                     float startLon, float startLat, float endLon, float endLat,
-                    short passengerCnt, long taxiId, long driverId) {
+                    long passengerCnt, long taxiId, long driverId) {
 
         this.rideId = rideId;
         this.isStart = isStart;
@@ -92,7 +92,7 @@ public class TaxiRide implements Comparable<TaxiRide>, Serializable {
             ride.startLat = tokens[5].length() > 0 ? Float.parseFloat(tokens[5]) : 0.0f;
             ride.endLon = tokens[6].length() > 0 ? Float.parseFloat(tokens[6]) : 0.0f;
             ride.endLat = tokens[7].length() > 0 ? Float.parseFloat(tokens[7]) : 0.0f;
-            ride.passengerCnt = Short.parseShort(tokens[8]);
+            ride.passengerCnt = Long.parseLong(tokens[8]);
             ride.taxiId = Long.parseLong(tokens[9]);
             ride.driverId = Long.parseLong(tokens[10]);
 
