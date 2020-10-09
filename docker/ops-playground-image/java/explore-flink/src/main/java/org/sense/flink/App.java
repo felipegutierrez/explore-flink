@@ -39,6 +39,7 @@ public class App {
     private static final String PARAMETER_OUTPUT = "-output";
     private static final String PARAMETER_INPUT = "-input";
     private static final String PARAMETER_BOOTSTRAP_SERVERS = "-bootstrap.servers";
+    private static final String PARAMETER_TOPIC = "-topic";
     private static final String PARAMETER_DURATION = "-duration";
     private static final String PARAMETER_MAX_COUNT = "-maxCount";
     private static final String PARAMETER_PINNING_POLICY = "-pinningPolicy";
@@ -51,6 +52,7 @@ public class App {
         String output = SinkOutputs.PARAMETER_OUTPUT_FILE;
         String input = null;
         String bootstrapServers = "127.0.0.1:9092";
+        String topic = "topic_default";
         int app = 0;
         int frequencyPull = 10;
         int frequencyWindow = 30;
@@ -125,6 +127,9 @@ public class App {
                 } else if (PARAMETER_BOOTSTRAP_SERVERS.equals(String.valueOf(args[i])) && i + 1 < size) {
                     i++;
                     bootstrapServers = String.valueOf(args[i]);
+                } else if (PARAMETER_TOPIC.equals(String.valueOf(args[i])) && i + 1 < size) {
+                    i++;
+                    topic = String.valueOf(args[i]);
                 } else if (PARAMETER_OUTPUT.equals(String.valueOf(args[i])) && i + 1 < size) {
                     i++;
                     if (SinkOutputs.PARAMETER_OUTPUT_FILE.equals(String.valueOf(args[i]))) {
@@ -377,7 +382,7 @@ public class App {
                     app = 0;
                     break;
                 case 41:
-                    new TCPHOrderProducer(bootstrapServers);
+                    new TCPHOrderProducer(bootstrapServers, topic);
                     app = 0;
                     break;
                 default:
