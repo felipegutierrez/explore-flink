@@ -14,9 +14,9 @@ spec:
         - name: tpch-dbgen-data
           persistentVolumeClaim:
             claimName: tpch-dbgen-data-pvc
-        # - name: job-artifacts-volume
-        #   hostPath:
-        #     path: /host/path/to/job/artifacts
+        - name: tpch-dbgen-datarate
+          persistentVolumeClaim:
+            claimName: tpch-dbgen-datarate-pvc
       containers:
         - name: kafka-producer-tpch-order
           image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
@@ -25,8 +25,9 @@ spec:
             - mountPath: /opt/tpch-dbgen/data
               name: tpch-dbgen-data
               subPath: data
-            # - name: job-artifacts-volume
-            #   mountPath: /opt/flink/usrlib
+            - mountPath: /tmp
+              name: tpch-dbgen-datarate
+              subPath: tmp
           env:
           # command: ['sh', '-c', 'for i in 1 2 3; do echo "job-1 `date`" && sleep 5m; done;', 'ls']
           command: ["java"]
