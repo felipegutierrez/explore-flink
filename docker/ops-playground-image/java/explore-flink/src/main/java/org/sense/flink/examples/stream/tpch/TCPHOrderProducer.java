@@ -15,7 +15,8 @@ import static org.sense.flink.util.MetricLabels.TPCH_DATA_ORDER;
 
 public class TCPHOrderProducer {
 
-    private static final String topic = "tpc-h-order";
+    private static final String TOPIC_ORDERS = "tpc-h-order";
+    private final String topic;
     private final Logger logger = LoggerFactory.getLogger(TCPHOrderProducer.class);
     private final String dataFilePath;
     private final DataRateListener dataRateListener;
@@ -23,14 +24,19 @@ public class TCPHOrderProducer {
     private Boolean running;
 
     public TCPHOrderProducer() {
-        this(TPCH_DATA_ORDER, "127.0.0.1:9092");
+        this(TPCH_DATA_ORDER, "127.0.0.1:9092", TOPIC_ORDERS);
     }
 
     public TCPHOrderProducer(String bootstrapServers) {
-        this(TPCH_DATA_ORDER, bootstrapServers);
+        this(TPCH_DATA_ORDER, bootstrapServers, TOPIC_ORDERS);
     }
 
-    public TCPHOrderProducer(String dataFilePath, String bootstrapServers) {
+    public TCPHOrderProducer(String bootstrapServers, String topic) {
+        this(TPCH_DATA_ORDER, bootstrapServers, topic);
+    }
+
+    public TCPHOrderProducer(String dataFilePath, String bootstrapServers, String topic) {
+        this.topic = topic;
         this.bootstrapServers = bootstrapServers;
         this.dataRateListener = new DataRateListener();
         this.dataRateListener.start();
