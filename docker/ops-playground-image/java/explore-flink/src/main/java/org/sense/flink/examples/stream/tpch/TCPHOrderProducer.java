@@ -43,6 +43,7 @@ public class TCPHOrderProducer {
             this.dataFilePath = dataFilePath;
         }
 
+        disclaimer();
         // create properties
         Properties properties = new Properties();
         properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -144,5 +145,12 @@ public class TCPHOrderProducer {
             throw new RuntimeException("Invalid record: " + line, e);
         }
         return order;
+    }
+
+    private void disclaimer() {
+        System.out.println("dataFilePath:     " + this.dataFilePath);
+        System.out.println("bootstrapServers: " + this.bootstrapServers);
+        System.out.println("topic:            " + this.topic);
+        System.out.println();
     }
 }
