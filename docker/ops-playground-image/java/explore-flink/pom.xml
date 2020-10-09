@@ -193,7 +193,6 @@
             <groupId>io.airlift.tpch</groupId>
             <artifactId>tpch</artifactId>
             <version>0.10</version>
-            <scope>provided</scope>
         </dependency>
     </dependencies>
     <build>

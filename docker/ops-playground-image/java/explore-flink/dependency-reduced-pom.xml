@@ -189,12 +189,6 @@
       <version>1.7.26</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>io.airlift.tpch</groupId>
-      <artifactId>tpch</artifactId>
-      <version>0.10</version>
-      <scope>provided</scope>
-    </dependency>
   </dependencies>
   <properties>
     <flink.version>1.11.2</flink.version>
