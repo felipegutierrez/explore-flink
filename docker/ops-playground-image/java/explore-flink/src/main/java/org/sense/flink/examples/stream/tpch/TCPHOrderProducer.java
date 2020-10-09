@@ -26,6 +26,10 @@ public class TCPHOrderProducer {
         this(TPCH_DATA_ORDER, "127.0.0.1:9092");
     }
 
+    public TCPHOrderProducer(String bootstrapServers) {
+        this(TPCH_DATA_ORDER, bootstrapServers);
+    }
+
     public TCPHOrderProducer(String dataFilePath, String bootstrapServers) {
         this.bootstrapServers = bootstrapServers;
         this.dataRateListener = new DataRateListener();
