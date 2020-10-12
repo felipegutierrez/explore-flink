@@ -98,18 +98,18 @@
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpclient:4.5.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.6" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.9" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.kafka:kafka-clients:2.6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.kafka:kafka-clients:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: com.github.luben:zstd-jni:1.4.4-7" level="project" />
     <orderEntry type="library" name="Maven: org.lz4:lz4-java:1.7.1" level="project" />
     <orderEntry type="library" name="Maven: org.xerial.snappy:snappy-java:1.1.7.3" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.kafka:kafka-streams:2.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.kafka:connect-json:2.6.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.kafka:connect-api:2.6.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.kafka:kafka-streams:2.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.kafka:connect-json:2.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.kafka:connect-api:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.10.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.10.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-core:2.10.2" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.10.2" level="project" />
-    <orderEntry type="library" name="Maven: org.rocksdb:rocksdbjni:5.18.4" level="project" />
+    <orderEntry type="library" name="Maven: org.rocksdb:rocksdbjni:5.18.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:29.0-jre" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:failureaccess:1.0.1" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava" level="project" />

@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: flink-taskmanager
+  namespace: kafka
 spec:
   replicas: 3
   serviceName: flink-taskmanager

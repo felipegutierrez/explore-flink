@@ -1,13 +1,13 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: kafka-producer-tpch-order
-  namespace: default
+  name: kafka-producer-tpch
+  namespace: kafka
 spec:
   template:
     metadata:
       labels:
-        app: kafka-producer-tpch-order
+        app: kafka-producer-tpch
     spec:
       restartPolicy: OnFailure
       volumes:
@@ -18,9 +18,9 @@ spec:
           persistentVolumeClaim:
             claimName: tpch-dbgen-datarate-pvc
       containers:
-        - name: kafka-producer-tpch-order
+        - name: kafka-producer-tpch
           image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
-          imagePullPolicy: Always # Always/IfNotPresent
+          imagePullPolicy: IfNotPresent # Always/IfNotPresent
           volumeMounts:
             - mountPath: /opt/tpch-dbgen/data
               name: tpch-dbgen-data
@@ -29,11 +29,9 @@ spec:
               name: tpch-dbgen-datarate
               subPath: tmp
           env:
-          - name: KAFKA-0-HOST
-            value: kafka-0.kafka.default.svc.cluster.local # kafka-0.kafka.default.svc.cluster.local
           # command: ['sh', '-c', 'for i in 1 2 3; do echo "job-1 `date`" && sleep 5m; done;', 'ls']
           command: ["java"]
-          args: ["-cp", "explore-flink.jar:/opt/flink/lib/*", "org.sense.flink.App", "-app", "41", "-bootstrap.servers", "kafka-0.kafka.default.svc.cluster.local:9092"]
+          args: ["-cp", "explore-flink.jar:/opt/flink/lib/*", "org.sense.flink.App", "-app", "41", "-bootstrap.servers", "10.111.85.76:9092", "-topic", "my-topic"]
           ports:
           - containerPort: 9092
           - containerPort: 9093

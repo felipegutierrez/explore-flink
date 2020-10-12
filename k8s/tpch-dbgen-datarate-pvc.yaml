@@ -2,6 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: tpch-dbgen-datarate-pvc
+  namespace: kafka
 spec:
   accessModes:
     - ReadWriteOnce

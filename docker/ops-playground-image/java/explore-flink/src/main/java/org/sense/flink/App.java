@@ -366,7 +366,7 @@ public class App {
                     app = 0;
                     break;
                 case 37:
-                    new TPCHQuery10(input, output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
+                    new TPCHQuery10(input, topic, bootstrapServers, output, ipAddressSink, disableOperatorChaining, pinningPolicy, maxCount);
                     app = 0;
                     break;
                 case 38:

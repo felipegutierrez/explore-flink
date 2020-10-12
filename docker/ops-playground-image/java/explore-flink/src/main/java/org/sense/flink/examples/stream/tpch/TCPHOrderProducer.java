@@ -56,11 +56,11 @@ public class TCPHOrderProducer {
         properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         // producer acks
-        properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
-        properties.setProperty(ProducerConfig.RETRIES_CONFIG, "3");
-        properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1");
+        // properties.setProperty(ProducerConfig.ACKS_CONFIG, "all");
+        // properties.setProperty(ProducerConfig.RETRIES_CONFIG, "3");
+        // properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "1");
         // leverage idempotent
-        properties.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
+        // properties.setProperty(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "true");
         // create producer
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);
 
@@ -124,7 +124,7 @@ public class TCPHOrderProducer {
     }
 
     public static void main(String[] args) {
-        new TCPHOrderProducer();
+        TCPHOrderProducer tcpHOrderProducer = new TCPHOrderProducer("10.98.121.13:9092", "my-topic");
     }
 
     private Order getOrderItem(String line, int rowNumber) {

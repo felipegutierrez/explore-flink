@@ -1,6 +1,13 @@
 package org.sense.flink.examples.stream.tpch;
 
+import org.apache.flink.api.common.serialization.DeserializationSchema;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.JsonNode;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.api.common.serialization.SimpleStringEncoder;
+import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple6;
 import org.apache.flink.core.fs.Path;
@@ -9,13 +16,20 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
+import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
+import org.apache.flink.streaming.util.serialization.JSONKeyValueDeserializationSchema;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.sense.flink.examples.stream.tpch.pojo.Order;
 import org.sense.flink.examples.stream.tpch.udf.*;
 import org.sense.flink.mqtt.MqttStringPublisher;
 
 import java.io.IOException;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import static org.apache.flink.api.java.typeutils.TypeExtractor.getForClass;
 import static org.sense.flink.util.MetricLabels.OPERATOR_REDUCER;
 import static org.sense.flink.util.MetricLabels.OPERATOR_SINK;
 import static org.sense.flink.util.SinkOutputs.*;
@@ -76,21 +90,44 @@ public class TPCHQuery10 {
     private final String topic = "topic-tpch-query-10";
 
     public TPCHQuery10() {
-        this(null, PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, -1);
+        this(null, null, null, PARAMETER_OUTPUT_LOG, "127.0.0.1", false, false, -1);
     }
 
-    public TPCHQuery10(String input, String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy, long maxCount) {
+    public TPCHQuery10(String input, String topic, String bootstrapServers, String output, String ipAddressSink, boolean disableOperatorChaining, boolean pinningPolicy, long maxCount) {
         try {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
+
+            // use filesystem based state management
+            // env.setStateBackend(new FsStateBackend("file:///tmp/flink/checkpoints"));
 
             if (disableOperatorChaining) {
                 env.disableOperatorChaining();
             }
 
-            DataStream<Order> orders = env
-                    .addSource(new OrdersSource(input, maxCount)).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
+            DataStream<Order> orders = null;
+            if ("kafka".equalsIgnoreCase(input)) {
+                Properties properties = new Properties();
+                // properties.setProperty("zookeeper.connect", "10.97.159.124:2181");
+                properties.setProperty("bootstrap.servers", bootstrapServers);
+                // properties.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+                // not to be shared with another job consuming the same topic
+                properties.setProperty("group.id", "flink-group");
+                // properties.setProperty("security.protocol", "SSL");
+                // properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+                // properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+                // orders =
+                FlinkKafkaConsumer kafkaConsumer = new FlinkKafkaConsumer<>(topic, new MyJSONDeserializationSchema(), properties);
+                // FlinkKafkaConsumer kafkaConsumer = new FlinkKafkaConsumer<>(topic, new JSONKeyValueDeserializationSchema(true), properties);
+                // FlinkKafkaConsumer011 kafkaConsumer = new FlinkKafkaConsumer011<>(topic, new JSONKeyValueDeserializationSchema(false), properties);
+                DataStream<ObjectNode> s = env.addSource(kafkaConsumer);
+                s.print();
+            } else {
+                orders = env
+                        .addSource(new OrdersSource(input, maxCount)).name(OrdersSource.class.getSimpleName()).uid(OrdersSource.class.getSimpleName());
+            }
 
+            /*
             // orders filtered by year: (orderkey, custkey) = order.f2.substring(0, 4)) > 1990
             DataStream<Order> ordersFiltered = orders
                     .filter(new OrderYearFilter(1990)).name(OrderYearFilter.class.getSimpleName()).uid(OrderYearFilter.class.getSimpleName());
@@ -131,7 +168,7 @@ public class TPCHQuery10 {
                         .addSink(sink).name(OPERATOR_SINK).uid(OPERATOR_SINK);
             } else {
                 System.out.println("discarding output");
-            }
+            }*/
 
             System.out.println("Stream job: " + TPCHQuery10.class.getSimpleName());
             System.out.println("Execution plan >>>\n" + env.getExecutionPlan());
@@ -143,7 +180,38 @@ public class TPCHQuery10 {
         }
     }
 
+    private static class MyJSONDeserializationSchema implements DeserializationSchema<ObjectNode> {
+
+        private static final long serialVersionUID = -1L;
+
+        private ObjectMapper mapper;
+
+        @Override
+        public ObjectNode deserialize(byte[] message) throws IOException {
+            if (mapper == null) {
+                mapper = new ObjectMapper();
+            }
+            ObjectNode node = mapper.createObjectNode();
+            if (message != null) {
+                node.set("value", mapper.readValue(message, JsonNode.class));
+            }
+            return node;
+        }
+
+        @Override
+        public boolean isEndOfStream(ObjectNode o) {
+            return false;
+        }
+
+        @Override
+        public TypeInformation getProducedType() {
+            return getForClass(ObjectNode.class);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        new TPCHQuery10();
+        String topic = "my-topic";
+        String bootstrapServers = "10.111.85.76:9092";
+        new TPCHQuery10("kafka", topic, bootstrapServers, "log", "127.0.0.1", false, false, -1);
     }
 }
