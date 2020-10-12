@@ -26,8 +26,8 @@ spec:
           image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
           imagePullPolicy: Always # Always/IfNotPresent
           env:
-          args: ["standalone-job", "--job-classname", "org.sense.flink.App", "-app", "36"] #, <optional arguments>, <job arguments>] # optional arguments: ["--job-id", "<job id>", "--fromSavepoint", "/path/to/savepoint", "--allowNonRestoredState"]
-          # args: ["standalone-job", "--job-classname", "org.sense.flink.App", "-app", "37"] #, <optional arguments>, <job arguments>] # optional arguments: ["--job-id", "<job id>", "--fromSavepoint", "/path/to/savepoint", "--allowNonRestoredState"]
+          # args: ["standalone-job", "--job-classname", "org.sense.flink.App", "-app", "36"] #, <optional arguments>, <job arguments>] # optional arguments: ["--job-id", "<job id>", "--fromSavepoint", "/path/to/savepoint", "--allowNonRestoredState"]
+          args: ["standalone-job", "--job-classname", "org.sense.flink.App", "-app", "37", "-input", "kafka", "-bootstrap.servers", "10.111.85.76:9092", "-topic", "my-topic"]
           ports:
             - containerPort: 6123
               name: rpc
@@ -37,6 +37,7 @@ spec:
               name: webui
             - containerPort: 9250
             - containerPort: 9251
+            - containerPort: 9092
           livenessProbe:
             tcpSocket:
               port: 6123

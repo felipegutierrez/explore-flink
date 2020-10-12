@@ -16,6 +16,8 @@ spec:
     port: 9250
   - name: prometheus-1
     port: 9251
+  - name: kafka
+    port: 9092
   selector:
     app: flink
     component: jobmanager

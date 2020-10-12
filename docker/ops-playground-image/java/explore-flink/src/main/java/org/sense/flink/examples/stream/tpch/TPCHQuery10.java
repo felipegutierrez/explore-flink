@@ -117,8 +117,8 @@ public class TPCHQuery10 {
                 // properties.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
                 // properties.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
                 // orders =
-                FlinkKafkaConsumer kafkaConsumer = new FlinkKafkaConsumer<>(topic, new MyJSONDeserializationSchema(), properties);
-                // FlinkKafkaConsumer kafkaConsumer = new FlinkKafkaConsumer<>(topic, new JSONKeyValueDeserializationSchema(true), properties);
+                // FlinkKafkaConsumer kafkaConsumer = new FlinkKafkaConsumer<>(topic, new MyJSONDeserializationSchema(), properties);
+                FlinkKafkaConsumer kafkaConsumer = new FlinkKafkaConsumer<>(topic, new JSONKeyValueDeserializationSchema(false), properties);
                 // FlinkKafkaConsumer011 kafkaConsumer = new FlinkKafkaConsumer011<>(topic, new JSONKeyValueDeserializationSchema(false), properties);
                 DataStream<ObjectNode> s = env.addSource(kafkaConsumer);
                 s.print();
@@ -191,6 +191,7 @@ public class TPCHQuery10 {
             if (mapper == null) {
                 mapper = new ObjectMapper();
             }
+            System.out.println(message);
             ObjectNode node = mapper.createObjectNode();
             if (message != null) {
                 node.set("value", mapper.readValue(message, JsonNode.class));
