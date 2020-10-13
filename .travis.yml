@@ -22,7 +22,12 @@ cache:
 before_script:
   # Download kubeval to validate Kubernetes yaml files
   - curl -Lo kubeval-linux-amd64.tar.gz https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz && tar xf kubeval-linux-amd64.tar.gz && sudo mv kubeval /usr/local/bin/ && rm -Rf kubeval-linux-amd64.tar.gz
-  - kubeval k8s/*.yaml
+  - kubeval k8s/kafka-producer-tpch-order.yaml
+  - kubeval k8s/metrics-server.yaml
+  - kubeval k8s/prometheus-*.yaml
+  - kubeval k8s/grafana-*.yaml
+  - kubeval k8s/tpch-dbgen-*.yaml
+  - kubeval k8s/flink-*.yaml
   # Download kubectl, which is a requirement for using minikube
   - curl -Lo kubectl https://storage.googleapis.com/kubernetes-release/release/v1.19.0/bin/linux/amd64/kubectl && chmod +x kubectl && sudo mv kubectl /usr/local/bin/
   # Download minikube
@@ -53,34 +58,14 @@ after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
   # take the images and push them to docker.hub
   - docker push felipeogutierrez/tpch-dbgen
-  - docker push felipeogutierrez/explore-flink:1.11.1-scala_2.12
+  - docker push felipeogutierrez/explore-flink:1.11.2-scala_2.12
   - cd ../
-  # test the explore-flink:1.11.1-scala_2.12 image inside Kubernetes
+  # test the explore-flink:1.11.2-scala_2.12 image inside Kubernetes
   #- minikube ssh 'sudo ip link set docker0 promisc on'
-  #- kubectl create -f k8s/flink-configuration-configmap.yaml
-  #- kubectl create -f k8s/zookeeper-service.yaml
-  #- kubectl create -f k8s/kafka-service.yaml
-  #- kubectl create -f k8s/flink-jobmanager-service.yaml
-  #- kubectl create -f k8s/flink-jobmanager-rest-service.yaml
-  #- kubectl create -f k8s/flink-taskmanager-service.yaml
   #- kubectl create -f k8s/tpch-dbgen-pvc.yaml
   #- kubectl create -f k8s/tpch-dbgen-datarate-pvc.yaml
   #- kubectl create -f k8s/tpch-dbgen-job.yaml
-  #- kubectl create -f k8s/zookeeper-statefulset.yaml
-  #- kubectl create -f k8s/kafka-statefulset.yaml  - kubectl create -f k8s/flink-jobmanager-job.yaml
-  #- kubectl create -f k8s/flink-taskmanager-statefulset.yaml
-  #- kubectl create -f k8s/flink-jobmanager-job.yaml
   # test if TPCH-dbgen-job is available
   #- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get jobs -o jsonpath="$JSONPATH" 2>&1 | grep -q "tpch-dbgen-job"; do sleep 1;echo "waiting for tpch-dbgen-job deployment to be available"; kubectl get jobs -n default; done
-  # test if Zookeeper is available
-  # test if Kafka is available
-  # test if Flink JobManager/TaskManagers are available
-  #- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get jobs -o jsonpath="$JSONPATH" 2>&1 | grep -q "flink-jobmanager"; do sleep 1;echo "waiting for flink-jobmanager job to be available"; kubectl get jobs -n default; done
-  #- JSONPATH='{range .items[*]}{@.metadata.name}:{range @.status.conditions[*]}{@.type}={@.status};{end}{end}'; until kubectl -n default get pods -lapp=flink-taskmanager -o jsonpath="$JSONPATH" 2>&1 | grep -q "Ready=True"; do sleep 1;echo "waiting for flink-taskmanager deployment to be available"; kubectl get pods -n default; done
   # delete Kubernetes objects
-  #- kubectl delete statefulset zookeeper kafka flink-taskmanager
-  #- kubectl delete jobs flink-jobmanager tpch-dbgen-job
   #- kubectl delete pvc tpch-dbgen-data-pvc tpch-dbgen-datarate-pvc
-  #- kubectl delete configmaps flink-config
-  #- kubectl delete services zookeeper kafka flink-jobmanager flink-jobmanager-rest flink-taskmanager
-  #- kubectl delete deployment metrics-server -n kube-system 

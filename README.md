@@ -1,9 +1,9 @@
 
 [![Build Status](https://api.travis-ci.org/felipegutierrez/explore-flink.svg?branch=master)](https://travis-ci.org/felipegutierrez/explore-flink)
 
-This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with Docker 19.03.8, Kubernetes v1.19.0, minikube v1.13.1, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). 
+This project is based on [Apache Flink 1.11.2](https://flink.apache.org/) consuming events from Kafka 2.2.5 (using [Strimzi](https://strimzi.io/quickstarts/) operators) with Docker 19.03.8, Kubernetes v1.19.0, minikube v1.13.1, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). 
 
-## Kubernetes + Docker + Kafka([Strimzi](https://strimzi.io/quickstarts/)) + Flink(1 JobManager, 3 TaskManagers) + Prometheus + Grafana
+## Kubernetes + Docker + Kafka(3 brokers from [Strimzi](https://strimzi.io/quickstarts/) operators) + Flink(1 JobManager, 3 TaskManagers) + Prometheus + Grafana
 
 This section aims to deploy the docker images above using minikube v1.13.1 Kubernetes v1.19.0 and Docker 19.03.8. It is based on the official tutorial [Flink with Kubernetes Setup](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html).
 

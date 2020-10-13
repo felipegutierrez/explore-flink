@@ -19,7 +19,7 @@ spec:
             claimName: tpch-dbgen-datarate-pvc
       containers:
         - name: kafka-producer-tpch
-          image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
+          image: felipeogutierrez/explore-flink:1.11.2-scala_2.12
           imagePullPolicy: Always # Always/IfNotPresent
           volumeMounts:
             - mountPath: /opt/tpch-dbgen/data

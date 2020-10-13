@@ -2,7 +2,7 @@ version: "3.7"
 services:
   client:
     build: ../docker/ops-playground-image
-    image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
+    image: felipeogutierrez/explore-flink:1.11.2-scala_2.12
     command: "flink run -d -p 4 /opt/flink/usrlib/explore-flink.jar -app 36 -disableOperatorChaining true -output file"
     depends_on:
       - jobmanager
@@ -13,7 +13,7 @@ services:
     environment:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
   clickevent-generator:
-    image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
+    image: felipeogutierrez/explore-flink:1.11.2-scala_2.12
     command: "java -classpath /opt/explore-flink.jar:/opt/flink/lib/* org.sense.flink.App -app 39"
     depends_on:
       - kafka
@@ -26,7 +26,7 @@ services:
       - datarate:/tmp/
     stdin_open: true
   jobmanager:
-    image: flink:1.11.1-scala_2.12
+    image: flink:1.11.2-scala_2.12
     command: "jobmanager.sh start-foreground"
     hostname: "jobmanager"
     expose:
@@ -43,7 +43,7 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     restart: always
   taskmanager-01:
-    image: flink:1.11.1-scala_2.12
+    image: flink:1.11.2-scala_2.12
     hostname: "taskmanager-01"
     expose:
       - "6121"
@@ -65,7 +65,7 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     restart: always
   taskmanager-02:
-    image: flink:1.11.1-scala_2.12
+    image: flink:1.11.2-scala_2.12
     hostname: "taskmanager-02"
     expose:
       - "6121"
@@ -87,7 +87,7 @@ services:
       - JOB_MANAGER_RPC_ADDRESS=jobmanager
     restart: always
   taskmanager-03:
-    image: flink:1.11.1-scala_2.12
+    image: flink:1.11.2-scala_2.12
     hostname: "taskmanager-03"
     expose:
       - "6121"
