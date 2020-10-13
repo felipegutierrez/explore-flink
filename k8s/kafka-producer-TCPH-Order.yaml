@@ -20,7 +20,7 @@ spec:
       containers:
         - name: kafka-producer-tpch
           image: felipeogutierrez/explore-flink:1.11.1-scala_2.12
-          imagePullPolicy: IfNotPresent # Always/IfNotPresent
+          imagePullPolicy: Always # Always/IfNotPresent
           volumeMounts:
             - mountPath: /opt/tpch-dbgen/data
               name: tpch-dbgen-data
