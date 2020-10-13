@@ -39,10 +39,10 @@ public class Order extends io.airlift.tpch.Order implements Serializable {
 
     @Override
     public String toString() {
-        return "Order [getRowNumber()=" + getRowNumber() + ", getOrderKey()=" + getOrderKey() + ", getCustomerKey()="
-                + getCustomerKey() + ", getOrderStatus()=" + getOrderStatus() + ", getTotalPrice()=" + getTotalPrice()
-                + ", getTotalPriceInCents()=" + getTotalPriceInCents() + ", getOrderDate()=" + getOrderDate()
-                + ", getOrderPriority()=" + getOrderPriority() + ", getClerk()=" + getClerk() + ", getShipPriority()="
-                + getShipPriority() + ", getComment()=" + getComment() + "]";
+        return "Order [RowNumber=" + getRowNumber() + ", OrderKey=" + getOrderKey() + ", CustomerKey="
+                + getCustomerKey() + ", OrderStatus=" + getOrderStatus() + ", TotalPrice=" + getTotalPrice()
+                + ", TotalPriceInCents=" + getTotalPriceInCents() + ", OrderDate=" + getOrderDate()
+                + ", OrderPriority=" + getOrderPriority() + ", Clerk=" + getClerk() + ", ShipPriority="
+                + getShipPriority() + ", Comment=" + getComment() + "]";
     }
 }

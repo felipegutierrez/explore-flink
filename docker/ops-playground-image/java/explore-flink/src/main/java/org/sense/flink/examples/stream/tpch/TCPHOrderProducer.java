@@ -124,7 +124,9 @@ public class TCPHOrderProducer {
     }
 
     public static void main(String[] args) {
-        TCPHOrderProducer tcpHOrderProducer = new TCPHOrderProducer("10.98.121.13:9092", "my-topic");
+        String exampleTopic = "my-topic";
+        String bootserverStrapExample = "127.0.0.1:9092"; //"10.98.121.13:9092";
+        TCPHOrderProducer tcpHOrderProducer = new TCPHOrderProducer(bootserverStrapExample, exampleTopic);
     }
 
     private Order getOrderItem(String line, int rowNumber) {
