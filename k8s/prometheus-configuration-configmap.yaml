@@ -18,7 +18,7 @@ data:
       - job_name: 'flink'
         scrape_interval: 15s
         static_configs:
-          - targets: ['flink-jobmanager:9250', 'flink-jobmanager:9251', 'flink-taskmanager-0.flink-taskmanager.default.svc.cluster.local:9250', 'flink-taskmanager-1.flink-taskmanager.default.svc.cluster.local:9250', 'flink-taskmanager-2.flink-taskmanager.default.svc.cluster.local:9250']
+          - targets: ['flink-jobmanager:9250', 'flink-jobmanager:9251', 'flink-taskmanager-0.flink-taskmanager.kafka.svc.cluster.local:9250', 'flink-taskmanager-1.flink-taskmanager.kafka.svc.cluster.local:9250', 'flink-taskmanager-2.flink-taskmanager.kafka.svc.cluster.local:9250']
         metrics_path: /
       - job_name: 'kafka'
         scrape_interval: 15s

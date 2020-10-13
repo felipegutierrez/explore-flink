@@ -28,3 +28,34 @@ minikube ip
  172.17.0.2
 kubectl get nodes --output=jsonpath='{range .items[*]}{.status.addresses[?(@.type=="172.17.0.2")].address}{"\n"}{end}'
 
+# accessing the Kubernetes dashboard
+
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.4/aio/deploy/recommended.yaml
+kubectl proxy
+# access the URL:
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/#/login
+# create the tocken
+kubectl create serviceaccount dashboard-admin-sa
+kubectl create clusterrolebinding dashboard-admin-sa --clusterrole=cluster-admin --serviceaccount=default:dashboard-admin-sa
+kubectl get secrets
+# NAME                             TYPE                                  DATA   AGE
+# dashboard-admin-sa-token-g44wr   kubernetes.io/service-account-token   3      2m21s
+# default-token-7lqvq              kubernetes.io/service-account-token   3      11d
+
+# Copy the token and enter it into the token field on the Kubernetes dashboard login page.
+kubectl describe secret dashboard-admin-sa-token-g44wr
+# Name:         dashboard-admin-sa-token-g44wr
+# Namespace:    default
+# Labels:       <none>
+# Annotations:  kubernetes.io/service-account.name: dashboard-admin-sa
+#               kubernetes.io/service-account.uid: 21a4dc00-0cca-41c0-9991-89f750968564
+#
+# Type:  kubernetes.io/service-account-token
+#
+# Data
+# ====
+# ca.crt:     1066 bytes
+# namespace:  7 bytes
+# token:      XXXXXXX....XXXX
+
+
