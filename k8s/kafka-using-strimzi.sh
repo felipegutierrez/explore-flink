@@ -7,6 +7,8 @@ kubectl apply -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
 
 # Apply the `Kafka` Cluster CR file
 kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml -n kafka
+# Then apply our kafka cluster to replace the existing one with 3 replicas
+kubectl apply -n kafka -f kafka-metrics.yaml
 
 kubectl wait kafka/my-cluster --for=condition=Ready --timeout=300s -n kafka
 

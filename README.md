@@ -3,7 +3,7 @@
 
 This project is based on [Apache Flink 1.11.1](https://flink.apache.org/) with Docker 19.03.8, Kubernetes v1.19.0, minikube v1.13.1, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). 
 
-## Kubernetes + Docker + Kafka(1 ZooKeeper, 1 broker) + Flink(1 JobManager, 3 TaskManagers) + Prometheus + Grafana
+## Kubernetes + Docker + Kafka([Strimzi](https://strimzi.io/quickstarts/)) + Flink(1 JobManager, 3 TaskManagers) + Prometheus + Grafana
 
 This section aims to deploy the docker images above using minikube v1.13.1 Kubernetes v1.19.0 and Docker 19.03.8. It is based on the official tutorial [Flink with Kubernetes Setup](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html).
 
@@ -13,7 +13,7 @@ minikube start --cpus 4 --memory 8192
 minikube ssh 'sudo ip link set docker0 promisc on'
 kubectl proxy
 
-kubectl apply -f k8s/
+kubectl apply -n kafka -f k8s/
 ```
 List the objects, the resources:
 ```
@@ -22,7 +22,7 @@ kubectl api-resources
 ```
 Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091/targets](http://172.17.0.2:30091/targets) and [http://172.17.0.2:30091/graph](http://172.17.0.2:30091/graph), and the Grafana WebUI at [http://172.17.0.2:30011](http://172.17.0.2:30011).
 
-![Flink web UI - prometheus - grafana - using Kubernetes](images/4h017m.gif)
+![Kafka(Strimzi) - Flink web UI - prometheus - grafana - using Kubernetes](images/screencast-00.gif)
 
 ### Troubleshooting:
 Testing Kafka client:
