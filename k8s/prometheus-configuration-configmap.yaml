@@ -23,5 +23,5 @@ data:
       - job_name: 'kafka'
         scrape_interval: 15s
         static_configs:
-          - targets: ['my-cluster-kafka-0.kafka.kafka.svc.cluster.local:7071']
+          - targets: ['172.18.0.21:9404', '172.18.0.22:9404', '172.18.0.15:9404']
         metrics_path: /
