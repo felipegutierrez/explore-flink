@@ -3,34 +3,36 @@
 
 This project is based on [Apache Flink 1.11.2](https://flink.apache.org/) consuming events from Kafka 2.2.5 (using [Strimzi](https://strimzi.io/quickstarts/) operators) with Docker 19.03.8, Kubernetes v1.19.0, minikube v1.13.1, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). 
 
-## Kubernetes + Docker + Kafka(3 brokers from [Strimzi](https://strimzi.io/quickstarts/) operators) + Flink(1 JobManager, 3 TaskManagers) + Prometheus + Grafana
+## 1. Kubernetes + Docker + Kafka & Zookeeper (3 brokers & 3 zookeepers from [Strimzi](https://strimzi.io/quickstarts/) operators) + Flink(1 JobManager & 3 TaskManagers) + Prometheus + Grafana
 
-This section aims to deploy the docker images above using minikube v1.13.1 Kubernetes v1.19.0 and Docker 19.03.8. It is based on the official tutorial [Flink with Kubernetes Setup](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html).
-
-Deploy the `Service` and `configmap` components of Flink cluster with Prometheus and Grafana into Kubernetes. Deploy 2 `PersistentVolumeClaim` to share a directory, a `Job` to create the TPC-H files, 1 `Job` with the Flink-JobManager, and 1 `Deployment` with 3 Flink-TaskManagers in Kubernetes.
+This section aims to use Flink consuming data from Kafka and from a filesystem, exporting data to Promethues and displaying it at Grafana dashboard. It is based on the official tutorial [Flink with Kubernetes Setup](https://ci.apache.org/projects/flink/flink-docs-stable/ops/deployment/kubernetes.html).
 ```
 minikube start --cpus 4 --memory 8192
+```
+First configure Kafka using the Strimzi operators based on this [file](k8s/kafka-using-strimzi.sh). Then, apply the other yaml files available on directory [k8s/](k8s/).
+```
 minikube ssh 'sudo ip link set docker0 promisc on'
 kubectl proxy
-
 kubectl apply -n kafka -f k8s/
-```
-List the objects, the resources:
-```
-kubectl get all
-kubectl api-resources
 ```
 Use the minikube IP address `minikube ip` to access the Flink UI-Web at [http://172.17.0.2:30081](http://172.17.0.2:30081), the Prometheus WebUI at [http://172.17.0.2:30091/targets](http://172.17.0.2:30091/targets) and [http://172.17.0.2:30091/graph](http://172.17.0.2:30091/graph), and the Grafana WebUI at [http://172.17.0.2:30011](http://172.17.0.2:30011).
 
+### Overview of this project in action
+
 ![Kafka(Strimzi) - Flink web UI - prometheus - grafana - using Kubernetes](images/screencast-00.gif)
 
-### Troubleshooting:
+### Troubleshooting
 Testing Kafka client:
 ```
 $ kubectl exec -it kafka-client -- /bin/bash
 root@kafka-client:/# cd /usr/bin/
 root@kafka-client:/usr/bin# kafka-topics --list --zookeeper zookeeper:2181
 __confluent.support.metrics
+```
+List the objects, the resources:
+```
+kubectl get all
+kubectl api-resources
 ```
 Logs:
 ```
@@ -56,7 +58,7 @@ kubectl delete pods kafka-client
 minikube stop
 ```
 
-## Docker + Kafka(1 ZooKeeper, 1 broker) + Flink(1JobManager, 3TaskManagers) + Prometheus + Grafana
+## 2. Docker + Kafka(1 ZooKeeper, 1 broker) + Flink(1JobManager, 3TaskManagers) + Prometheus + Grafana
 This section is here only to help if one would like to not use Kubernetes and deploy Flink only using Docker.
 ```
 cd operations-playground
@@ -85,7 +87,7 @@ Stop the images:
 docker-compose down
 ```
 
-### Troubleshooting:
+### Troubleshooting
 ```
 docker-compose logs clickevent-generator|client|kafka|zookeeper|jobmanager|taskmanager-01|taskmanager-02|taskmanager-03
 docker-compose images

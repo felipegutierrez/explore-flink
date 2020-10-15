@@ -25,3 +25,8 @@ data:
         static_configs:
           - targets: ['172.18.0.21:9404', '172.18.0.22:9404', '172.18.0.15:9404']
         metrics_path: /
+      - job_name: 'zookeeper'
+        scrape_interval: 15s
+        static_configs:
+          - targets: ['172.18.0.5:9404', '172.18.0.13:9404', '172.18.0.7:9404']
+        metrics_path: /
