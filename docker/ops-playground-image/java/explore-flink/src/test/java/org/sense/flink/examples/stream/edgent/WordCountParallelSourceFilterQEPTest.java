@@ -10,7 +10,7 @@ import org.apache.flink.test.util.MiniClusterWithClientResource;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sense.flink.source.WordsSource;
+import org.sense.flink.source.WordsParallelSource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import java.util.*;
 
 import static org.junit.Assert.assertTrue;
 
-public class WordCountFilterQEPTest {
+public class WordCountParallelSourceFilterQEPTest {
 
     public static List<Tuple2<String, Integer>> totalTuplesFound;
     public static List<Tuple2<String, Integer>> totalTuplesExpected;
@@ -31,13 +31,13 @@ public class WordCountFilterQEPTest {
     private final int minAvailableProcessors = 4;
     private final boolean runInParallel;
 
-    public WordCountFilterQEPTest() {
+    public WordCountParallelSourceFilterQEPTest() {
         int availableProcessors = Runtime.getRuntime().availableProcessors();
-        this.runInParallel = availableProcessors >= minAvailableProcessors;
+        this.runInParallel = availableProcessors >= this.minAvailableProcessors;
         if (this.runInParallel) {
             flinkCluster = new MiniClusterWithClientResource(
                     new MiniClusterResourceConfiguration.Builder()
-                            .setNumberSlotsPerTaskManager(minAvailableProcessors)
+                            .setNumberSlotsPerTaskManager(this.minAvailableProcessors)
                             .setNumberTaskManagers(1)
                             .build());
         }
@@ -96,10 +96,10 @@ public class WordCountFilterQEPTest {
             // CollectSink.values.clear();
 
             DataStream<Tuple2<String, Integer>> dataStream = env
-                    .addSource(new WordsSource(filePath, 1))
-                    .flatMap(new WordCountFilterQEP.SplitterFlatMap())
-                    .keyBy(new WordCountFilterQEP.WordKeySelector())
-                    .reduce(new WordCountFilterQEP.SumReducer());
+                    .addSource(new WordsParallelSource(filePath, 1))
+                    .flatMap(new WordCountParallelSourceFilterQEP.SplitterFlatMap())
+                    .keyBy(new WordCountParallelSourceFilterQEP.WordKeySelector())
+                    .reduce(new WordCountParallelSourceFilterQEP.SumReducer());
             dataStream.addSink(new CollectSink());
 
             String executionPlan = env.getExecutionPlan();
