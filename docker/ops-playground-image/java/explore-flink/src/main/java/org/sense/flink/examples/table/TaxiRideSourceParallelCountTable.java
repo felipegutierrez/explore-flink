@@ -10,7 +10,7 @@ import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.sense.flink.examples.stream.udf.MqttDataSink;
 import org.sense.flink.examples.stream.udf.TaxiRideCountMap;
-import org.sense.flink.examples.table.udf.TaxiRideSource;
+import org.sense.flink.examples.table.udf.TaxiRideSourceParallel;
 import org.sense.flink.examples.table.util.TaxiRide;
 import org.sense.flink.examples.table.util.TaxiRideCommons;
 
@@ -20,19 +20,19 @@ import static org.sense.flink.util.MetricLabels.*;
 /**
  * change the flink-table-* in the pom.xml from <scope>provided</scope> to <scope>compile</scope>
  */
-public class TaxiRideCountTable {
+public class TaxiRideSourceParallelCountTable {
 
     final String input = TaxiRideCommons.pathToRideData;
 
-    public TaxiRideCountTable() {
+    public TaxiRideSourceParallelCountTable() {
         this("127.0.0.1", 1883, true, 4);
     }
 
-    public TaxiRideCountTable(String sinkHost) {
+    public TaxiRideSourceParallelCountTable(String sinkHost) {
         this(sinkHost, 1883, true, 4);
     }
 
-    public TaxiRideCountTable(String sinkHost, int sinkPort, boolean disableOperatorChaining, int parallelism) {
+    public TaxiRideSourceParallelCountTable(String sinkHost, int sinkPort, boolean disableOperatorChaining, int parallelism) {
         try {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
@@ -52,7 +52,7 @@ public class TaxiRideCountTable {
                 env.disableOperatorChaining();
             }
 
-            DataStream<TaxiRide> ridesStream = env.addSource(new TaxiRideSource(input)).name(OPERATOR_SOURCE).uid(OPERATOR_SOURCE);
+            DataStream<TaxiRide> ridesStream = env.addSource(new TaxiRideSourceParallel(input)).name(OPERATOR_SOURCE).uid(OPERATOR_SOURCE);
 
             // "rideId, isStart, startTime, endTime, startLon, startLat, endLon, endLat, passengerCnt, taxiId, driverId"
             Table ridesTableStream = tableEnv.fromDataStream(ridesStream);
@@ -70,7 +70,7 @@ public class TaxiRideCountTable {
                     .addSink(new MqttDataSink(TOPIC_DATA_SINK, sinkHost, sinkPort)).name(OPERATOR_SINK).uid(OPERATOR_SINK);
 
             System.out.println(env.getExecutionPlan());
-            env.execute(TaxiRideCountTable.class.getSimpleName());
+            env.execute(TaxiRideSourceParallelCountTable.class.getSimpleName());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,6 +78,6 @@ public class TaxiRideCountTable {
     }
 
     public static void main(String[] args) {
-        TaxiRideCountTable taxiRideCountTable = new TaxiRideCountTable();
+        TaxiRideSourceParallelCountTable taxiRideCountTable = new TaxiRideSourceParallelCountTable();
     }
 }

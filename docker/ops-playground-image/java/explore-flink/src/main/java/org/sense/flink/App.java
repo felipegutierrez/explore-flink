@@ -12,6 +12,7 @@ import org.sense.flink.examples.stream.tpch.TPCHQuery10;
 import org.sense.flink.examples.stream.twitter.TwitterExample;
 import org.sense.flink.examples.stream.valencia.*;
 import org.sense.flink.examples.table.TaxiRideCountTable;
+import org.sense.flink.examples.table.TaxiRideSourceParallelCountTable;
 import org.sense.flink.util.SinkOutputs;
 import org.sense.flink.util.ValenciaItemType;
 
@@ -296,6 +297,7 @@ public class App {
                     app = 0;
                     break;
                 case 24:
+                    System.out.println("change the flink-table-* in the pom.xml from <scope>provided</scope> to <scope>compile</scope>");
                     new TaxiRideCountTable(ipAddressSink);
                     app = 0;
                     break;
@@ -384,6 +386,11 @@ public class App {
                     new TCPHOrderProducer(bootstrapServers, topic);
                     app = 0;
                     break;
+                case 42:
+                    System.out.println("change the flink-table-* in the pom.xml from <scope>provided</scope> to <scope>compile</scope>");
+                    new TaxiRideSourceParallelCountTable(ipAddressSink);
+                    app = 0;
+                    break;
                 default:
                     args = null;
                     System.out.println("No application selected [" + app + "] ");
@@ -439,6 +446,7 @@ public class App {
         System.out.println("39 - ClickEventGenerator using Kafka");
         System.out.println("40 - ClickEventCount consuming from Kafka");
         System.out.println("41 - TCP-H Order Producer from Kafka");
+        System.out.println("42 - TaxiRideSourceParallelCountTable using parallel source function");
         System.out.println();
     }
 
