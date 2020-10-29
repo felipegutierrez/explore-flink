@@ -1,15 +1,17 @@
 package org.sense.flink.source;
 
-import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
+import org.apache.flink.streaming.api.functions.source.SourceFunction;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-public class WordsSource extends RichSourceFunction<String> {
+/**
+ * http://erdani.com/tdpl/hamlet.txt
+ */
+public class WordsSource implements SourceFunction<String> {
     private final long maxCount;
-    private final String inputUrlFile;
     private final String inputTextFile;
     private boolean running;
 
@@ -18,10 +20,13 @@ public class WordsSource extends RichSourceFunction<String> {
     }
 
     public WordsSource(long maxCount) {
+        this("/hamlet.txt", maxCount);
+    }
+
+    public WordsSource(String filePath, long maxCount) {
         this.running = true;
         this.maxCount = maxCount;
-        this.inputUrlFile = "http://erdani.com/tdpl/hamlet.txt";
-        this.inputTextFile = "/hamlet.txt";
+        this.inputTextFile = filePath;
     }
 
     @Override
@@ -57,9 +62,7 @@ public class WordsSource extends RichSourceFunction<String> {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 String line;
                 while ((line = br.readLine()) != null) {
-                    // process the line.
                     sourceContext.collect(line);
-                    Thread.sleep(1000);
                 }
             }
         }

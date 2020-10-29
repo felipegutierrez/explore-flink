@@ -20,7 +20,7 @@ public class WordCountFilterQEP {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         DataStream<Tuple2<String, Integer>> dataStream = env
-                .addSource(new WordsSource())
+                .addSource(new WordsSource(1))
                 .flatMap(new SplitterFlatMap())
                 .keyBy(0) // select the first value as a key
                 .sum(1) // reduce to sum all values with same key
@@ -34,7 +34,7 @@ public class WordCountFilterQEP {
 
         dataStream.print();
 
-        env.execute("WordCountSocketFilterQEP");
+        env.execute(WordCountFilterQEP.class.getSimpleName());
     }
 
     public static void main(String[] args) throws Exception {

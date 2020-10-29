@@ -1,6 +1,5 @@
 package org.sense.flink;
 
-import org.apache.flink.runtime.client.JobExecutionException;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.clickcount.ClickEventCount;
 import org.sense.flink.examples.stream.clickcount.ClickEventGenerator;
@@ -390,7 +389,7 @@ public class App {
                     System.out.println("No application selected [" + app + "] ");
                     break;
             }
-        } catch (JobExecutionException ce) {
+        } catch (Exception ce) {
             System.err.println(ce.getMessage());
             ce.printStackTrace();
         }

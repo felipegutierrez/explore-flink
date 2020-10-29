@@ -178,6 +178,26 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-test-utils_2.12</artifactId>
+      <version>1.11.2</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>flink-test-utils-junit</artifactId>
+          <groupId>org.apache.flink</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>flink-runtime_2.12</artifactId>
+          <groupId>org.apache.flink</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>curator-test</artifactId>
+          <groupId>org.apache.curator</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <version>1.7.26</version>
@@ -198,6 +218,7 @@
     <scala.binary.version>2.12</scala.binary.version>
     <kafka.version>2.5.0</kafka.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <mockito.version>2.21.0</mockito.version>
     <jdk.version>1.8</jdk.version>
     <scala.version>2.12.7</scala.version>
   </properties>

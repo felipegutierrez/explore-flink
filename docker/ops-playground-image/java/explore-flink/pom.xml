@@ -17,10 +17,11 @@
         <scala.binary.version>2.12</scala.binary.version>
         <flink.version>1.11.2</flink.version>
         <guava.version>29.0-jre</guava.version>
-	<junit.version>4.13.1</junit.version>
+        <junit.version>4.13.1</junit.version>
         <scala.version>2.12.7</scala.version>
         <kafka.version>2.5.0</kafka.version>
         <geotools.version>21.2</geotools.version>
+        <mockito.version>2.21.0</mockito.version>
     </properties>
 
     <!--	<repositories>-->
@@ -101,6 +102,25 @@
             <scope>provided</scope>
             <!--<scope>compile</scope>-->
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-test-utils_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>test</scope>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.flink</groupId>-->
+<!--            <artifactId>flink-runtime_${scala.binary.version}</artifactId>-->
+<!--            <version>${flink.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.mockito</groupId>-->
+<!--            <artifactId>mockito-core</artifactId>-->
+<!--            <version>${mockito.version}</version>-->
+<!--            <type>jar</type>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>org.fusesource.mqtt-client</groupId>
