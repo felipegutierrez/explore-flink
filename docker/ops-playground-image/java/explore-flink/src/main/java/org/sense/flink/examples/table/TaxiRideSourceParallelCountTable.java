@@ -22,17 +22,20 @@ import static org.sense.flink.util.MetricLabels.*;
  */
 public class TaxiRideSourceParallelCountTable {
 
-    final String input = TaxiRideCommons.pathToRideData;
-
     public TaxiRideSourceParallelCountTable() {
-        this("127.0.0.1", 1883, true, 4);
+        this(TaxiRideCommons.pathToRideData, "127.0.0.1", 1883, true, 4, true, "1 s", "1000", true);
     }
 
     public TaxiRideSourceParallelCountTable(String sinkHost) {
-        this(sinkHost, 1883, true, 4);
+        this(TaxiRideCommons.pathToRideData, sinkHost, 1883, true, 4, true, "1 s", "1000", true);
     }
 
-    public TaxiRideSourceParallelCountTable(String sinkHost, int sinkPort, boolean disableOperatorChaining, int parallelism) {
+    public TaxiRideSourceParallelCountTable(String input, String sinkHost, boolean disableOperatorChaining, int parallelism, boolean mini_batch_enabled, String mini_batch_allow_latency, String mini_batch_size, boolean twoPhaseAgg) {
+        this(input, sinkHost, 1883, disableOperatorChaining, parallelism, mini_batch_enabled, mini_batch_allow_latency, mini_batch_size, twoPhaseAgg);
+    }
+
+    public TaxiRideSourceParallelCountTable(String input, String sinkHost, int sinkPort, boolean disableOperatorChaining, int parallelism,
+                                            boolean mini_batch_enabled, String mini_batch_allow_latency, String mini_batch_size, boolean twoPhaseAgg) {
         try {
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
             StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
@@ -42,11 +45,13 @@ public class TaxiRideSourceParallelCountTable {
             // set low-level key-value options
             configuration.setInteger("table.exec.resource.default-parallelism", parallelism);
             // local-global aggregation depends on mini-batch is enabled
-            configuration.setString("table.exec.mini-batch.enabled", "true");
-            configuration.setString("table.exec.mini-batch.allow-latency", "1 s");
-            configuration.setString("table.exec.mini-batch.size", "1000");
+            configuration.setString("table.exec.mini-batch.enabled", Boolean.toString(mini_batch_enabled));
+            configuration.setString("table.exec.mini-batch.allow-latency", mini_batch_allow_latency);
+            configuration.setString("table.exec.mini-batch.size", mini_batch_size);
             // enable two-phase, i.e. local-global aggregation
-            configuration.setString("table.optimizer.agg-phase-strategy", "TWO_PHASE");
+            if (twoPhaseAgg) {
+                configuration.setString("table.optimizer.agg-phase-strategy", "TWO_PHASE");
+            }
 
             if (disableOperatorChaining) {
                 env.disableOperatorChaining();

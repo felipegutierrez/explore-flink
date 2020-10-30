@@ -20,6 +20,10 @@ import org.sense.flink.util.ValenciaItemType;
  * <pre>
  * parameters to run this application:
  * -app 30 -source 127.0.0.1 -sink 127.0.0.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true
+ * Table aggregation one source
+ * -app 24 -input "/home/flink/nycTaxiRides.gz" -sink 127.0.0.1 -parallelism 4 -disableOperatorChaining true -mini_batch_enabled true -mini_batch_size 1000 -two_phase_agg true
+ * Table aggregation parallel source
+ * -app 42 -input "/home/flink/nycTaxiRides.gz" -sink 127.0.0.1 -parallelism 4 -disableOperatorChaining true -mini_batch_enabled true -mini_batch_size 1000 -two_phase_agg true
  * </pre>
  *
  * @author Felipe Oliveira Gutierrez
@@ -44,6 +48,10 @@ public class App {
     private static final String PARAMETER_MAX_COUNT = "-maxCount";
     private static final String PARAMETER_PINNING_POLICY = "-pinningPolicy";
     private static final String PARAMETER_SKEWED_DATA = "-skew";
+    private static final String PARAMETER_MINI_BATCH_ENABLED = "-mini_batch_enabled";
+    private static final String PARAMETER_MINI_BATCH_ALLOW_LATENCY = "-mini_batch_allow_latency";
+    private static final String PARAMETER_MINI_BATCH_SIZE = "-mini_batch_size";
+    private static final String PARAMETER_TWO_PHASE_AGG = "-two_phase_agg";
 
     public static void main(String[] args) throws Exception {
 
@@ -66,6 +74,10 @@ public class App {
         boolean disableOperatorChaining = false;
         boolean pinningPolicy = false;
         boolean skewedData = false;
+        boolean mini_batch_enabled = true;
+        boolean two_phase_agg = true;
+        String mini_batch_allow_latency = "1 s";
+        String mini_batch_size = "1000";
 
         if (args != null && args.length > 0) {
             int size = args.length;
@@ -103,6 +115,18 @@ public class App {
                 } else if (PARAMETER_SKEWED_DATA.equals(String.valueOf(args[i])) && i + 1 < size) {
                     i++;
                     skewedData = Boolean.valueOf(args[i]);
+                } else if (PARAMETER_MINI_BATCH_ENABLED.equals(String.valueOf(args[i])) && i + 1 < size) {
+                    i++;
+                    mini_batch_enabled = Boolean.valueOf(args[i]);
+                } else if (PARAMETER_TWO_PHASE_AGG.equals(String.valueOf(args[i])) && i + 1 < size) {
+                    i++;
+                    two_phase_agg = Boolean.valueOf(args[i]);
+                } else if (PARAMETER_MINI_BATCH_ALLOW_LATENCY.equals(String.valueOf(args[i])) && i + 1 < size) {
+                    i++;
+                    mini_batch_allow_latency = String.valueOf(args[i]);
+                } else if (PARAMETER_MINI_BATCH_SIZE.equals(String.valueOf(args[i])) && i + 1 < size) {
+                    i++;
+                    mini_batch_size = String.valueOf(args[i]);
                 } else if (PARAMETER_FREQUENCY_WINDOW.equals(String.valueOf(args[i])) && i + 1 < size) {
                     i++;
                     frequencyWindow = Integer.parseInt(args[i]);
@@ -163,6 +187,10 @@ public class App {
         System.out.println("pinning policy          : " + pinningPolicy);
         System.out.println("output                  : " + output);
         System.out.println("input                   : " + input);
+        System.out.println("mini_batch_enabled      : " + mini_batch_enabled);
+        System.out.println("mini_batch_allow_latency: " + mini_batch_allow_latency);
+        System.out.println("mini_batch_size         : " + mini_batch_size);
+        System.out.println("two_phase_agg           : " + two_phase_agg);
         System.out.println();
 
         try {
@@ -298,7 +326,7 @@ public class App {
                     break;
                 case 24:
                     System.out.println("change the flink-table-* in the pom.xml from <scope>provided</scope> to <scope>compile</scope>");
-                    new TaxiRideCountTable(ipAddressSink);
+                    new TaxiRideCountTable(input, ipAddressSink, disableOperatorChaining, parallelism, mini_batch_enabled, mini_batch_allow_latency, mini_batch_size, two_phase_agg);
                     app = 0;
                     break;
                 case 25:
@@ -388,7 +416,7 @@ public class App {
                     break;
                 case 42:
                     System.out.println("change the flink-table-* in the pom.xml from <scope>provided</scope> to <scope>compile</scope>");
-                    new TaxiRideSourceParallelCountTable(ipAddressSink);
+                    new TaxiRideSourceParallelCountTable(input, ipAddressSink, disableOperatorChaining, parallelism, mini_batch_enabled, mini_batch_allow_latency, mini_batch_size, two_phase_agg);
                     app = 0;
                     break;
                 default:

@@ -70,19 +70,19 @@
     <orderEntry type="library" name="Maven: org.apache.flink:flink-connector-kafka-base_2.12:1.11.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-statebackend-rocksdb_2.12:1.11.2" level="project" />
     <orderEntry type="library" name="Maven: com.data-artisans:frocksdbjni:5.17.2-artisans-2.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-common:1.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-common:1.11.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-asm-7:7.1-11.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-api-java-bridge_2.12:1.11.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-api-java:1.11.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-planner-blink_2.12:1.11.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-api-scala_2.12:1.11.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-api-scala-bridge_2.12:1.11.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-runtime-blink_2.12:1.11.2" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.codehaus.janino:janino:3.0.9" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.codehaus.janino:commons-compiler:3.0.9" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.calcite.avatica:avatica-core:1.16.0" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.reflections:reflections:0.9.10" level="project" />
-    <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.flink:flink-table-planner_2.12:1.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-api-java-bridge_2.12:1.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-api-java:1.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-planner-blink_2.12:1.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-api-scala_2.12:1.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-api-scala-bridge_2.12:1.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-runtime-blink_2.12:1.11.2" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.janino:janino:3.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.janino:commons-compiler:3.0.9" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.calcite.avatica:avatica-core:1.16.0" level="project" />
+    <orderEntry type="library" name="Maven: org.reflections:reflections:0.9.10" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-table-planner_2.12:1.11.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.flink:flink-test-utils_2.12:1.11.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.flink:flink-test-utils-junit:1.11.2" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.logging.log4j:log4j-slf4j-impl:2.12.1" level="project" />
