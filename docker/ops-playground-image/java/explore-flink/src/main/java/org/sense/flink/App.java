@@ -21,9 +21,9 @@ import org.sense.flink.util.ValenciaItemType;
  * parameters to run this application:
  * -app 30 -source 127.0.0.1 -sink 127.0.0.1 -offlineData true -frequencyPull 10 -frequencyWindow 30 -syntheticData true
  * Table aggregation one source
- * -app 24 -input "/home/flink/nycTaxiRides.gz" -sink 127.0.0.1 -parallelism 4 -disableOperatorChaining true -mini_batch_enabled true -mini_batch_size 1000 -two_phase_agg true
+ * -app 24 -input "/home/flink/nycTaxiRides.gz" -sink 127.0.0.1 -parallelism 4 -disableOperatorChaining true -mini_batch_enabled true -mini_batch_allow_latency "5_s" -mini_batch_size 1000 -two_phase_agg true
  * Table aggregation parallel source
- * -app 42 -input "/home/flink/nycTaxiRides.gz" -sink 127.0.0.1 -parallelism 4 -disableOperatorChaining true -mini_batch_enabled true -mini_batch_size 1000 -two_phase_agg true
+ * -app 42 -input "/home/flink/nycTaxiRides.gz" -sink 127.0.0.1 -parallelism 4 -disableOperatorChaining true -mini_batch_enabled true -mini_batch_allow_latency "5_s" -mini_batch_size 1000 -two_phase_agg true
  * </pre>
  *
  * @author Felipe Oliveira Gutierrez
@@ -76,7 +76,7 @@ public class App {
         boolean skewedData = false;
         boolean mini_batch_enabled = true;
         boolean two_phase_agg = true;
-        String mini_batch_allow_latency = "1 s";
+        String mini_batch_allow_latency = "1_s";
         String mini_batch_size = "1000";
 
         if (args != null && args.length > 0) {
@@ -123,7 +123,7 @@ public class App {
                     two_phase_agg = Boolean.valueOf(args[i]);
                 } else if (PARAMETER_MINI_BATCH_ALLOW_LATENCY.equals(String.valueOf(args[i])) && i + 1 < size) {
                     i++;
-                    mini_batch_allow_latency = String.valueOf(args[i]);
+                    mini_batch_allow_latency = String.valueOf(args[i]).replace("_", " ");
                 } else if (PARAMETER_MINI_BATCH_SIZE.equals(String.valueOf(args[i])) && i + 1 < size) {
                     i++;
                     mini_batch_size = String.valueOf(args[i]);
