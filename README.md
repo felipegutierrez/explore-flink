@@ -3,6 +3,8 @@
 [![codecov](https://codecov.io/gh/felipegutierrez/explore-flink/branch/master/graph/badge.svg?token=MFG0YKQT25)](https://codecov.io/gh/felipegutierrez/explore-flink)
 ![GitHub issues](https://img.shields.io/github/issues-raw/felipegutierrez/explore-flink)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/felipegutierrez/explore-flink)
+![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/felipeogutierrez/explore-flink)
+
 
 This project is based on [Apache Flink 1.11.2](https://flink.apache.org/) consuming events from Kafka 2.2.5 (using [Strimzi](https://strimzi.io/quickstarts/) operators) with Docker 19.03.8, Kubernetes v1.19.0, minikube v1.13.1, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). 
 
