@@ -15,7 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.8</jdk.version>
         <scala.binary.version>2.12</scala.binary.version>
-        <flink.version>1.11.2</flink.version>
+        <flink.version>1.12.0</flink.version>
         <guava.version>29.0-jre</guava.version>
         <junit.version>4.13.1</junit.version>
         <scala.version>2.12.7</scala.version>

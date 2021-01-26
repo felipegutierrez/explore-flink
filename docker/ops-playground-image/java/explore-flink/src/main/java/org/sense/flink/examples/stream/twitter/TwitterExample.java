@@ -31,7 +31,7 @@ public class TwitterExample {
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 		// make parameters available in the web interface
 		env.getConfig().setGlobalJobParameters(params);
-		env.getConfig().disableSysoutLogging();
+		// env.getConfig().disableSysoutLogging();
 
 		// @formatter:off
 		Properties props = new Properties();

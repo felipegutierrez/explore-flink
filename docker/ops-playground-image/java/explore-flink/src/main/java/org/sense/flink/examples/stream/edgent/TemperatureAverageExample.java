@@ -22,7 +22,7 @@ public class TemperatureAverageExample {
 	public TemperatureAverageExample() throws Exception {
 
 		final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-		env.getConfig().disableSysoutLogging();
+		// env.getConfig().disableSysoutLogging();
 
 		// Tuple of (TYPE, ID, READING)
 		DataStream<Tuple3<Integer, Integer, Integer>> input = env.fromElements(new Tuple3<>(0, 0, 10),
