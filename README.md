@@ -1,6 +1,7 @@
 
 [![Build Status](https://travis-ci.com/felipegutierrez/explore-flink.svg?branch=master)](https://travis-ci.com/felipegutierrez/explore-flink)
 [![codecov](https://codecov.io/gh/felipegutierrez/explore-flink/branch/master/graph/badge.svg?token=MFG0YKQT25)](https://codecov.io/gh/felipegutierrez/explore-flink)
+[![CodeFactor](https://www.codefactor.io/repository/github/felipegutierrez/explore-flink/badge)](https://www.codefactor.io/repository/github/felipegutierrez/explore-flink)
 ![GitHub issues](https://img.shields.io/github/issues-raw/felipegutierrez/explore-flink)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/felipegutierrez/explore-flink)
 ![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/felipeogutierrez/explore-flink)
