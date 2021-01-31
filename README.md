@@ -1,8 +1,8 @@
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/12501b8207d342d49c00fefbe11b17a3)](https://app.codacy.com/gh/felipegutierrez/explore-flink?utm_source=github.com&utm_medium=referral&utm_content=felipegutierrez/explore-flink&utm_campaign=Badge_Grade)
 [![Build Status](https://travis-ci.com/felipegutierrez/explore-flink.svg?branch=master)](https://travis-ci.com/felipegutierrez/explore-flink)
 [![codecov](https://codecov.io/gh/felipegutierrez/explore-flink/branch/master/graph/badge.svg?token=MFG0YKQT25)](https://codecov.io/gh/felipegutierrez/explore-flink)
 [![CodeFactor](https://www.codefactor.io/repository/github/felipegutierrez/explore-flink/badge)](https://www.codefactor.io/repository/github/felipegutierrez/explore-flink)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/12501b8207d342d49c00fefbe11b17a3)](https://app.codacy.com/gh/felipegutierrez/explore-flink?utm_source=github.com&utm_medium=referral&utm_content=felipegutierrez/explore-flink&utm_campaign=Badge_Grade)
 ![GitHub issues](https://img.shields.io/github/issues-raw/felipegutierrez/explore-flink)
 ![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/felipegutierrez/explore-flink)
 ![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/felipeogutierrez/explore-flink)
