@@ -2,7 +2,7 @@ name: Run Test Suites
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   test:
@@ -23,3 +23,4 @@ jobs:
         with:
           file: ./**/target/site/jacoco/jacoco.xml
           name: codecov # Upload to Codecov
+
