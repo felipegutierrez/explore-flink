@@ -1,4 +1,6 @@
 [![Java CI with Maven](https://github.com/felipegutierrez/explore-flink/actions/workflows/maven.yml/badge.svg)](https://github.com/felipegutierrez/explore-flink/actions/workflows/maven.yml)
+[![Run Test Suites](https://github.com/felipegutierrez/explore-flink/actions/workflows/codecov-test-suites.yml/badge.svg)](https://github.com/felipegutierrez/explore-flink/actions/workflows/codecov-test-suites.yml)
+
 
 
 
