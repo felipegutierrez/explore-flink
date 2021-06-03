@@ -31,7 +31,7 @@ import java.time.LocalTime;
  */
 public class BackpressureMap implements MapFunction<ClickEvent, ClickEvent> {
 
-	private boolean causeBackpressure() {
+	public boolean causeBackpressure() {
 		return ((LocalTime.now().getMinute() % 2) == 0);
 	}
 
@@ -40,8 +40,6 @@ public class BackpressureMap implements MapFunction<ClickEvent, ClickEvent> {
 		if (causeBackpressure()) {
 			Thread.sleep(100);
 		}
-
 		return event;
 	}
-
 }
