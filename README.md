@@ -1,3 +1,7 @@
+[![Java CI with Maven](https://github.com/felipegutierrez/explore-flink/actions/workflows/maven.yml/badge.svg)](https://github.com/felipegutierrez/explore-flink/actions/workflows/maven.yml)
+
+
+
 
 [![Build Status](https://travis-ci.com/felipegutierrez/explore-flink.svg?branch=master)](https://travis-ci.com/felipegutierrez/explore-flink)
 [![codecov](https://codecov.io/gh/felipegutierrez/explore-flink/branch/master/graph/badge.svg?token=MFG0YKQT25)](https://codecov.io/gh/felipegutierrez/explore-flink)
