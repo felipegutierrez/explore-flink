@@ -15,8 +15,8 @@ import org.sense.flink.util.CustomFlinkException;
 
 public class MatrixMultiplication {
 
-	private static final String MATRIX_A = "A";
-	private static final String MATRIX_B = "B";
+	public static final String MATRIX_A = "A";
+	public static final String MATRIX_B = "B";
 
 	/**
 	 * <code>
