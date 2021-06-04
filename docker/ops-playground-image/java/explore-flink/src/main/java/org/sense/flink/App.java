@@ -1,5 +1,7 @@
 package org.sense.flink;
 
+import org.apache.flink.api.java.io.DiscardingOutputFormat;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.clickcount.ClickEventCount;
 import org.sense.flink.examples.stream.clickcount.ClickEventGenerator;
@@ -213,7 +215,8 @@ public class App {
                     break;
                 case 3:
                     System.out.println("App 3 selected");
-                    new MatrixMultiplication();
+                    MatrixMultiplication matrixMultiplication = new MatrixMultiplication();
+                    matrixMultiplication.execute();
                     app = 0;
                     break;
                 case 4:
