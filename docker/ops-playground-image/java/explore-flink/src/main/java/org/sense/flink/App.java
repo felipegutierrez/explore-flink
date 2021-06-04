@@ -245,7 +245,10 @@ public class App {
                 case 8:
                     System.out.println("App 8 selected");
                     System.out.println("Temperature average example");
-                    new TemperatureAverageExample();
+                    TemperatureAverageExample temperatureAverageExample = new TemperatureAverageExample(
+                            new TemperatureAverageExample.TemperatureSourceFunction(),
+                            new TemperatureAverageExample.TemperatureSinkFunction());
+                    temperatureAverageExample.execute();
                     app = 0;
                     break;
                 case 9:
