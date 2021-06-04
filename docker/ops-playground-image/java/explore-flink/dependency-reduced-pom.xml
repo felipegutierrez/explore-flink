@@ -89,6 +89,13 @@
       </plugin>
     </plugins>
   </build>
+  <repositories>
+    <repository>
+      <id>geotools</id>
+      <name>Geotools repository</name>
+      <url>https://repo.osgeo.org/repository/geotools-releases/</url>
+    </repository>
+  </repositories>
   <dependencies>
     <dependency>
       <groupId>org.apache.flink</groupId>

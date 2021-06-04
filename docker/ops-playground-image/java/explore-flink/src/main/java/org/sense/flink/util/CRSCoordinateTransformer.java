@@ -1,15 +1,15 @@
 package org.sense.flink.util;
 
-import java.io.Serializable;
-
-//import org.geotools.geometry.DirectPosition2D;
-//import org.geotools.geometry.DirectPosition3D;
-//import org.geotools.referencing.CRS;
-//import org.opengis.referencing.FactoryException;
-//import org.opengis.referencing.crs.CoordinateReferenceSystem;
-//import org.opengis.referencing.operation.MathTransform;
-//import org.opengis.referencing.operation.TransformException;
+import org.geotools.geometry.DirectPosition2D;
+import org.geotools.geometry.DirectPosition3D;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 import org.sense.flink.pojo.Point;
+
+import java.io.Serializable;
 
 /**
  * The IOGP’s EPSG Geodetic Parameter Dataset is a collection of definitions of
@@ -33,83 +33,79 @@ public class CRSCoordinateTransformer implements Serializable {
 	public static final String DEFAULT_CRS_EPSG_25830 = "EPSG:25830";
 	public static final String DEFAULT_CRS_EPSG_4326 = "EPSG:4326";
 	public static final String DEFAULT_CRS_EPSG_4989_RADIUS = "EPSG:4989";
-//	private MathTransform transformEPSG25830;
-//	private MathTransform transformEPSG4326;
-//	private MathTransform transformRadius;
-//	private CoordinateReferenceSystem coordinateReferenceSystemEPSG25830;
-//	private CoordinateReferenceSystem coordinateReferenceSystemEPSG4326;
-//	private CoordinateReferenceSystem coordinateReferenceSystemRadius;
+	private MathTransform transformEPSG25830;
+	private MathTransform transformEPSG4326;
+	private MathTransform transformRadius;
+	private CoordinateReferenceSystem coordinateReferenceSystemEPSG25830;
+	private CoordinateReferenceSystem coordinateReferenceSystemEPSG4326;
+	private CoordinateReferenceSystem coordinateReferenceSystemRadius;
 
 	public CRSCoordinateTransformer() {
-//		try {
-//			coordinateReferenceSystemEPSG25830 = CRS.decode(DEFAULT_CRS_EPSG_25830);
-//			coordinateReferenceSystemEPSG4326 = CRS.decode(DEFAULT_CRS_EPSG_4326);
-//			coordinateReferenceSystemRadius = CRS.decode(DEFAULT_CRS_EPSG_4989_RADIUS);
-//			this.transformEPSG25830 = CRS.findMathTransform(coordinateReferenceSystemEPSG25830,
-//					coordinateReferenceSystemEPSG4326, true);
-//			this.transformEPSG4326 = CRS.findMathTransform(coordinateReferenceSystemEPSG4326,
-//					coordinateReferenceSystemEPSG25830, true);
-//			this.transformRadius = CRS.findMathTransform(coordinateReferenceSystemRadius,
-//					coordinateReferenceSystemRadius, true);
-//		} catch (FactoryException fex) {
-//			throw new ExceptionInInitializerError(fex);
-//		}
+		try {
+			coordinateReferenceSystemEPSG25830 = CRS.decode(DEFAULT_CRS_EPSG_25830);
+			coordinateReferenceSystemEPSG4326 = CRS.decode(DEFAULT_CRS_EPSG_4326);
+			coordinateReferenceSystemRadius = CRS.decode(DEFAULT_CRS_EPSG_4989_RADIUS);
+			this.transformEPSG25830 = CRS.findMathTransform(coordinateReferenceSystemEPSG25830,
+					coordinateReferenceSystemEPSG4326, true);
+			this.transformEPSG4326 = CRS.findMathTransform(coordinateReferenceSystemEPSG4326,
+					coordinateReferenceSystemEPSG25830, true);
+			this.transformRadius = CRS.findMathTransform(coordinateReferenceSystemRadius,
+					coordinateReferenceSystemRadius, true);
+		} catch (FactoryException fex) {
+			throw new ExceptionInInitializerError(fex);
+		}
 	}
 
-	public double[] lonLatToXY(double lon, double lat) {//throws TransformException {
-//		DirectPosition2D srcDirectPosition2D = new DirectPosition2D(coordinateReferenceSystemEPSG25830, lat, lon);
-//		DirectPosition2D destDirectPosition2D = new DirectPosition2D();
-//		try {
-//			transformEPSG4326.transform(srcDirectPosition2D, destDirectPosition2D);
-//			return new double[] { destDirectPosition2D.x, destDirectPosition2D.y };
-//		} catch (Error error) {
-//			throw error;
-//		}
-		return null;
+	public double[] lonLatToXY(double lon, double lat) throws TransformException {
+		DirectPosition2D srcDirectPosition2D = new DirectPosition2D(coordinateReferenceSystemEPSG25830, lat, lon);
+		DirectPosition2D destDirectPosition2D = new DirectPosition2D();
+		try {
+			transformEPSG4326.transform(srcDirectPosition2D, destDirectPosition2D);
+			return new double[] { destDirectPosition2D.x, destDirectPosition2D.y };
+		} catch (Error error) {
+			throw error;
+		}
 	}
 
-	public double[] xyToLonLat(double x, double y) {//throws TransformException {
+	public double[] xyToLonLat(double x, double y) throws TransformException {
 
-//		DirectPosition2D srcDirectPosition2D = new DirectPosition2D(coordinateReferenceSystemEPSG25830, x, y);
-//		DirectPosition2D destDirectPosition2D = new DirectPosition2D();
-//		transformEPSG25830.transform(srcDirectPosition2D, destDirectPosition2D);
-//
-//		return new double[] { destDirectPosition2D.y, destDirectPosition2D.x };
-		return null;
+		DirectPosition2D srcDirectPosition2D = new DirectPosition2D(coordinateReferenceSystemEPSG25830, x, y);
+		DirectPosition2D destDirectPosition2D = new DirectPosition2D();
+		transformEPSG25830.transform(srcDirectPosition2D, destDirectPosition2D);
+
+		return new double[] { destDirectPosition2D.y, destDirectPosition2D.x };
 	}
 
-	public Point xyToLonLatPoint(double x, double y) {//throws TransformException {
+	public Point xyToLonLatPoint(double x, double y) throws TransformException {
 		double[] lonLat = xyToLonLat(x, y);
 		return new Point(lonLat[0], lonLat[1], DEFAULT_CRS_EPSG_4326);
 	}
 
-	public double[] lonLatToRadius(double lon, double lat) {//throws TransformException {
-//		DirectPosition3D srcDirectPosition3D = new DirectPosition3D(coordinateReferenceSystemRadius, lat, lon, 0);
-//		DirectPosition3D destDirectPosition3D = new DirectPosition3D();
-//		try {
-//			transformRadius.transform(srcDirectPosition3D, destDirectPosition3D);
-//			return new double[] { destDirectPosition3D.x, destDirectPosition3D.y };
-//		} catch (Error error) {
-//			throw error;
-//		}
-		return null;
+	public double[] lonLatToRadius(double lon, double lat) throws TransformException {
+		DirectPosition3D srcDirectPosition3D = new DirectPosition3D(coordinateReferenceSystemRadius, lat, lon, 0);
+		DirectPosition3D destDirectPosition3D = new DirectPosition3D();
+		try {
+			transformRadius.transform(srcDirectPosition3D, destDirectPosition3D);
+			return new double[] { destDirectPosition3D.x, destDirectPosition3D.y };
+		} catch (Error error) {
+			throw error;
+		}
 	}
 
-	public Point lonLatToRadiusPoint(double x, double y) {//throws TransformException {
+	public Point lonLatToRadiusPoint(double x, double y) throws TransformException {
 		double[] lonLat = lonLatToRadius(x, y);
 		return new Point(lonLat[0], lonLat[1], DEFAULT_CRS_EPSG_4989_RADIUS);
 	}
 
-	public double[] xyToRadius(double x, double y) {//throws TransformException {
-//		DirectPosition3D srcDirectPosition3D = new DirectPosition3D(coordinateReferenceSystemRadius, x, y, 0);
-//		DirectPosition3D destDirectPosition3D = new DirectPosition3D();
-//		transformRadius.transform(srcDirectPosition3D, destDirectPosition3D);
-//
-//		return new double[] { destDirectPosition3D.y, destDirectPosition3D.x };
-		return null;
+	public double[] xyToRadius(double x, double y) throws TransformException {
+		DirectPosition3D srcDirectPosition3D = new DirectPosition3D(coordinateReferenceSystemRadius, x, y, 0);
+		DirectPosition3D destDirectPosition3D = new DirectPosition3D();
+		transformRadius.transform(srcDirectPosition3D, destDirectPosition3D);
+
+		return new double[] { destDirectPosition3D.y, destDirectPosition3D.x };
 	}
 
-	public Point xyToRadiusPoint(double x, double y) {//throws TransformException {
+	public Point xyToRadiusPoint(double x, double y) throws TransformException {
 		double[] lonLat = xyToRadius(x, y);
 		return new Point(lonLat[0], lonLat[1], DEFAULT_CRS_EPSG_4989_RADIUS);
 	}
@@ -120,7 +116,7 @@ public class CRSCoordinateTransformer implements Serializable {
 			// Point(725704.3880000003 4370895.1142)
 			CRSCoordinateTransformer ct = new CRSCoordinateTransformer();
 			double[] lonLat = ct.xyToLonLat(725704.3880000003, 4370895.1142);
-			if (lonLat!=null) System.out.println(lonLat[0] + " " + lonLat[1]);
+			if (lonLat != null) System.out.println(lonLat[0] + " " + lonLat[1]);
 
 			Point lonLatPoint = ct.xyToLonLatPoint(725704.3880000003, 4370895.1142);
 			System.out.println(lonLatPoint.getX() + " " + lonLatPoint.getY());
