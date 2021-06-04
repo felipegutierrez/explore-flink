@@ -149,6 +149,11 @@
             <version>2.9.0</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.12.0</version>
+        </dependency>
+        <dependency>
             <groupId>org.fusesource.mqtt-client</groupId>
             <artifactId>mqtt-client</artifactId>
             <version>1.15</version>

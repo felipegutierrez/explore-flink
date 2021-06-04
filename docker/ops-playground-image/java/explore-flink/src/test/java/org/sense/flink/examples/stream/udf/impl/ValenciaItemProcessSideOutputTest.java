@@ -25,17 +25,20 @@ public class ValenciaItemProcessSideOutputTest {
         OneInputStreamOperatorTestHarness<ValenciaItem, ValenciaItem> harness = ProcessFunctionTestHarnesses
                 .forProcessFunction(processFunction);
 
-
         List<Point> points = new ArrayList<Point>();
         CRSCoordinateTransformer ct = new CRSCoordinateTransformer();
         double[] lonLat = ct.xyToLonLat(728630.3849999998, 4370921.0409);
-        /*points.add(new Point(lonLat[0], lonLat[1], DEFAULT_CRS_EPSG_4326));
+        points.add(new Point(lonLat[0], lonLat[1], DEFAULT_CRS_EPSG_4326));
         ValenciaItem valenciaItem = new ValenciaTraffic(0L, 0L, "", new Date(), points,
                 (new Random().nextInt((100 - 1) + 1) + 1));
         //push (timestamped) elements into the operator (and hence user defined function)
         harness.processElement(valenciaItem, 10);
 
-        //retrieve list of emitted records for assertions
-        assertEquals(harness.extractOutputValues(), Collections.singletonList(1));*/
+        // retrieve list of emitted records for assertions
+        assertEquals(harness.extractOutputValues().size(), Arrays.asList(Collections.singletonList(valenciaItem)).get(0).size());
+
+        assertEquals(harness.extractOutputValues().get(0).getId(), Arrays.asList(Collections.singletonList(valenciaItem)).get(0).get(0).getId());
+        assertEquals(harness.extractOutputValues().get(0).getAdminLevel(), Arrays.asList(Collections.singletonList(valenciaItem)).get(0).get(0).getAdminLevel());
+        assertEquals(harness.extractOutputValues().get(0).getValue(), Arrays.asList(Collections.singletonList(valenciaItem)).get(0).get(0).getValue());
     }
 }
