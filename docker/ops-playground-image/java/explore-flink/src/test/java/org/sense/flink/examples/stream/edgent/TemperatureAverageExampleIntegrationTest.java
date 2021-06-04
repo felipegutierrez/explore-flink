@@ -19,7 +19,7 @@ public class TemperatureAverageExampleIntegrationTest {
     public static MiniClusterWithClientResource flinkCluster =
             new MiniClusterWithClientResource(
                     new MiniClusterResourceConfiguration.Builder()
-                            .setNumberSlotsPerTaskManager(1)
+                            .setNumberSlotsPerTaskManager(2)
                             .setNumberTaskManagers(1)
                             .build());
 

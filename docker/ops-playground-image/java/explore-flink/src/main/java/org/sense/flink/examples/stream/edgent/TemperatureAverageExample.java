@@ -5,7 +5,6 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
-import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
@@ -19,9 +18,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TemperatureAverageExample {
 
-    private final boolean checkpointEnable = false;
-    private final long checkpointInterval = 1000;
-    private final CheckpointingMode checkpointMode = CheckpointingMode.EXACTLY_ONCE;
     private final TemperatureSourceFunction source;
     private final TemperatureSinkFunction sink;
 
@@ -38,16 +34,16 @@ public class TemperatureAverageExample {
 
     public void execute() throws Exception {
 
-        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.enableCheckpointing(5000);
         // env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
+        // env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
         // env.getConfig().disableSysoutLogging();
 
         // Tuple of (ID, READING)
         env.addSource(source)
                 .keyBy(new TemperatureKeySelector())
-                .window(TumblingProcessingTimeWindows.of(Time.seconds(2)))
+                .window(TumblingProcessingTimeWindows.of(Time.seconds(1)))
                 .aggregate(new AverageTemperatureAggregator())
                 .map(new PrintMapFunction())
                 .addSink(sink).setParallelism(1);
