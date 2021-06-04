@@ -1665,27 +1665,6 @@
     <orderEntry type="library" name="Maven: com.google.code.findbugs:jsr305:1.3.9" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:force-shading:1.12.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-clients_2.12:1.12.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-runtime_2.12:1.12.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-queryable-state-client-java:1.12.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-hadoop-fs:1.12.0" level="project" />
-    <orderEntry type="library" name="Maven: commons-io:commons-io:2.7" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-netty:4.1.49.Final-12.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-jackson:2.10.1-12.0" level="project" />
-    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-zookeeper-3:3.4.14-12.0" level="project" />
-    <orderEntry type="library" name="Maven: org.javassist:javassist:3.24.0-GA" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-actor_2.12:2.5.21" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe:config:1.3.3" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-java8-compat_2.12:0.8.0" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-stream_2.12:2.5.21" level="project" />
-    <orderEntry type="library" name="Maven: org.reactivestreams:reactive-streams:1.0.2" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe:ssl-config-core_2.12:0.3.7" level="project" />
-    <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-protobuf_2.12:2.5.21" level="project" />
-    <orderEntry type="library" name="Maven: com.typesafe.akka:akka-slf4j_2.12:2.5.21" level="project" />
-    <orderEntry type="library" name="Maven: org.clapper:grizzled-slf4j_2.12:1.3.2" level="project" />
-    <orderEntry type="library" name="Maven: com.github.scopt:scopt_2.12:3.5.0" level="project" />
-    <orderEntry type="library" name="Maven: com.twitter:chill_2.12:0.7.6" level="project" />
-    <orderEntry type="library" name="Maven: com.twitter:chill-java:0.7.6" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-optimizer_2.12:1.12.0" level="project" />
     <orderEntry type="library" name="Maven: commons-cli:commons-cli:1.3.1" level="project" />
     <orderEntry type="library" name="Maven: org.apache.flink:flink-streaming-java_2.12:1.12.0" level="project" />
@@ -1727,6 +1706,30 @@
     <orderEntry type="library" scope="TEST" name="Maven: org.apache.zookeeper:zookeeper:3.4.8" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: jline:jline:0.9.94" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: io.netty:netty:3.7.0.Final" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.flink:flink-runtime_2.12:1.12.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.flink:flink-queryable-state-client-java:1.12.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.flink:flink-hadoop-fs:1.12.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: commons-io:commons-io:2.7" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.flink:flink-shaded-netty:4.1.49.Final-12.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.flink:flink-shaded-jackson:2.10.1-12.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.flink:flink-shaded-zookeeper-3:3.4.14-12.0" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.javassist:javassist:3.24.0-GA" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.typesafe.akka:akka-actor_2.12:2.5.21" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.typesafe:config:1.3.3" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.scala-lang.modules:scala-java8-compat_2.12:0.8.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.typesafe.akka:akka-stream_2.12:2.5.21" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.reactivestreams:reactive-streams:1.0.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.typesafe:ssl-config-core_2.12:0.3.7" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.scala-lang.modules:scala-parser-combinators_2.12:1.1.1" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.typesafe.akka:akka-protobuf_2.12:2.5.21" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.typesafe.akka:akka-slf4j_2.12:2.5.21" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.clapper:grizzled-slf4j_2.12:1.3.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.github.scopt:scopt_2.12:3.5.0" level="project" />
+    <orderEntry type="library" name="Maven: org.xerial.snappy:snappy-java:1.1.4" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.twitter:chill_2.12:0.7.6" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: com.twitter:chill-java:0.7.6" level="project" />
+    <orderEntry type="library" name="Maven: org.lz4:lz4-java:1.6.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.apache.flink:flink-streaming-java_2.12:test-jar:tests:1.12.0" level="project" />
     <orderEntry type="library" name="Maven: org.fusesource.mqtt-client:mqtt-client:1.15" level="project" />
     <orderEntry type="library" name="Maven: org.fusesource.hawtdispatch:hawtdispatch-transport:1.22" level="project" />
     <orderEntry type="library" name="Maven: org.fusesource.hawtdispatch:hawtdispatch:1.22" level="project" />
@@ -1748,8 +1751,6 @@
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.9" level="project" />
     <orderEntry type="library" name="Maven: org.apache.kafka:kafka-clients:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: com.github.luben:zstd-jni:1.4.4-7" level="project" />
-    <orderEntry type="library" name="Maven: org.lz4:lz4-java:1.7.1" level="project" />
-    <orderEntry type="library" name="Maven: org.xerial.snappy:snappy-java:1.1.7.3" level="project" />
     <orderEntry type="library" name="Maven: org.apache.kafka:kafka-streams:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.kafka:connect-json:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.kafka:connect-api:2.5.0" level="project" />

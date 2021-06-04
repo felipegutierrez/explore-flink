@@ -20,7 +20,7 @@
         <junit.version>4.13.1</junit.version>
         <scala.version>2.12.7</scala.version>
         <kafka.version>2.5.0</kafka.version>
-        <geotools.version>21.2</geotools.version>
+        <geotools.version>22.2</geotools.version>
         <mockito.version>2.21.0</mockito.version>
     </properties>
 
@@ -108,7 +108,27 @@
             <version>${flink.version}</version>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-test-utils_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+            <scope>test</scope>
+            <type>test-jar</type>
+        </dependency>
+
+        <!--        <dependency>-->
 <!--            <groupId>org.apache.flink</groupId>-->
 <!--            <artifactId>flink-runtime_${scala.binary.version}</artifactId>-->
 <!--            <version>${flink.version}</version>-->
@@ -174,11 +194,11 @@
             <artifactId>kafka-streams</artifactId>
             <version>${kafka.version}</version>
         </dependency>
-        <!--		<dependency>-->
-        <!--			<groupId>org.geotools</groupId>-->
-        <!--			<artifactId>gt-referencing</artifactId>-->
-        <!--			<version>${geotools.version}</version>-->
-        <!--		</dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.geotools</groupId>-->
+        <!--            <artifactId>gt-referencing</artifactId>-->
+        <!--            <version>${geotools.version}</version>-->
+        <!--        </dependency>-->
         <!--		<dependency>-->
         <!--			<groupId>org.geotools</groupId>-->
         <!--			<artifactId>gt-epsg-wkt</artifactId>-->
@@ -229,6 +249,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <pluginManagement>
             <plugins>

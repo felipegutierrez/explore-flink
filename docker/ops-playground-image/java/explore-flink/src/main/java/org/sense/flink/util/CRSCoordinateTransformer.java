@@ -120,7 +120,7 @@ public class CRSCoordinateTransformer implements Serializable {
 			// Point(725704.3880000003 4370895.1142)
 			CRSCoordinateTransformer ct = new CRSCoordinateTransformer();
 			double[] lonLat = ct.xyToLonLat(725704.3880000003, 4370895.1142);
-			System.out.println(lonLat[0] + " " + lonLat[1]);
+			if (lonLat!=null) System.out.println(lonLat[0] + " " + lonLat[1]);
 
 			Point lonLatPoint = ct.xyToLonLatPoint(725704.3880000003, 4370895.1142);
 			System.out.println(lonLatPoint.getX() + " " + lonLatPoint.getY());
