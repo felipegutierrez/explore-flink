@@ -4,15 +4,18 @@ import java.text.DecimalFormat;
 
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 import org.sense.flink.mqtt.MqttSensor;
 import org.sense.flink.util.HyperLogLogState;
 
 public class CompositeKeySensorTypePlatformStationKeyedProcessFunction
 		extends KeyedProcessFunction<Byte, MqttSensor, String> {
 	private static final long serialVersionUID = -1161858308397059065L;
+	static final OutputTag<HyperLogLogState> hyperLogLogStateOutputTag = new OutputTag<HyperLogLogState>("hyperLogLogStateOutputTag") {};
 	// delay after which an alert flag is thrown
 	private final long timeOut;
 	// state to remember the last timer set
@@ -67,6 +70,10 @@ public class CompositeKeySensorTypePlatformStationKeyedProcessFunction
 		// error (= [estimated cardinality - true cardinality] / true cardinality)
 		double error = (double) (((double) (estimative - real)) / real);
 		out.collect("Cardinality:\n estimate: " + estimative + " real: " + real + " error: " + dec.format(error) + "%");
-		hllState.clear();
+
+		if (hllState != null) {
+			ctx.output(hyperLogLogStateOutputTag, hllState.value());
+			hllState.clear();
+		}
 	}
 }
