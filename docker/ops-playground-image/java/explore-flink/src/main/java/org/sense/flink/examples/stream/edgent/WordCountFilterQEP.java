@@ -1,13 +1,28 @@
 package org.sense.flink.examples.stream.edgent;
 
+import com.google.common.collect.Lists;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.state.ListState;
+import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.runtime.state.FunctionInitializationContext;
+import org.apache.flink.runtime.state.FunctionSnapshotContext;
+import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
 import org.sense.flink.source.WordsSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 public class WordCountFilterQEP {
 
@@ -18,6 +33,7 @@ public class WordCountFilterQEP {
         DataStream<Tuple2<String, Integer>> dataStream = env
                 .addSource(new WordsSource(1))
                 .flatMap(new SplitterFlatMap())
+                .process(new ExceptionSimulatorProcess(System.currentTimeMillis() - 10_000L, 2_000L))
                 .keyBy(new WordKeySelector()) // select the first value as a key
                 .reduce(new SumReducer()) // reduce to sum all values with same key
                 // .filter(word -> word.f1 >= 2) // use simple filter

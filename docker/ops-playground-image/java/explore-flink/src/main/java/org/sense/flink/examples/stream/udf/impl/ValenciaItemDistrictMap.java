@@ -50,8 +50,7 @@ public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, Valen
 	public ValenciaItem map(ValenciaItem value) throws Exception {
 		// updates the CPU core current in use
 		this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
-		System.err.println(ValenciaItemDistrictMap.class.getSimpleName() + " thread[" + Thread.currentThread().getId()
-				+ "] core[" + this.cpuGauge.getValue() + "]");
+		// System.err.println(ValenciaItemDistrictMap.class.getSimpleName() + " thread[" + Thread.currentThread().getId() + "] core[" + this.cpuGauge.getValue() + "]");
 
 		List<Point> coordinates = value.getCoordinates();
 		boolean flag = true;

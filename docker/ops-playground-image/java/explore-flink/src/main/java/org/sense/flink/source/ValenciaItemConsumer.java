@@ -138,8 +138,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
 		while (running) {
 			// updates the CPU core current in use
 			this.cpuGauge.updateValue(LinuxJNAAffinity.INSTANCE.getCpu());
-			System.err.println(ValenciaItemConsumer.class.getSimpleName() + " thread[" + Thread.currentThread().getId()
-					+ "] core[" + this.cpuGauge.getValue() + "]");
+			// System.err.println(ValenciaItemConsumer.class.getSimpleName() + " thread[" + Thread.currentThread().getId() + "] core[" + this.cpuGauge.getValue() + "]");
 
 			// get the data source file to collect data
 			InputStream in = getDataSourceInputStream();

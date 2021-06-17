@@ -3,6 +3,9 @@
 
 ```
 mvn clean package
+mvn -Dtest=ValenciaItemProcessSideOutputTest test
+mvn -Dtest=ExceptionSimulatorProcessTest test
+mvn -Dtest=WordCountFilterQEPTest test
 ```
 
 Start the zookeeper, Kafka brokers, create topics:
