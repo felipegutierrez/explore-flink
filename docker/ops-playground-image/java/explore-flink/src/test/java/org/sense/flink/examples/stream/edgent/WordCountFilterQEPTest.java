@@ -12,7 +12,6 @@ import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
 import org.junit.Assert;
 import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.sense.flink.source.WordsSource;
 
@@ -27,9 +26,6 @@ import static org.junit.Assert.assertTrue;
 import static org.sense.flink.examples.stream.edgent.ExceptionSimulatorProcess.POISON_TRANSACTION_ID;
 
 public class WordCountFilterQEPTest {
-
-    public static List<Tuple2<String, Integer>> totalTuplesFound;
-    public static List<Tuple2<String, Integer>> totalTuplesExpected;
 
     @ClassRule
     public static MiniClusterWithClientResource flinkCluster;
@@ -85,12 +81,12 @@ public class WordCountFilterQEPTest {
     @Test
     public void countWordsUsingWordsSource() throws Exception {
         if (this.runInParallel) {
-            totalTuplesFound = Collections.synchronizedList(new ArrayList<Tuple2<String, Integer>>());
-            totalTuplesExpected = Collections.synchronizedList(new ArrayList<Tuple2<String, Integer>>());
-
             // source file with multiple words
             String filePath = "/hamlet.txt";
             // String filePath = "/shorttext.txt";
+
+            // expected values
+            List<Tuple2<String, Integer>> totalTuplesExpected = countWordsSequentially(filePath);
 
             StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -98,7 +94,7 @@ public class WordCountFilterQEPTest {
             env.setParallelism(this.minAvailableProcessors);
 
             // values are collected in a static variable
-            // CollectSink.values.clear();
+            CollectSink.values.clear();
 
             DataStream<Tuple2<String, Integer>> dataStream = env
                     .addSource(new WordsSource(filePath, 1))
@@ -115,12 +111,9 @@ public class WordCountFilterQEPTest {
             // execute
             env.execute();
 
-            // expected values
-            countWordsSequentially(filePath);
-
             // verify your results
-            // assertTrue( CollectSink.values.containsAll(outExpected));
-            assertTrue(totalTuplesFound.containsAll(totalTuplesExpected));
+            List<Tuple2<String, Integer>> currentValues = CollectSink.values;
+            assertTrue(currentValues.containsAll(totalTuplesExpected));
         }
     }
 
@@ -131,15 +124,19 @@ public class WordCountFilterQEPTest {
         // configure your test environment
         env.setParallelism(this.minAvailableProcessors);
 
+        // values are collected in a static variable
+        CollectSink.values.clear();
+
         // create a stream of custom elements and apply transformations
-        String sentence = "this is a sentence " + POISON_TRANSACTION_ID + " this sentence must be split because this is a split sentence flatmap";
+        String sentence = "this is a sentence " + POISON_TRANSACTION_ID + " this sentence";
         DataStream<Tuple2<String, Integer>> dataStream = env
                 .fromElements(sentence)
                 .flatMap(new WordCountFilterQEP.SplitterFlatMap())
-                .process(new ExceptionSimulatorProcess(1_000_000L, 20_000L))
+                .process(new ExceptionSimulatorProcess(1_000_000L, 20_000L)).name("exception-simulator")
                 .keyBy(new WordCountFilterQEP.WordKeySelector()) // select the first value as a key
                 .reduce(new WordCountFilterQEP.SumReducer()) // reduce to sum all values with same key
                 ;
+        dataStream.addSink(new CollectSink());
 
         String executionPlan = env.getExecutionPlan();
         System.out.println("ExecutionPlan ........................ ");
@@ -148,11 +145,27 @@ public class WordCountFilterQEPTest {
 
         // execute
         env.execute();
+
+        // no need to verify your results because an exception will happen
     }
 
     @Test
-    @Ignore("this unit test is under development")
+    // @Ignore("this unit test is under development")
     public void integrationTestWithPoisonPillRecovery() throws Exception {
+
+        String sentence = "this is a sentence " + POISON_TRANSACTION_ID + " this sentence . is it a correct sentence ?";
+
+        // expected values
+        List<Tuple2<String, Integer>> outExpected = new ArrayList<Tuple2<String, Integer>>();
+        outExpected.add(Tuple2.of("this", 2));
+        outExpected.add(Tuple2.of("is", 2));
+        outExpected.add(Tuple2.of("a", 2));
+        outExpected.add(Tuple2.of("sentence", 3));
+        outExpected.add(Tuple2.of(POISON_TRANSACTION_ID, 1));
+        outExpected.add(Tuple2.of("correct", 1));
+        outExpected.add(Tuple2.of(".", 1));
+        outExpected.add(Tuple2.of("?", 1));
+
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         // start a checkpoint every 500 ms
@@ -176,16 +189,18 @@ public class WordCountFilterQEPTest {
         // configure your test environment
         env.setParallelism(this.minAvailableProcessors);
 
+        // values are collected in a static variable
+        CollectSink.values.clear();
+
         // create a stream of custom elements and apply transformations
-        String sentence = "this is a sentence " + POISON_TRANSACTION_ID + " this sentence must be split because this is a split sentence flatmap";
         DataStream<Tuple2<String, Integer>> dataStream = env
                 .fromElements(sentence)
                 .flatMap(new WordCountFilterQEP.SplitterFlatMap())
-                .process(new ExceptionSimulatorProcess(1_000_000L, 2_000L))
+                .process(new ExceptionSimulatorProcess(1_000_000L, 2_000L)).name("exception-simulator")
                 .keyBy(new WordCountFilterQEP.WordKeySelector()) // select the first value as a key
                 .reduce(new WordCountFilterQEP.SumReducer()) // reduce to sum all values with same key
                 ;
-        // dataStream.addSink(new CollectSink());
+        dataStream.addSink(new CollectSink());
 
         String executionPlan = env.getExecutionPlan();
         System.out.println("ExecutionPlan ........................ ");
@@ -194,9 +209,13 @@ public class WordCountFilterQEPTest {
 
         // execute
         env.execute();
+
+        // verify your results
+        List<Tuple2<String, Integer>> currentValues = CollectSink.values;
+        assertTrue(currentValues.containsAll(outExpected));
     }
 
-    private void countWordsSequentially(String filePath) throws IOException, URISyntaxException {
+    private List<Tuple2<String, Integer>> countWordsSequentially(String filePath) throws IOException, URISyntaxException {
         Map<String, Integer> total = new HashMap<String, Integer>();
         InputStream is = getClass().getResourceAsStream(filePath);
         if (is == null) {
@@ -218,17 +237,21 @@ public class WordCountFilterQEPTest {
                 }
             }
         }
+        List<Tuple2<String, Integer>> totalTuplesExpected = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : total.entrySet()) {
             // System.out.println(entry.getKey() + "," + entry.getValue());
             totalTuplesExpected.add(Tuple2.of(entry.getKey(), entry.getValue()));
         }
+        return totalTuplesExpected;
     }
 
     // create a testing sink
     private static class CollectSink implements SinkFunction<Tuple2<String, Integer>> {
+        public static final List<Tuple2<String, Integer>> values = Collections.synchronizedList(new ArrayList<Tuple2<String, Integer>>());
+
         @Override
         public void invoke(Tuple2<String, Integer> value, Context context) throws Exception {
-            totalTuplesFound.add(value);
+            values.add(value);
         }
     }
 }
