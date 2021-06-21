@@ -112,18 +112,15 @@ public class WatermarkStreamOperatorTest {
     @Test
     public void testRestartWithLatestWatermark() throws Exception {
 
-        String sentence = "this is a sentence " + POISON_TRANSACTION_ID + " this sentence . is it a correct sentence ?";
+        String sentence = "this is a sentence " + POISON_TRANSACTION_ID;
 
         // expected values
         List<Tuple2<String, Integer>> outExpected = new ArrayList<Tuple2<String, Integer>>();
-        outExpected.add(Tuple2.of("this", 2));
-        outExpected.add(Tuple2.of("is", 2));
-        outExpected.add(Tuple2.of("a", 2));
-        outExpected.add(Tuple2.of("sentence", 3));
+        outExpected.add(Tuple2.of("this", 1));
+        outExpected.add(Tuple2.of("is", 1));
+        outExpected.add(Tuple2.of("a", 1));
+        outExpected.add(Tuple2.of("sentence", 1));
         outExpected.add(Tuple2.of(POISON_TRANSACTION_ID, 1));
-        outExpected.add(Tuple2.of("correct", 1));
-        outExpected.add(Tuple2.of(".", 1));
-        outExpected.add(Tuple2.of("?", 1));
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
@@ -270,7 +267,9 @@ public class WatermarkStreamOperatorTest {
             for (int i = 0; i < words.length; i++) {
                 Thread.sleep(250);
                 ctx.collect(words[i]);
-                // ctx.emitWatermark();
+                if (i < 4) {
+                    ctx.emitWatermark(new Watermark(i));
+                }
             }
         }
 

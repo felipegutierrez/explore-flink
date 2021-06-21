@@ -30,7 +30,15 @@ public class WatermarkStreamOperator<IN> extends AbstractUdfStreamOperator<IN, W
         super.initializeState(context);
 
         ListStateDescriptor<Long> descriptor = new ListStateDescriptor<>("latest-watermark", Long.class);
-        this.latestWatermark = context.getOperatorStateStore().getListState(descriptor);
+        latestWatermark = context.getOperatorStateStore().getListState(descriptor);
+        List<Long> watermarkList = new ArrayList<>();
+        latestWatermark.get().forEach(watermarkList::add);
+        watermarkList.forEach(value -> {
+            System.out.println("watermarkList recovered: " + value);
+        });
+        Long maxWatermark = watermarkList.stream().max(Long::compare).orElse(0L);
+        System.out.println("maxWatermark: " + maxWatermark);
+        processWatermark(new Watermark(maxWatermark));
     }
 
     @Override
@@ -40,13 +48,9 @@ public class WatermarkStreamOperator<IN> extends AbstractUdfStreamOperator<IN, W
 
     @Override
     public void processWatermark(Watermark mark) throws Exception {
-        if (mark.isWatermark()) {
-            System.out.println("processing watermark: " + mark.getTimestamp());
-            List<Long> watermarkListState = new ArrayList<>();
-            latestWatermark.get().forEach(watermarkListState::add);
-            watermarkListState.add(mark.getTimestamp());
-            latestWatermark.update(watermarkListState);
-        }
+        System.out.println("processing watermark: " + mark.getTimestamp());
+        latestWatermark.add(mark.getTimestamp());
+
         super.processWatermark(mark);
     }
 }
