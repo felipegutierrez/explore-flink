@@ -37,8 +37,10 @@ public class WatermarkStreamOperator<IN> extends AbstractUdfStreamOperator<IN, W
             System.out.println("watermarkList recovered: " + value);
         });
         Long maxWatermark = watermarkList.stream().max(Long::compare).orElse(0L);
-        System.out.println("maxWatermark: " + maxWatermark);
-        processWatermark(new Watermark(maxWatermark));
+        if (!maxWatermark.equals(Long.valueOf(0l))) {
+            System.out.println("maxWatermark: " + maxWatermark);
+            processWatermark(new Watermark(maxWatermark));
+        }
     }
 
     @Override
