@@ -26,6 +26,7 @@ public class WatermarkStreamOperator<IN> extends AbstractUdfStreamOperator<IN, W
 
     @Override
     public void initializeState(StateInitializationContext context) throws Exception {
+        System.out.println("WatermarkStreamOperator.initializeState");
         super.initializeState(context);
 
         ListStateDescriptor<Long> descriptor = new ListStateDescriptor<>("latest-watermark", Long.class);
@@ -40,6 +41,7 @@ public class WatermarkStreamOperator<IN> extends AbstractUdfStreamOperator<IN, W
     @Override
     public void processWatermark(Watermark mark) throws Exception {
         if (mark.isWatermark()) {
+            System.out.println("processing watermark: " + mark.getTimestamp());
             List<Long> watermarkListState = new ArrayList<>();
             latestWatermark.get().forEach(watermarkListState::add);
             watermarkListState.add(mark.getTimestamp());
