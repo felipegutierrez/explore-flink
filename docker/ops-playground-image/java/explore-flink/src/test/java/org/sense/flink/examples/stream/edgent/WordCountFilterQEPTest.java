@@ -9,7 +9,9 @@ import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
+import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
+import org.apache.flink.util.OutputTag;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static org.junit.Assert.assertTrue;
 import static org.sense.flink.examples.stream.edgent.ExceptionSimulatorProcess.POISON_TRANSACTION_ID;
@@ -190,16 +193,25 @@ public class WordCountFilterQEPTest {
 
         // values are collected in a static variable
         CollectSink.values.clear();
+        SideOutputSink.result.set(0L);
 
         // create a stream of custom elements and apply transformations
         DataStream<Tuple2<String, Integer>> dataStream = env
-                .fromElements(sentence)
+                .addSource(new MySource(sentence))
+                // .fromElements(sentence)
                 .flatMap(new WordCountFilterQEP.SplitterFlatMap())
-                .process(new ExceptionSimulatorProcess(1_000_000L, 5_000L)).name("exception-simulator")
                 .keyBy(new WordCountFilterQEP.WordKeySelector()) // select the first value as a key
                 .reduce(new WordCountFilterQEP.SumReducer()) // reduce to sum all values with same key
                 ;
         dataStream.addSink(new CollectSink());
+
+        OutputTag<Long> outputTag = new OutputTag<Long>("side-output") {
+        };
+        dataStream
+                .process(new ExceptionSimulatorProcess(1_000_000L, 5_000L)).name("exception-simulator")
+                .getSideOutput(outputTag)
+                .addSink(new SideOutputSink());
+
 
         String executionPlan = env.getExecutionPlan();
         System.out.println("ExecutionPlan ........................ ");
@@ -214,6 +226,7 @@ public class WordCountFilterQEPTest {
         assertTrue(currentValues.containsAll(outExpected));
 
         // count how many times the job restarted
+        assertTrue(SideOutputSink.result.get() > 0);
     }
 
     private List<Tuple2<String, Integer>> countWordsSequentially(String filePath) throws IOException, URISyntaxException {
@@ -253,6 +266,37 @@ public class WordCountFilterQEPTest {
         @Override
         public void invoke(Tuple2<String, Integer> value, Context context) throws Exception {
             values.add(value);
+        }
+    }
+
+    private static class SideOutputSink implements SinkFunction<Long> {
+        public static final AtomicLong result = new AtomicLong(0L);
+
+        @Override
+        public void invoke(Long value, Context context) throws Exception {
+            result.set(value);
+        }
+    }
+
+    private static class MySource implements SourceFunction<String> {
+        private final String sentence;
+
+        public MySource(String sentence) {
+            this.sentence = sentence;
+        }
+
+        @Override
+        public void run(SourceContext<String> ctx) throws Exception {
+            String[] words = this.sentence.split(" ");
+            for (int i = 0; i < words.length; i++) {
+                Thread.sleep(250);
+                ctx.collect(words[i]);
+            }
+        }
+
+        @Override
+        public void cancel() {
+
         }
     }
 }
