@@ -5,5 +5,5 @@ import java.io.Serializable;
 
 public interface WatermarkFunction<T> extends Function, Serializable {
 
-    boolean process(T value) throws Exception;
+    T process(T value) throws Exception;
 }
