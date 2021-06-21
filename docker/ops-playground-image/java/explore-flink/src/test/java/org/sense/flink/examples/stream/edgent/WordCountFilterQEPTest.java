@@ -150,7 +150,6 @@ public class WordCountFilterQEPTest {
     }
 
     @Test
-    // @Ignore("this unit test is under development")
     public void integrationTestWithPoisonPillRecovery() throws Exception {
 
         String sentence = "this is a sentence " + POISON_TRANSACTION_ID + " this sentence . is it a correct sentence ?";
@@ -171,7 +170,7 @@ public class WordCountFilterQEPTest {
         // start a checkpoint every 500 ms
         env.enableCheckpointing(500);
         // make sure 250 ms of progress happen between checkpoints
-        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(250);
+        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(0);
         // checkpoints have to complete within one minute, or are discarded
         env.getCheckpointConfig().setCheckpointTimeout(60000);
         // allow only one checkpoint to be in progress at the same time
@@ -196,7 +195,7 @@ public class WordCountFilterQEPTest {
         DataStream<Tuple2<String, Integer>> dataStream = env
                 .fromElements(sentence)
                 .flatMap(new WordCountFilterQEP.SplitterFlatMap())
-                .process(new ExceptionSimulatorProcess(1_000_000L, 2_000L)).name("exception-simulator")
+                .process(new ExceptionSimulatorProcess(1_000_000L, 5_000L)).name("exception-simulator")
                 .keyBy(new WordCountFilterQEP.WordKeySelector()) // select the first value as a key
                 .reduce(new WordCountFilterQEP.SumReducer()) // reduce to sum all values with same key
                 ;
@@ -213,6 +212,8 @@ public class WordCountFilterQEPTest {
         // verify your results
         List<Tuple2<String, Integer>> currentValues = CollectSink.values;
         assertTrue(currentValues.containsAll(outExpected));
+
+        // count how many times the job restarted
     }
 
     private List<Tuple2<String, Integer>> countWordsSequentially(String filePath) throws IOException, URISyntaxException {
