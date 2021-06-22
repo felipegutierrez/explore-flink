@@ -32,7 +32,7 @@ public class ValenciaItemDistrictMapTest {
         ValenciaItemDistrictMap mapFunction = new ValenciaItemDistrictMap();
 
         List<Point> points = Arrays.asList(new Point(123.45, 543.21, "EPSG:4326"));
-        ValenciaItem valenciaItem = new ValenciaPollution(0L, 0L, "", new Date(), points, "1");
+        ValenciaItem valenciaItem = new ValenciaPollution(0L, 0L, "", new Date(), points, "http://mapas.valencia.es/WebsMunicipales/uploads/atmosferica/6A.csv");
 
         // call the methods that you have implemented
         assertEquals(valenciaItem, mapFunction.map(valenciaItem));

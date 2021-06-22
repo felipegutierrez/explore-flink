@@ -15,10 +15,10 @@ import java.util.List;
 
 public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, ValenciaItem> {
     private static final long serialVersionUID = 624354384779615610L;
+    private final boolean pinningPolicy;
     private SimpleGeographicalPolygons sgp;
     private transient CpuGauge cpuGauge;
     private BitSet affinity;
-    private final boolean pinningPolicy;
 
     public ValenciaItemDistrictMap() throws Exception {
         this(false);
@@ -26,12 +26,12 @@ public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, Valen
 
     public ValenciaItemDistrictMap(boolean pinningPolicy) throws Exception {
         this.pinningPolicy = pinningPolicy;
-		this.sgp = new SimpleGeographicalPolygons();
     }
 
     @Override
     public void open(Configuration parameters) throws Exception {
         super.open(parameters);
+        this.sgp = new SimpleGeographicalPolygons();
         this.cpuGauge = new CpuGauge();
         getRuntimeContext().getMetricGroup().gauge("cpu", cpuGauge);
 
@@ -57,19 +57,19 @@ public class ValenciaItemDistrictMap extends RichMapFunction<ValenciaItem, Valen
         boolean flag = true;
         int i = 0;
         while (flag) {
-        	if (i < coordinates.size()){
-				Tuple3<Long, Long, String> adminLevel = sgp.getAdminLevel(coordinates.get(i));
-				if (adminLevel.f0 != null && adminLevel.f1 != null) {
-					value.setId(adminLevel.f0);
-					value.setAdminLevel(adminLevel.f1);
-					value.setDistrict(adminLevel.f2);
-					flag = false;
-				} else {
-					i++;
-				}
-			} else {
-				flag = false;
-			}
+            if (sgp != null && i < coordinates.size()) {
+                Tuple3<Long, Long, String> adminLevel = sgp.getAdminLevel(coordinates.get(i));
+                if (adminLevel.f0 != null && adminLevel.f1 != null) {
+                    value.setId(adminLevel.f0);
+                    value.setAdminLevel(adminLevel.f1);
+                    value.setDistrict(adminLevel.f2);
+                    flag = false;
+                } else {
+                    i++;
+                }
+            } else {
+                flag = false;
+            }
         }
         if (flag) {
             // if we did not find a district with the given coordinate we assume the
