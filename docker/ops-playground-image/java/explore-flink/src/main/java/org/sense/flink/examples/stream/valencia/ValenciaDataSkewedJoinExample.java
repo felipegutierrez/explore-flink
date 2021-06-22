@@ -33,9 +33,9 @@ public class ValenciaDataSkewedJoinExample {
         boolean collectWithTimestamp = true;
         boolean skewedDataInjection = true;
         long frequencyMilliSeconds1 = Time.seconds(20).toMilliseconds();
-        // long frequencyMilliSeconds2 = Time.seconds(60).toMilliseconds();
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        // TODO: it is not working with event time
         env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
         // @formatter:off
