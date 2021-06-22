@@ -1,7 +1,5 @@
 package org.sense.flink;
 
-import org.apache.flink.api.java.io.DiscardingOutputFormat;
-import org.apache.flink.api.java.tuple.Tuple2;
 import org.sense.flink.examples.batch.MatrixMultiplication;
 import org.sense.flink.examples.stream.clickcount.ClickEventCount;
 import org.sense.flink.examples.stream.clickcount.ClickEventGenerator;
@@ -336,7 +334,8 @@ public class App {
                     app = 0;
                     break;
                 case 25:
-                    new ValenciaDataSkewedJoinExample(ipAddressSource, ipAddressSink);
+                    ValenciaDataSkewedJoinExample joinExample = new ValenciaDataSkewedJoinExample(ipAddressSource, ipAddressSink);
+                    joinExample.execute();
                     app = 0;
                     break;
                 case 26:

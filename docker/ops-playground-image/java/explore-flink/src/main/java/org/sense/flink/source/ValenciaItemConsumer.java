@@ -65,6 +65,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
     private final boolean collectWithTimestamp;
     private final boolean offlineData;
     private final boolean dataSkewedSyntheticInjection;
+    private final int countMax;
     private long offsetTime;
     private boolean useDataSkewedFile;
     private boolean pinningPolicy = false;
@@ -73,9 +74,18 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
     private BitSet affinity;
     // @formatter:on
 
+    public ValenciaItemConsumer(ValenciaItemType airPollution, long pollutionFrequency,
+                                boolean collectWithTimestamp, boolean offlineData, boolean skewedDataInjection, long duration, boolean b) throws Exception {
+        this(airPollution, pollutionFrequency, collectWithTimestamp, offlineData, false, Long.MAX_VALUE, false, -1);
+    }
+
+    public ValenciaItemConsumer(ValenciaItemType trafficJam, long toMilliseconds, boolean collectWithTimestamp, boolean offlineData) throws Exception {
+        this(trafficJam, toMilliseconds, collectWithTimestamp, offlineData, false, Long.MAX_VALUE, false, -1);
+    }
+
     public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
-                                boolean collectWithTimestamp, boolean offlineData) throws Exception {
-        this(valenciaItemType, frequencyMilliSeconds, collectWithTimestamp, offlineData, false, Long.MAX_VALUE, false);
+                                boolean collectWithTimestamp, boolean offlineData, int countMax) throws Exception {
+        this(valenciaItemType, frequencyMilliSeconds, collectWithTimestamp, offlineData, false, Long.MAX_VALUE, false, countMax);
     }
 
     /**
@@ -87,7 +97,7 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
      */
     public ValenciaItemConsumer(ValenciaItemType valenciaItemType, long frequencyMilliSeconds,
                                 boolean collectWithTimestamp, boolean offlineData, boolean dataSkewedSyntheticInjection, long duration,
-                                boolean pinningPolicy) throws Exception {
+                                boolean pinningPolicy, int countMax) throws Exception {
         if (valenciaItemType == ValenciaItemType.TRAFFIC_JAM) {
             this.url = new URL(VALENCIA_TRAFFIC_JAM_URL);
             this.timeoutMillSeconds = Time.minutes(5).toMilliseconds();
@@ -106,10 +116,11 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
         this.collectWithTimestamp = collectWithTimestamp;
         this.dataSkewedSyntheticInjection = dataSkewedSyntheticInjection;
         this.useDataSkewedFile = false;
-        this.duration = Time.minutes(duration).toMilliseconds();
+        this.duration = Time.seconds(duration).toMilliseconds();
         this.startTime = Calendar.getInstance().getTimeInMillis();
         this.offsetTime = this.startTime;
         this.pinningPolicy = pinningPolicy;
+        this.countMax = countMax;
     }
 
     public static void main(String[] args) {
@@ -212,12 +223,15 @@ public class ValenciaItemConsumer extends RichSourceFunction<ValenciaItem> {
                         if (valenciaItem != null) {
                             if (collectWithTimestamp) {
                                 ctx.collectWithTimestamp(valenciaItem, eventTime.getTime());
-                                count++;
                                 if (count % 10 == 0) {
                                     ctx.emitWatermark(new Watermark(eventTime.getTime()));
                                 }
                             } else {
                                 ctx.collect(valenciaItem);
+                            }
+                            count++;
+                            if (count >= this.countMax) {
+                                this.running = false;
                             }
                         }
                     }
