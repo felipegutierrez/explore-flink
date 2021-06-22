@@ -2,7 +2,6 @@ package org.sense.flink.examples.stream.valencia;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.flink.api.java.tuple.Tuple4;
-import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
@@ -36,7 +35,7 @@ public class ValenciaDataSkewedJoinExample {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // TODO: it is not working with event time
-        env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
+        // env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
         // @formatter:off
         // Sources -> add synthetic data -> filter
@@ -56,7 +55,7 @@ public class ValenciaDataSkewedJoinExample {
         streamTrafficJam.join(streamAirPollution)
                 .where(new ValenciaItemDistrictSelector())
                 .equalTo(new ValenciaItemDistrictSelector())
-                .window(TumblingEventTimeWindows.of(Time.seconds(20)))
+                .window(TumblingEventTimeWindows.of(Time.seconds(30)))
                 .apply(new TrafficPollutionByDistrictJoinFunction())
                 .print().name(METRIC_VALENCIA_SINK)
         ;
