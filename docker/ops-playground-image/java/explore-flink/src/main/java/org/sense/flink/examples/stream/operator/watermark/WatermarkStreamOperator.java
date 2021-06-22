@@ -10,6 +10,7 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 import org.apache.flink.streaming.runtime.streamrecord.StreamRecord;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class WatermarkStreamOperator<IN> extends AbstractUdfStreamOperator<IN, WatermarkFunction<IN>>
@@ -33,12 +34,10 @@ public class WatermarkStreamOperator<IN> extends AbstractUdfStreamOperator<IN, W
         latestWatermark = context.getOperatorStateStore().getListState(descriptor);
         List<Long> watermarkList = new ArrayList<>();
         latestWatermark.get().forEach(watermarkList::add);
-        watermarkList.forEach(value -> {
-            System.out.println("watermarkList recovered: " + value);
-        });
+
         Long maxWatermark = watermarkList.stream().max(Long::compare).orElse(0L);
         if (!maxWatermark.equals(Long.valueOf(0l))) {
-            System.out.println("maxWatermark: " + maxWatermark);
+            System.out.println("watermarkList recovered max: " + maxWatermark);
             processWatermark(new Watermark(maxWatermark));
         }
     }
@@ -51,7 +50,7 @@ public class WatermarkStreamOperator<IN> extends AbstractUdfStreamOperator<IN, W
     @Override
     public void processWatermark(Watermark mark) throws Exception {
         System.out.println("processing watermark: " + mark.getTimestamp());
-        latestWatermark.add(mark.getTimestamp());
+        latestWatermark.update(Arrays.asList(mark.getTimestamp()));
 
         super.processWatermark(mark);
     }

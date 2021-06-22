@@ -64,7 +64,7 @@ public class ExceptionSimulatorProcess extends ProcessFunction<Tuple2<String, In
     @Override
     public void initializeState(FunctionInitializationContext context) throws Exception {
         restartsLocal = getRuntimeContext().getAttemptNumber();
-        System.out.println("initializeState... " + restartsLocal);
+        System.out.println("ExceptionSimulatorProcess.initializeState - restarts: " + restartsLocal);
     }
 }
 
