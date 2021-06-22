@@ -34,8 +34,6 @@ public class ValenciaDataSkewedJoinExample {
         long frequencyMilliSeconds1 = Time.seconds(20).toMilliseconds();
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        // TODO: it is not working with event time
-        // env.setStreamTimeCharacteristic(TimeCharacteristic.IngestionTime);
 
         // @formatter:off
         // Sources -> add synthetic data -> filter
