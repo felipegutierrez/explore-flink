@@ -10,7 +10,7 @@
 ![Lines of code](https://img.shields.io/tokei/lines/github/felipegutierrez/explore-flink)
 
 
-This project is based on [Apache Flink 1.11.2](https://flink.apache.org/) consuming events from Kafka 2.2.5 (using [Strimzi](https://strimzi.io/quickstarts/) operators) with Docker 19.03.8, Kubernetes v1.19.0, minikube v1.13.1, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). 
+This project is based on [Apache Flink 1.13.1](https://flink.apache.org/) consuming events from Kafka 2.2.5 (using [Strimzi](https://strimzi.io/quickstarts/) operators) with Docker 19.03.8, Kubernetes v1.19.0, minikube v1.13.1, Java 8, and Scala 2.12. The docker images can be found at [Docker Hub](https://hub.docker.com/repository/docker/felipeogutierrez/explore-flink). 
 
 ## 1. Kubernetes + Docker + Kafka & Zookeeper (3 brokers & 3 zookeepers from [Strimzi](https://strimzi.io/quickstarts/) operators) + Flink(1 JobManager & 3 TaskManagers) + Prometheus + Grafana
 
