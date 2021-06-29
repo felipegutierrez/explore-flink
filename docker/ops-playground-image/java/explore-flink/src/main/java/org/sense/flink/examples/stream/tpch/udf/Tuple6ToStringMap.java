@@ -48,4 +48,8 @@ public class Tuple6ToStringMap
 				+ value.f5 + "])";
 		return result;
 	}
+
+	public CpuGauge getCpuGauge() {
+		return cpuGauge;
+	}
 }
