@@ -1,13 +1,14 @@
 package org.sense.flink.examples.stream.udf.stackoverflow;
 
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
+import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.sense.flink.examples.stream.valencia.ValenciaSinkFunction;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
@@ -37,13 +38,22 @@ public class ConcreteModelStreamJobTest {
         List<AbstractDataModel> abstractDataModelList = new ArrayList<AbstractDataModel>();
         abstractDataModelList.add(new ConcreteModel("a", "1"));
         abstractDataModelList.add(new ConcreteModel("a", "2"));
-        ValenciaSinkFunction.values.clear();
+        MySinkFunction.values.clear();
 
-        ConcreteModelStreamJob streamJob = new ConcreteModelStreamJob(abstractDataModelList, new ValenciaSinkFunction());
+        ConcreteModelStreamJob streamJob = new ConcreteModelStreamJob(abstractDataModelList, new MySinkFunction());
         streamJob.execute();
 
-        List<String> results = ValenciaSinkFunction.values;
+        List<String> results = MySinkFunction.values;
         assertEquals(2, results.size());
         assertTrue(results.containsAll(Arrays.asList("1", "2")));
+    }
+
+    private static class MySinkFunction implements SinkFunction<String> {
+        public static final List<String> values = Collections.synchronizedList(new ArrayList<String>());
+
+        public void invoke(String value, Context context) throws Exception {
+            System.out.println(value);
+            values.add(value);
+        }
     }
 }

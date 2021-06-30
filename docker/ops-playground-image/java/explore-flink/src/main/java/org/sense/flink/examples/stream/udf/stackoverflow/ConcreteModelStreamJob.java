@@ -1,6 +1,7 @@
 package org.sense.flink.examples.stream.udf.stackoverflow;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.sense.flink.examples.stream.valencia.ValenciaSinkFunction;
 
 import java.util.ArrayList;
@@ -9,7 +10,7 @@ import java.util.List;
 public class ConcreteModelStreamJob {
 
     private final List<AbstractDataModel> abstractDataModelList;
-    private final ValenciaSinkFunction sink;
+    private final SinkFunction sink;
 
     public ConcreteModelStreamJob() {
         this.abstractDataModelList = new ArrayList<AbstractDataModel>();
@@ -18,7 +19,7 @@ public class ConcreteModelStreamJob {
         this.sink = new ValenciaSinkFunction();
     }
 
-    public ConcreteModelStreamJob(List<AbstractDataModel> abstractDataModelList, ValenciaSinkFunction sink) {
+    public ConcreteModelStreamJob(List<AbstractDataModel> abstractDataModelList, SinkFunction sink) {
         this.abstractDataModelList = abstractDataModelList;
         this.sink = sink;
     }

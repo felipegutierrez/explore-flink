@@ -1,6 +1,7 @@
 package org.sense.flink.examples.stream.valencia;
 
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
+import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.test.util.MiniClusterWithClientResource;
 import org.junit.ClassRule;
@@ -8,6 +9,8 @@ import org.junit.Test;
 import org.sense.flink.source.ValenciaItemConsumer;
 import org.sense.flink.util.ValenciaItemType;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
@@ -38,13 +41,22 @@ public class ValenciaDataSkewedJoinExampleTest {
                 true, true, false, 30L, false, 10);
         ValenciaItemConsumer sourcePollution = new ValenciaItemConsumer(ValenciaItemType.AIR_POLLUTION, Time.seconds(2).toMilliseconds(),
                 true, true, false, 30L, false, 10);
-        ValenciaSinkFunction.values.clear();
+        MySinkFunction.values.clear();
 
         ValenciaDataSkewedJoinExample joinExample = new ValenciaDataSkewedJoinExample("127.0.0.1", "127.0.0.1",
-                sourceTraffic, sourcePollution, new ValenciaSinkFunction());
+                sourceTraffic, sourcePollution, new MySinkFunction());
         joinExample.execute();
 
-        List<String> results = ValenciaSinkFunction.values;
+        List<String> results = MySinkFunction.values;
         assertEquals(16, results.size());
+    }
+
+    private static class MySinkFunction implements SinkFunction<String> {
+        public static final List<String> values = Collections.synchronizedList(new ArrayList<String>());
+
+        public void invoke(String value, Context context) throws Exception {
+            System.out.println(value);
+            values.add(value);
+        }
     }
 }
