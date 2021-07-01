@@ -44,4 +44,8 @@ public class ShippingPriorityItemMap extends RichMapFunction<ShippingPriorityIte
 
 		return value.toString();
 	}
+
+	public CpuGauge getCpuGauge() {
+		return cpuGauge;
+	}
 }
