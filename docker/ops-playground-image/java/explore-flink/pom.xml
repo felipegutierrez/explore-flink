@@ -16,7 +16,7 @@
         <jdk.version>1.8</jdk.version>
         <scala.binary.version>2.12</scala.binary.version>
         <flink.version>1.13.1</flink.version>
-        <guava.version>30.1.1-jre</guava.version>
+        <guava.version>32.0.0-jre</guava.version>
         <junit.version>4.13.2</junit.version>
         <scala.version>2.12.7</scala.version>
         <kafka.version>2.5.0</kafka.version>
