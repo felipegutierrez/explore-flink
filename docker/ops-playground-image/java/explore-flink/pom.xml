@@ -19,7 +19,7 @@
         <guava.version>30.1.1-jre</guava.version>
         <junit.version>4.13.2</junit.version>
         <scala.version>2.12.7</scala.version>
-        <kafka.version>2.5.0</kafka.version>
+        <kafka.version>2.6.3</kafka.version>
         <geotools.version>21.2</geotools.version>
         <mockito.version>2.21.0</mockito.version>
         <hamcrest.version>2.2</hamcrest.version>
